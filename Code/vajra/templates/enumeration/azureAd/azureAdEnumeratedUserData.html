@@ -1,0 +1,707 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12 grid-margin">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                <div id="home-tab" aria-selected="true">
+                  <b>Azure Ad Enumerated User data</b>
+                </div>
+                <div class="btn-wrapper">
+                  <a href="{{url_for('downloadAzureAdEnumData', victim=enumerate.azureAdUserProfile.victim)}}" class="btn btn-primary text-white me-0"><i class="icon-download"></i>Download All</a>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-primary">
+            <li class="breadcrumb-item "><a href="{{ url_for('azureAdEnumeration') }}">Users</a></li>
+            <li class="breadcrumb-item active" aria-current="page">All Data</li>
+          </ol>
+        </nav>
+        <div class="col-12 grid-margin">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title"><u>{{ enumerate.azureAdUserProfile.displayName }}</u></h4>
+              <p class="card-description">
+                Max<code>1000</code>data will be listed for each, please click <u>Download All</u> to view complete list.
+              </p>
+              <div class="row">
+                <div class="col-md-12 mx-auto">
+                  <ul class="nav nav-pills nav-pills-custom" id="pills-tab-custom" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-Profile" role="tab" aria-controls="pills-home" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-users.svg') }}" width="25px">
+                        Profile
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-Users" role="tab" aria-controls="pills-home" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-users.svg') }}" width="25px">
+                        Users
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-profile-tab-custom" data-bs-toggle="pill" href="#pills-Groups" role="tab" aria-controls="pills-profile" aria-selected="true">
+                        <img src="{{ url_for('static',filename='images/logo/azure-groups.svg') }}" width="25spx">
+                        Groups
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-contact-tab-custom" data-bs-toggle="pill" href="#pills-Devices" role="tab" aria-controls="pills-contact" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-device.svg') }}" width="25px">
+                        Devices
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-vibes-tab-custom" data-bs-toggle="pill" href="#pills-Admin-Users" role="tab" aria-controls="pills-contact" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-ad-AdminUsers.svg') }}" width="25px">
+                        Admin Users
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-Custom-Directory-Roles" role="tab" aria-controls="pills-contact" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-ad-custom-directory-role.png') }}" width="25px">
+                        Custom Directory Roles
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-App-Registrations" role="tab" aria-controls="pills-contact" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/Azure-App-Registrations.svg') }}" width="25px"> 
+                        App Registrations
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-Service-Principles" role="tab" aria-controls="pills-contact" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-Enterprise-Applications.svg') }}" width="25px">
+                        Service Principles
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-Conditional-Access-Policy" role="tab" aria-controls="pills-contact" aria-selected="false">
+                        <img src="{{ url_for('static',filename='images/logo/azure-conditional-Access.svg') }}" width="25px"> 
+                        Conditional Access Policy
+                      </a>
+                    </li>
+                  </ul>
+                  <hr>
+                  <div class="tab-content tab-content-custom-pill" id="pills-tabContent-custom">
+                    <div class="tab-pane fade active show" id="pills-Profile" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                          <div class="d-sm-flex align-items-center justify-content-between">
+                            <h4><img src="{{ url_for('static',filename='images/logo/azure-users.svg') }}" width="40px"> <b>Profile: </b> <u>{{ enumerate.azureAdUserProfile.victim }}</u></h4>
+                        </div>
+                          <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                            <table class="table table-hover table-bordered table-dark" >
+                              <thead>
+                                <tr>
+                                  <th>
+                                    User Principle Name
+                                   </th>
+                                   <th>
+                                    Groups
+                                   </th>
+                                   <th>
+                                    Id
+                                   </th>
+                                   <th>
+                                    Display name
+                                   </th>
+                                   <th>
+                                    Given Name
+                                   </th>
+                                   <th>
+                                    Job Title:
+                                   </th>
+                                   <th>
+                                    Mail
+                                   </th>
+                                   <th>
+                                    Mobile Phone
+                                   </th>
+                                   <th>
+                                    Office location
+                                   </th>
+                                   <th>
+                                    Preferred Language
+                                   </th>
+                                </tr>
+                             </thead>
+                              <tbody id="table-users">
+                                {% if enumerate.azureAdUserProfile.userPrincipalName %}
+                                <tr>
+                                  <td>
+                                    <label class="badge badge-outline-success">
+                                    {{ enumerate.azureAdUserProfile.userPrincipalName }}
+                                  </label>
+                                  </td>
+                                  <td>
+                                    {{ enumerate.azureAdUserProfile.groups.replace("\r\n", "<br>") | safe }}
+                                  </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.id }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.displayName }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.givenName }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.jobTitle }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.mail }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.mobilePhone }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.officeLocation }}
+                                    </td>
+                                    <td>
+                                      {{ enumerate.azureAdUserProfile.preferredLanguage }}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                              </tbody>
+                            </table>
+                          </div>
+                          <br>
+                          {% if enumerate.azureAdUserProfile.accessToken %}
+                          <b>Access Token: </b> 
+                          <div class="table-responsive fixTableHead text-muted" style="max-height: 150px;">
+                            {{ enumerate.azureAdUserProfile.accessToken }}
+                          </div>
+                          {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="pills-Users" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                      <div class="d-sm-flex align-items-center justify-content-between">
+                        <h4><img src="{{ url_for('static',filename='images/logo/azure-users.svg') }}" width="40px"> <b>Users - {{ count }}</b></h4>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-users" name="displaySearch-users" placeholder="Keywords" type="text" value="">
+                    </div>
+                      <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                        <table class="table table-hover table-bordered table-dark" >
+                          <thead>
+                            <tr>
+                               <th>
+                                User Principle Name
+                               </th>
+                               <th>
+                                 Roles
+                               </th>
+                               <th>
+                                Display Name
+                               </th>
+                               <th>
+                                  Job Title
+                               </th>
+                               <th>
+                                  Mobile Phone
+                               </th>
+                               <th>
+                                  ID
+                               </th>
+                            </tr>
+                         </thead>
+                          <tbody id="table-users">
+                            {% for data in enumerate.azureAdUsersData %}
+                            <tr>
+                                <td>
+                                  {{ data.userPrincipalName }}
+                                </td>
+                                <td>
+                                  {{ data.roles.replace("\r\n","<br>") | safe }}
+                                </td>
+                                <td>
+                                  <label class="badge badge-outline-warning">
+                                    {{ data.displayName }}
+                                </label>
+                                </td>
+                                <td>
+                                  {{ data.jobTitle }}
+                                </td>
+                                <td>
+                                  {{ data.mobilePhone }}
+                                </td>
+                                <td>
+                                  {{ data.id }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-Groups" role="tabpanel" aria-labelledby="pills-profile-tab-custom">
+                      <div class="d-sm-flex align-items-center justify-content-between">
+                        <h4><img src="{{ url_for('static',filename='images/logo/azure-groups.svg') }}" width="40px"> <b>Azure Ad Groups</b></h4>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-groups" name="displayName" placeholder="Keywords" type="text" value="">
+                    </div>
+                      <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                        <table class="table table-hover table-bordered table-dark" width="100%">
+                          <thead>
+                            <tr>
+                              <th>
+                                Name
+                              </th>
+                              <th>
+                                Role Assignment
+                              </th>
+                              <th>
+                                Owner
+                              </th>
+                              <th style="width: 100px;">
+                                Description
+                              </th>
+                              <th>
+                                Email
+                              </th>
+                              <th>
+                                Id
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody  id="table-groups">
+                            {% for data in enumerate.azureAdGroupData %}
+                            <tr>
+                              <td>
+                                <a href="{{url_for('azureAdGroupData', groupName=data.displayName, victim=enumerate.azureAdUserProfile.victim)}}" class="nav-link text-info"><u><i class="mdi mdi-link-variant"></i> {{data.displayName}}</u></a> 
+                              </td>
+                              <td>
+                                {{data.roleAssignment.replace("\r\n", "<br>") | safe}}
+                              </td>
+                              <td style="max-width:300px;overflow: auto;">
+                                {{data.ownerName.replace("\r\n", "<br>") | safe}}
+                              </td>
+                              <td style="max-width:300px;overflow: auto;">
+                                {{data.description}}
+                              </td>
+                              <td>
+                                {{data.mail}}
+                              </td>
+                              <td>
+                                {{data.id}}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-Devices" role="tabpanel" aria-labelledby="pills-contact-tab-custom">
+                      <div class="d-sm-flex align-items-center justify-content-between">
+                        <h4><img src="{{ url_for('static',filename='images/logo/azure-device.svg') }}" width="40px"> <b>Azure Ad Devices</b></h4>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-devices" name="displayName" placeholder="Keywords" type="text" value="">
+                    </div>
+                      <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                        <table class="table table-hover table-bordered table-dark" width="100%">
+                          <thead>
+                            <tr>
+                              <th>
+                                Device Name
+                              </th>
+                              <th>
+                                Model
+                              </th>
+                              <th>
+                                OS Version
+                              </th>
+                              <th>
+                                Device ID
+                              </th>
+                              <th>
+                                AccountEnabled
+                              </th>
+                              <th>
+                                Manufacturer
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="table-devices">
+                            {% for data in enumerate.azureAdDeviceData %}
+                            <tr>
+                              <td>
+                               {{data.deviceName}}
+                              </td>
+                              <td>
+                                {{data.model}}
+                              </td>
+                              <td>
+                                {{data.osVersion}}
+                              </td>
+                              <td>
+                                {{data.deviceId}}
+                              </td>
+                              <td>
+                                {{data.accountEnabled}}
+                              </td>
+                              <td>
+                                {{data.manufacturer}}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-Admin-Users" role="tabpanel" aria-labelledby="pills-vibes-tab-custom">
+                      <div class="d-sm-flex justify-content-between align-items-start">
+                        <div id="home-tab" aria-selected="true">
+                          <h4><img src="{{ url_for('static',filename='images/logo/azure-ad-AdminUsers.svg') }}" width="40px"><b>Admin Users</b></h4>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-admin-users" name="displayName" placeholder="Keywords" type="text" value="">
+                    </div>
+                    <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                      <table class="table table-dark">
+                        <thead>
+                          <tr>
+                            <th>
+                              Admin Username
+                            </th>
+                            <th>
+                              Directory Role Name
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody id="table-admin-users">
+                          {% for data in enumerate.azureAdAdminusers %}
+                          <tr>
+                            <td>
+                              <label class="badge badge-outline-info">
+                              {{data.adminName}}</label>
+                            </td>
+                            <td>
+                              {{data.directoryRoleName}}
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-Custom-Directory-Roles" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
+                      <div class="d-sm-flex justify-content-between align-items-start">
+                        <div id="home-tab" aria-selected="true">
+                          <h4><img src="{{ url_for('static',filename='images/logo/azure-ad-custom-directory-role.png') }}" width="40px"><b>Custom Directory Roles</b></h4>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <input class="form-control mb-2 mr-sm-2" id="displaySearch-custom-roles" name="displayName" placeholder="Keywords" type="text" value="">
+                      </div>
+                      <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                        <table class="table table-dark">
+                          <thead>
+                            <tr>
+                              <th>
+                                Custom Role
+                              </th>
+                              <th>
+                                Description
+                              </th>
+                              <th>
+                                Id
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody  id="table-custom-roles">
+                            {% for data in enumerate.azureAdCustomDirectoryRoles %}
+                            <tr>
+                              <td>
+                                {{data.directoryRoleName}}
+                              </td>
+                              <td>
+                                {{data.description}}
+                              </td>
+                              <td>
+                                {{data.id}}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-App-Registrations" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
+                      <div class="d-sm-flex align-items-center justify-content-between">
+                        <h4><img src="{{ url_for('static',filename='images/logo/Azure-App-Registrations.svg') }}" width="40px"> <b>App Registrations</b></h4>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-app-reg" name="displayName" placeholder="Keywords" type="text" value="">
+                    </div>
+                      <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                        <table class="table table-hover table-bordered table-dark" width="100%">
+                          <thead>
+                            <tr>
+                              <th>
+                                App Name
+                              </th>
+                              <th>
+                                Application Permission
+                              </th>
+                              <th>
+                                Client/App Id
+                              </th>
+                              <th>
+                                Identifier URI's
+                              </th>
+                              <th>
+                                Sign In Audience
+                              </th>
+                              <th>
+                                Publisher Domain
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="table-app-reg">
+                            {% for data in enumerate.azureAdApplications %}
+                            <tr>
+                              <td>
+                                <label class="badge badge-outline-light">
+                               {{data.appName}}
+                              </label>
+                              </td>
+                              <td>
+                                {{data.appRoles.replace("\r\n", "<br>") | safe}}
+                              </td>
+                              <td>
+                                {{data.appId}}
+                              </td>
+                              <td>
+                                {{data.identifierUris}}
+                              </td>
+                              <td>
+                                {{data.signInAudience}}
+                              </td>
+                              <td>
+                                {{data.publisherDomain}}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-Service-Principles" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
+                      <div class="d-sm-flex align-items-center justify-content-between">
+                        <h4><img src="{{ url_for('static',filename='images/logo/azure-Enterprise-Applications.svg') }}" width="40px"><b>Service Principles</b></h4>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-sp" name="displayName" placeholder="Keywords" type="text" value="">
+                    </div>
+                      <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                        <table class="table table-hover table-bordered table-dark" width="100%">
+                          <thead>
+                            <tr>
+                              <th>
+                                App Name
+                              </th>
+                              <th>
+                                Sign In Audience
+                              </th>
+                              <th>
+                                Redirect Url
+                              </th>
+                              <th>
+                                Home Page Url
+                              </th>
+                              <th>
+                                Description
+                              </th>
+                              <th>
+                                Service Principle Names
+                              </th>
+                              <th>
+                                Id
+                              </th>
+                              <th>
+                                Key Credentials
+                              </th>
+                              <th>
+                                Password Credentials
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="table-sp">
+                            {% for data in enumerate.azureAdServicePrinciple %}
+                            <tr>
+                              <td>
+                                <label class="badge badge-outline-light">
+                               {{data.appDisplayName}}
+                              </label>
+                              </td>
+                              <td>
+                                {{data.signInAudience}}
+                              </td>
+                              <td>
+                                {{ data.replyUrls.replace("\r\n", "<br>") | safe }}
+                              </td>
+                              <td>
+                                {{data.homepage}}
+                              </td>
+                              <td>
+                                {{data.appDescription}}
+                              </td>
+                              <td>
+                                {{data.servicePrincipalNames.replace("\r\n", "<br>") | safe}}
+                              </td>
+                              <td>
+                                {{data.id}}
+                              </td>
+                              <td>
+                                <pre>{{data.keyCredentials}}</pre>
+                              </td>
+                              <td><pre>{{data.passwordCredentials}}</pre>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-Conditional-Access-Policy" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
+                      <div class="d-sm-flex align-items-center justify-content-between">
+                        <h4><img src="{{ url_for('static',filename='images/logo/azure-conditional-Access.svg') }}" width="40px"> <b>Conditional Access Policy</b></h4>
+                    </div>
+                    <div class="form-group">
+                      <input class="form-control mb-2 mr-sm-2" id="displaySearch-cap" name="displayName" placeholder="Keywords" type="text" value="">
+                    </div>
+                    <div class="table-responsive fixTableHead" style="max-height: 600px;">
+                      <table class="table table-hover table-bordered table-dark" width="100%">
+                          <thead><tr>
+                          <th title="Field #1">Name</th>
+                          <th title="Field #2">Id</th>
+                          <th title="Field #3">Created Date Time</th>
+                          <th title="Field #4">Modified Date Time</th>
+                          <th title="Field #5">State</th>
+                          <th title="Field #6">Session Controls</th>
+                          <th title="Field #7">Conditions/clientAppTypes</th>
+                          <th title="Field #8">Conditions/platforms</th>
+                          <th title="Field #9">Conditions/locations</th>
+                          <th title="Field #10">Conditions/applications/includeApplications</th>
+                          <th title="Field #11">Conditions/users/includeUsers</th>
+                          <th title="Field #12">GrantControls/operator</th>
+                          <th title="Field #13">GrantControls/builtInControls</th>
+                          </tr></thead>
+                          <tbody id="table-cap">
+                          {% for data in enumerate.azureAdConditionalAccessPolicy %}
+                          <tr>
+                          <td><label class="badge badge-outline-warning">{{ data.displayName }}</label></td>
+                          <td>{{ data.id }}</td>
+                          <td>{{ data.createdDateTime }}</td>
+                          <td>{{ data.modifiedDareTime }}</td>
+                          <td>{{ data.state }}</td>
+                          <td>{{ data.sessionControls }}</td>
+                          <td>
+                            {{ data.conditions_clientAppTypes.replace("\r\n", "<br>").replace("\r\n", "<br>") | safe}}
+                          </td>
+                          <td>{{ data.conditions_platforms }}</td>
+                          <td>{{ data.conditions_locations }}</td>
+                          <td>{{ data.conditions_applications_includeApplications.replace("\r\n", "<br>") | safe }}</td>
+                          <td>{{ data.conditions_users_includeUsers.replace("\r\n", "<br>") | safe}}</td>
+                          <td>{{ data.grantControls_operator }}</td>
+                          <td>{{ data.grantControls_builtInControls.replace("\r\n", "<br>") | safe}}</td>                    
+                          </tr>
+                          {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+  $(document).ready(function(){
+    $("#displaySearch-users").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-users tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-groups").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-groups tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-devices").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-devices tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-admin-users").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-admin-users tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-custom-roles").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-custom-roles tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-app-reg").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-app-reg tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-sp").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-sp tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  $(document).ready(function(){
+    $("#displaySearch-cap").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#table-cap tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+  </script>
+{% endblock %}
+

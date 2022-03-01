@@ -1,0 +1,344 @@
+<!--
+Copyright (C) 2022 Raunak Parmar, @trouble1_raunak
+All rights reserved to Raunak Parmar
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+This tool is meant for educational purposes only. 
+The creator takes no responsibility of any mis-use of this tool.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>Azure AD Attacking ToolKit</title>
+      <!-- plugins:css -->
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/feather/feather.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/mdi/css/materialdesignicons.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/ti-icons/css/themify-icons.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/typicons/typicons.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/simple-line-icons/css/simple-line-icons.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/css/vendor.bundle.base.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/jquery-toast-plugin/jquery.toast.min.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap4.0.0/bootstrap.min.css') }} ">
+      <!-- endinject -->
+      <!-- Plugin css for this page -->
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/select.dataTables.min.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/vendors/jsgrid.min.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/vendors/jsgrid-theme.min.css') }} ">
+      <!-- End plugin css for this page -->
+      <!-- inject:css -->
+      
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/vertical-layout-'+theme+'/style.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/custom.css') }} ">
+      
+      <!-- endinject -->
+      <link rel="shortcut icon" href="{{ url_for('static',filename='images/favicon.jpg') }}" />
+   </head>
+   <body>
+      <div class="container-scroller">
+         <!-- partial:partials/_navbar.html -->
+         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row ">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start ">
+               <div class="me-3">
+                  <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                  <span class="icon-menu"></span>
+                  </button>
+                  </div>
+                  <a class="navbar-brand brand-logo text-vajra" href="/">
+                     {% if textColor != "white" %}
+                     <h1 style="font-size: 200%;">VAJRA</h1>
+                     {% else %}
+                     <h1 style="font-size: 200%;color:#73b4fd;">VAJRA</h1>
+                     {% endif %}
+                   </a>
+                   <a class="navbar-brand  brand-logo-mini" href="index.html">
+                     <img class=" rounded-circle" src="{{ url_for('static',filename='images/faces/indra_logo.png') }}" alt="logo" />
+                   </a>
+                   
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-top">
+
+               <ul class="navbar-nav ">
+                  <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+                     {% if textColor != "white" %}
+                     <h1 class="welcome-text fw-bold"><span style="color:#2e71be;">Azure AD</span> <span style="color:#000000;">Attacking ToolKit</span></h1>
+                     <h3 class="welcome-sub-text"><span style="color:#2e71be;">Your Weapon</span> <span style="color:#000000;">To Cloud</span></h3>
+                     {% else %}
+                     <h1 class="welcome-text fw-bold"><span style="color:#73b4fd;">Azure AD</span> <span style="color:#ffffff;">Attacking ToolKit</span></h1>
+                     <h3 class="welcome-sub-text"><span style="color:#73b4fd;">Your Weapon</span> <span style="color:#ffffff;">To Cloud</span></h3>
+                     {% endif %}
+                  </li>
+               </ul>
+               <ul class="navbar-nav ms-auto">
+                  <!--
+                  <li class="nav-item">
+                     <form class="search-form">
+                        <i class="icon-search"></i>
+                        <input type="search" class="form-control" placeholder="Search feature in progres" title="Search here" name="search">
+                     </form>
+                  </li>
+                  -->
+                  <li class="nav-item">
+                     <div class="dropdown">
+                        <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                           <img src="{{ url_for('static',filename='images/common/cloud-computing.png') }}" width="25" height="20" > &nbsp;&nbsp;Select Cloud 
+                            </a>
+  
+                        <div class="dropdown-content">
+                           <a href="{{ url_for('dashboard') }}">
+                                <img src="{{ url_for('static',filename='images/logo/azure-icon.png') }}" width="25" height="20" > &nbsp;&nbsp;Azure
+                           </a>
+                           <a href="{{ url_for('aws_dashboard') }}">
+                                <img src="{{ url_for('static',filename='images/aws/icons/aws.png') }}" width="25" height="15"> &nbsp;&nbsp;AWS
+                              </a>
+                           <a href="{{ url_for('gcp_dashboard') }}">
+                              <img src="{{ url_for('static',filename='images/gcp/icons/gcp.png') }}" width="25" height="15"> &nbsp;&nbsp;GCP
+                           </a>  
+                        </div>
+                    </div>
+                  </li>
+                  <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                     <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                       <img class="img-custom rounded-circle" src="{{ url_for('static',filename='images/faces/indra_logo.png') }}" alt="Profile image"> </a>
+                   </li>
+               </ul>
+               <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+               <span class="mdi mdi-menu"></span>
+               </button>
+            </div>
+         </nav>
+         <!-- partial -->
+         <div class="container-fluid page-body-wrapper " >
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+               <ul class="nav" >
+                  <li class="nav-item {{ active }}" >
+                     <a class="nav-link" href="{{ url_for('dashboard') }}">
+                     <i class="mdi mdi-view-dashboard menu-icon {{textColor}}"></i>
+                     <span class="menu-title ">Dashboard</span>
+                     </a>
+                  </li>
+                  <li class="nav-item nav-category">Stolen Data</li>
+                  <li class="nav-item">
+                     <a class="nav-link" data-bs-toggle="collapse" href="#office-365" aria-expanded="false" aria-controls="ui-basic">
+                     <i class="menu-icon mdi mdi-office {{textColor}}"></i>
+                     <span class="menu-title">Office365</span>
+                     <i class="menu-arrow"></i> 
+                     </a>
+                     
+                     <div class="collapse" id="office-365">
+                        <ul class="nav flex-column sub-menu">
+                           <li class="nav-item">
+                              <a class="nav-link" href="{{ url_for('victims') }}">
+                              <i class="menu-icon mdi mdi-human-greeting"></i>
+                              <span class="menu-title">Victims</span>
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" href="{{ url_for('oneDrive') }}">
+                              <i class="menu-icon mdi mdi-onedrive"></i>
+                              <span class="menu-title">OneDrive</span>
+                              </a>
+                           <li class="nav-item">
+                              <a class="nav-link" href="{{ url_for('outlook') }}">
+                              <i class="menu-icon mdi mdi-outlook"></i>
+                              <span class="menu-title">Outlook</span>
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" href="{{ url_for('attachments') }}">
+                              <i class="menu-icon mdi mdi-attachment"></i>
+                              <span class="menu-title">Attachments</span>
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" href="{{ url_for('onenote') }}">
+                              <i class="menu-icon mdi mdi-onenote "></i>
+                              <span class="menu-title">OneNote</span>
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </li>
+                  <li class="nav-item nav-category">Hacking</li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#attacks" aria-expanded="false" aria-controls="form-elements">
+                      <i class="menu-icon mdi mdi-target {{textColor}}"></i>
+                      <span class="menu-title">Attacks</span>
+                      <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="attacks">
+                      <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('phishing') }}">
+                              <img src="{{ url_for('static',filename='images/logo/thief.png') }}" class="img-logo">
+                           <span class="menu-title">Phishing</span>
+                           </a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('spraying') }}">
+                              <img src="{{ url_for('static',filename='images/logo/spray.png') }}" class="img-logo">
+                           <span class="menu-title">Spraying</span>
+                           </a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('bruteforce') }}">
+                              <img src="{{ url_for('static',filename='images/logo/bruteforce.png') }}" class="img-logo">
+                           <span class="menu-title">BruteForce</span>
+                           </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link" data-bs-toggle="collapse" href="#enumeration" aria-expanded="false" aria-controls="form-elements">
+                       <i class="menu-icon mdi mdi-search-web {{textColor}}"></i>
+                       <span class="menu-title">Enumeration</span>
+                       <i class="menu-arrow"></i>
+                     </a>
+                     <div class="collapse" id="enumeration">
+                       <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('userenum') }}">
+                              <img src="{{ url_for('static',filename='images/logo/userenum.png') }}" class="img-logo">
+                           <span class="menu-title">Users</span>
+                           </a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('subdomainEnumeration') }}">
+                               <img src="{{ url_for('static',filename='images/logo/subdomainenumeration.png') }}" class="img-logo">
+                            <span class="menu-title">Subdomain</span>
+                            </a>
+                         </li>
+                         <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('azureAdEnumeration') }}">
+                              <img src="{{ url_for('static',filename='images/logo/azure-ad.png') }}" class="img-logo">
+                           <span class="menu-title">Azure Ad</span>
+                           </a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('azureServicesEnumeration') }}">
+                              <img src="{{ url_for('static',filename='images/logo/Azure-icon.png') }}" class="img-logo">
+                           <span class="menu-title">Azure Resources</span>
+                           </a>
+                        </li>
+                       </ul>
+                     </div>
+                   </li>
+                   <li class="nav-item nav-category">Predictive Model</li>
+                   <li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('azure_simulation') }}">
+                     <i class="menu-icon mdi mdi-sword {{textColor}}"></i>
+                     <span class="menu-title">Simulator</span>
+                     </a>
+                  </li>
+                  <li class="nav-item nav-category">Settings</li>
+                  <li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('configuration') }}">
+                     <i class="menu-icon mdi mdi-settings-box {{textColor}}"></i>
+                     <span class="menu-title">Configuration</span>
+                     </a>
+                  </li>
+                  <li class="nav-item nav-category">Others</li>
+                  <li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('contact') }}">
+                     <i class="menu-icon mdi mdi-help-circle {{textColor}}"></i>
+                     <span class="menu-title">Contact me</span>
+                     </a>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('documentation') }}">
+                     <i class="menu-icon mdi mdi-file-document {{textColor}}"></i>
+                     <span class="menu-title">Documentation</span>
+                     </a>
+                  </li>
+                  
+                  <li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('signout') }}">
+                     <i class="menu-icon mdi mdi-logout {{textColor}} "></i>
+                     <span class="menu-title">Sign Out</span>
+                     </a>
+                  </li>
+               </ul>
+               <img rel="shortcut icon" src="{{ url_for('static',filename='images/logo/vajra-weapon.png') }} " width="75%" class="vajra-weapon"/>
+            </nav>
+            <!-- partial -->
+            {% block body %}{% endblock %}
+            <!-- main-panel ends -->
+         </div>
+      </div>
+      <!-- container-scroller -->
+      <!-- plugins:js -->
+      <script src="{{ url_for('static',filename='vendors/js/vendor.bundle.base.js') }}"></script>
+      <!-- endinject -->
+      <!-- Plugin js for this page -->
+      <script src="{{ url_for('static',filename='vendors/chart.js/Chart.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/jsgrid/jsgrid.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/progressbar.js/progressbar.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
+      
+      <!-- End plugin js for this page -->
+      <!-- inject:js -->
+      <script src="{{ url_for('static',filename='js/off-canvas.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/hoverable-collapse.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/template.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/settings.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/todolist.js') }}"></script>
+
+      <!-- endinject -->
+      <!-- Custom js for this page-->
+      <script src="{{ url_for('static',filename='js/dashboard.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/db.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/js-grid.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/Chart.roundedBarCharts.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/toastDemo.js') }}"></script>
+      <!-- End custom js for this page-->
+   </body>
+   <footer class="footer">
+      <div class="d-sm-flex justify-content-center justify-content-sm-between">
+         <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Github <a href="https://github.com/TROUBLE-1/vajra" target="_blank">Vajra</a> from <a href="https://twitter.com/trouble1_raunak" target="_blank">@trouble1_raunak</a></span>
+         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2022 Raunak Parmar. All rights reserved.</span>
+      </div>
+   </footer>
+   {% if form %}
+      {% if form.csrf_token.errors%}
+         <div class="jq-toast-wrap bottom-left">
+            <div class="jq-toast-single jq-has-icon jq-icon-error notification" style="text-align: left; display: block;">
+               <h2 class="jq-toast-heading">CSRF Token</h2>
+               You have submitted an invalid CSRF token
+            </div>
+         </div>
+      {% endif %}
+   {% endif %}
+
+   {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+
+            <div class="jq-toast-wrap bottom-left">
+               <div class="jq-toast-single jq-has-icon jq-icon-{{category}} notification" style="text-align: left; display: block;">
+                  <h2 class="jq-toast-heading">{{ message[0]}}</h2>
+                  {{ message[1] | safe }}
+               </div>
+            </div>
+            
+      {% endfor %}
+      {% endif %}
+   {% endwith %}
+</html>

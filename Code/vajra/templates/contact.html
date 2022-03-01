@@ -1,0 +1,61 @@
+{% extends "layout.html" %} {% block body %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-9">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="border-bottom  pb-4">
+                      <div class="text-center">
+                    <img src="{{ url_for('static',filename='images/faces/myprofile.jpeg') }}" alt="profile" class="rounded-circle mb-3" width="25%">
+                    
+                    
+                    </div>
+                    <div class="mb-3">
+                        <h3>Raunak Parmar</h3>
+                      <div class="d-flex">
+                        <h5 class="mb-0 me-2 text-muted">India</h5>
+                      </div>
+                    </div>
+                    <p>Web and Cloud Security is one of my main interests. In my spare time, I develop WebSec labs and some offensive tools, such as <b>VAJRA</b>. I enjoy performing security code reviews and have been <b>OSWE</b> certified in this area.</p>
+                  </div>
+                  <div class="border-bottom py-4">
+                    <p>Skills</p>
+                    <div>
+                      <label class="badge badge-outline-success">WebSec</label>
+                      <label class="badge badge-outline-success">CloudSec</label>
+                      <label class="badge badge-outline-success">Python</label>
+                      <label class="badge badge-outline-success">Php</label>
+                      <label class="badge badge-outline-success">Java</label>
+                      <label class="badge badge-outline-success">Code Review</label>
+                    </div>                                                               
+                  </div>
+                  <div class="border-bottom  py-4 ">
+                    <p>Social Media</p>
+                    <div class="template-demo">
+                      <a href="https://www.youtube.com/channel/UCkJ_sEF8iUDXPCI3UL0DAcg" target=_blank class="btn btn-social-icon-text btn-youtube"><i class="ti-youtube"></i>Youtube</button></a>
+                      <a href="https://twitter.com/trouble1_raunak" target="_blank" type="button" class="btn btn-social-icon-text btn-twitter"><i class="ti-twitter-alt"></i>Twitter</button></a>
+                      <a href="https://www.linkedin.com/in/trouble1raunak/" target="_blank" class="btn btn-social-icon-text btn-linkedin"><i class="ti-linkedin"></i>Linkedin</button></a>
+                      <a href="mailto: trouble1vajra@gmail.com" target="_blank" class="btn btn-social-icon-text btn-google"><i class="ti-google"></i>Gmail</a>
+                    </div>  
+                    <br>
+                      Mail At: <span class="text-primary"><u>trouble1vajra@gmail.com</u></span>
+                    
+                  </div>
+                  <div class="py-4">
+                    <p><code><b>Note: Vajra is currently in development,</b></code>and future upgrades will include plenty of new modules and features. In the future, support for AWS and GCP will be added.</p>
+                    <p>Please raise an issue if you encounter a bug or have a feature request. Feel free to DM me via twitter <a href="https://twitter.com/trouble1_raunak" target="_blank">@trouble1_raunak</a></p>
+                  </div>
+                </div>                              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock %}

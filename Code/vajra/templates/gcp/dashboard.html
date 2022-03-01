@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>AWS Attacking ToolKit</title>
+      <!-- plugins:css -->
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/feather/feather.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/mdi/css/materialdesignicons.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/ti-icons/css/themify-icons.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/typicons/typicons.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/simple-line-icons/css/simple-line-icons.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/css/vendor.bundle.base.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='vendors/jquery-toast-plugin/jquery.toast.min.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap4.0.0/bootstrap.min.css') }} ">
+      <!-- endinject -->
+      <!-- Plugin css for this page -->
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/select.dataTables.min.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/vendors/jsgrid.min.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/vendors/jsgrid-theme.min.css') }} ">
+      <!-- End plugin css for this page -->
+      <!-- inject:css -->
+      
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/vertical-layout-'+theme+'/style.css') }} ">
+      <link rel="stylesheet" href="{{ url_for('static',filename='css/custom.css') }} ">
+      
+      <!-- endinject -->
+      <link rel="shortcut icon" href="{{ url_for('static',filename='images/favicon.jpg') }}" />
+	  <style>
+		@import url('https://fonts.googleapis.com/css?family=Varela+Round');
+	
+
+
+	.illustration {
+		display: block;
+		max-width: 1034px;
+		margin: 0 auto;
+	}
+	
+	
+	ul.social {
+		list-style: none;
+		margin: 0 auto;
+		padding: 0;
+	}
+	
+	ul.social li {
+		display: inline-block;
+		margin: 0;
+		padding: 0;
+	}
+	
+	ul.social li a {
+		display: block;
+		width: 48px;
+		height: 48px;
+		background: #fff;
+		margin-right: 1em;
+		font-size: 1.2em;
+		line-height: 48px;
+		border-radius: 499em;
+		color: #313131;
+		margin-bottom: .5em;
+	}
+	
+	ul.social li a:hover {
+		color: #fff;
+		background: #35c2be;
+	}
+	
+	@media only screen and (max-width : 1020px) {
+		body {
+			padding-top: 3em;
+			padding-left: 2em;
+			padding-right: 2em;
+		}
+		h1 {
+			font-size: 2.6em;
+		}
+		h2 {
+			font-size: 1.2em;
+			letter-spacing: 0.2rem;
+			margin-bottom: 2em;
+		}
+		p {
+			max-width: 680px;
+		}
+	}
+	
+	@media only screen and (max-width : 768px) {
+		body {
+			padding-top: 1.6em;
+		}
+		h1 {
+			font-size: 2.2em;
+			letter-spacing: 0.2rem;
+		}
+		h2 {
+			font-size: 1.1em;
+			letter-spacing: 0.2rem;
+		}
+		p {
+			margin-top: 1.5em;
+			font-size: 1em;
+		}	
+		ul.social li a {
+			width: 38px;
+			height: 38px;
+			font-size: 1.1em;
+			line-height: 39px;
+			margin-right: .5em;
+		}
+	}
+	
+	@media only screen and (max-width : 480px) {
+		body {
+			padding-left: 1em;
+			padding-right: 1em;
+		}
+		h1 {
+			font-size: 1.6em;
+		}
+		h2 {
+			font-size: 0.9em;
+		}
+		p {
+			margin-top: 1.5em;
+			font-size: 0.9em;
+			padding-left: .5em;
+			padding-right: .5em;
+		}
+	}
+	</style>
+   </head>
+   <body>
+      <div class="container-scroller">
+         <!-- partial:partials/_navbar.html -->
+         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row ">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start ">
+               <div class="me-3">
+                  <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                  <span class="icon-menu"></span>
+                  </button>
+                  </div>
+                  <a class="navbar-brand brand-logo text-vajra" href="/">
+                     <h1 style="font-size: 200%;color:#0041f3;">VAJRA</h1>
+      
+                   </a>
+                   <a class="navbar-brand  brand-logo-mini" href="index.html">
+                     <img class=" rounded-circle" src="{{ url_for('static',filename='images/faces/indra_logo.png') }}" alt="logo" />
+                   </a>
+                   
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-top">
+
+               <ul class="navbar-nav ">
+                  <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+                     {% if textColor != "white" %}
+                     <h1 class="welcome-text fw-bold"><span style="color:#cc1d06;">Google Cloud </span> <span style="color:#000000;">Attacking ToolKit</span></h1>
+                     <h3 class="welcome-sub-text"><span style="color:#f1a634;">Your Weapon</span> <span style="color:#000000;">To Cloud</span></h3>
+                     {% else %}
+                     <h1 class="welcome-text fw-bold"><span style="color:#cc1d06;">Google Cloud </span> <span style="color:#ffffff;">Attacking ToolKit</span></h1>
+                     <h3 class="welcome-sub-text"><span style="color:#f1a634;">Your Weapon</span> <span style="color:#ffffff;">To Cloud</span></h3>
+                     {% endif %}
+                  </li>
+               </ul>
+               <ul class="navbar-nav ms-auto">
+                  <!--
+                  <li class="nav-item">
+                     <form class="search-form">
+                        <i class="icon-search"></i>
+                        <input type="search" class="form-control" placeholder="Search feature in progres" title="Search here" name="search">
+                     </form>
+                  </li>
+                  -->
+                  <li class="nav-item">
+                     <div class="dropdown">
+                        <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                           <img src="{{ url_for('static',filename='images/common/cloud-computing.png') }}" width="25" height="20" > &nbsp;&nbsp;Select Cloud 
+                            </a>
+  
+                        <div class="dropdown-content">
+                           <a href="{{ url_for('dashboard') }}">
+                                <img src="{{ url_for('static',filename='images/logo/azure-icon.png') }}" width="25" height="20" > &nbsp;&nbsp;Azure
+                           </a>
+                           <a href="{{ url_for('aws_dashboard') }}">
+                                <img src="{{ url_for('static',filename='images/aws/icons/aws.png') }}" width="25" height="15"> &nbsp;&nbsp;AWS
+                              </a>
+                           <a href="{{ url_for('gcp_dashboard') }}">
+                              <img src="{{ url_for('static',filename='images/gcp/icons/gcp.png') }}" width="25" height="15"> &nbsp;&nbsp;GCP
+                           </a>  
+                        </div>
+                    </div>
+                  </li>
+                  <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                     <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                       <img class="img-custom rounded-circle" src="{{ url_for('static',filename='images/faces/indra_logo.png') }}" alt="Profile image"> </a>
+                   </li>
+               </ul>
+               <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+               <span class="mdi mdi-menu"></span>
+               </button>
+            </div>
+         </nav>
+         <!-- partial -->
+         <div class="container-fluid page-body-wrapper " >
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+               <ul class="nav" >
+                  <li class="nav-item {{ active }}" >
+                     <a class="nav-link" href="{{ url_for('dashboard') }}">
+                     <i class="mdi mdi-view-dashboard menu-icon {{textColor}}"></i>
+                     <span class="menu-title ">Dashboard</span>
+                     </a>
+                  </li>
+               </ul>
+               <img rel="shortcut icon" src="{{ url_for('static',filename='images/logo/vajra-weapon.png') }} " width="75%" class="vajra-weapon"/>
+            </nav>
+            <!-- partial -->
+			<div class="main-panel">
+				<div class="content-wrapper">
+				  <div class="row" >
+					<div class="col-12" >
+						<div class="card">
+							<div class="card-body" style="height: 1000px;">
+						<center>
+							<h2 class="text-center">Under Development</h2>
+			<img class="illustration" src="{{ url_for('static',filename='under-progress/under-construction-illustration.svg') }}" alt="Under Construction Illustration">
+						</center>
+					</div>
+					</div>
+					</div>
+				  </div>
+				</div>
+			</div>    
+            {% block body %}
+			
+			{% endblock %}
+            <!-- main-panel ends -->
+         </div>
+      </div>
+      <!-- container-scroller -->
+      <!-- plugins:js -->
+      <script src="{{ url_for('static',filename='vendors/js/vendor.bundle.base.js') }}"></script>
+      <!-- endinject -->
+      <!-- Plugin js for this page -->
+      <script src="{{ url_for('static',filename='vendors/chart.js/Chart.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/jsgrid/jsgrid.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/progressbar.js/progressbar.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
+      
+      <!-- End plugin js for this page -->
+      <!-- inject:js -->
+      <script src="{{ url_for('static',filename='js/off-canvas.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/hoverable-collapse.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/template.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/settings.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/todolist.js') }}"></script>
+
+      <!-- endinject -->
+      <!-- Custom js for this page-->
+      <script src="{{ url_for('static',filename='js/dashboard.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/db.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/js-grid.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/Chart.roundedBarCharts.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/toastDemo.js') }}"></script>
+      <!-- End custom js for this page-->
+   </body>
+   <footer class="footer">
+      <div class="d-sm-flex justify-content-center justify-content-sm-between">
+         <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Github <a href="https://github.com/TROUBLE-1/vajra" target="_blank">Vajra</a> from <a href="https://twitter.com/trouble1_raunak" target="_blank">@trouble1_raunak</a></span>
+         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2022 Raunak Parmar. All rights reserved.</span>
+      </div>
+   </footer>
+   {% if form %}
+      {% if form.csrf_token.errors%}
+         <div class="jq-toast-wrap bottom-left">
+            <div class="jq-toast-single jq-has-icon jq-icon-error notification" style="text-align: left; display: block;">
+               <h2 class="jq-toast-heading">CSRF Token</h2>
+               You have submitted an invalid CSRF token
+            </div>
+         </div>
+      {% endif %}
+   {% endif %}
+
+   {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+
+            <div class="jq-toast-wrap bottom-left">
+               <div class="jq-toast-single jq-has-icon jq-icon-{{category}} notification" style="text-align: left; display: block;">
+                  <h2 class="jq-toast-heading">{{ message[0]}}</h2>
+                  {{ message[1] | safe }}
+               </div>
+            </div>
+            
+      {% endfor %}
+      {% endif %}
+   {% endwith %}
+</html>

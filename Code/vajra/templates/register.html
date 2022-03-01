@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Azure AD Attacking ToolKit</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/feather/feather.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/mdi/css/materialdesignicons.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/ti-icons/css/themify-icons.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/typicons/typicons.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/simple-line-icons/css/simple-line-icons.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/css/vendor.bundle.base.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static',filename='vendors/jquery-toast-plugin/jquery.toast.min.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap4.0.0/bootstrap.min.css') }} ">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/custom.css') }} ">
+
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/vertical-layout-light/style.css') }} ">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="{{ url_for('static',filename='images/favicon.jpg') }} " />
+</head>
+<body >
+  <div class="container-scroller" >
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-center auth px-0 wallpaper1">
+        <div class="row w-100 mx-0" >
+          <div class="col-lg-4 mx-auto" >
+            <div class="auth-form-light text-left py-5 px-4 px-sm-5" >
+              <div class="brand-logo">
+                <h2 class="welcome-text fw-bold"><span style="color:#2e71be;"></span></h2>
+              </div>
+              <div class="brand-logo">
+                <h1 class="welcome-text text-vajra text-center"><span style="color:#2e71be;">Vajra </span></h1>
+              </div>
+              <h2 class="text-vajra text-center"><span style="color:#000000;">Your Weapon To Cloud </span></h2>
+              <h6 class="fw-light text-center">Register to continue</h6>
+              <form class="pt-3" action="{{url_for('register')}}" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                  {% if form.email.errors %}
+                      {{ form.email(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.email.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.email(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+                <div class="form-group">
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="mt-3">
+                  <button type="submit" name="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" >SIGN UP</a>
+                </div>
+                <div class="text-center mt-4 fw-light">
+                  <a href="{{ url_for('login') }}" class="text-primary">Sign In Instead</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- content-wrapper ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+<!-- page-body-wrapper ends -->
+      <!-- container-scroller -->
+      <!-- plugins:js -->
+      <script src="{{ url_for('static',filename='vendors/js/vendor.bundle.base.js') }}"></script>
+      <!-- endinject -->
+      <!-- Plugin js for this page -->
+      <script src="{{ url_for('static',filename='vendors/chart.js/Chart.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/progressbar.js/progressbar.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='vendors/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
+      
+      <!-- End plugin js for this page -->
+      <!-- inject:js -->
+      <script src="{{ url_for('static',filename='js/off-canvas.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/hoverable-collapse.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/template.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/settings.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/todolist.js') }}"></script>
+      <!-- endinject -->
+      <!-- Custom js for this page-->
+      <script src="{{ url_for('static',filename='js/dashboard.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/Chart.roundedBarCharts.js') }}"></script>
+      <script src="{{ url_for('static',filename='js/toastDemo.js') }}"></script>
+      <!-- End custom js for this page-->
+</body>
+
+</html>

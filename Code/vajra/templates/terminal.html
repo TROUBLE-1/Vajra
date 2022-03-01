@@ -1,0 +1,25 @@
+
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/dist/xterm.css" />
+    <link rel="stylesheet" href="/static//dist/terminal.css" />
+    <script src="/static//dist/xterm.js"></script>
+    <script src="/static//dist/addons/terminado/terminado.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="terminal-container"></div>
+    </div>
+    <script>
+      var term = new Terminal(),
+          protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://',
+          socketURL = protocol + location.hostname + ((location.port) ? (':' + location.port) : '') + "{{ url_prefix }}/websocket";
+          sock = new WebSocket(socketURL);
+      sock.addEventListener('open', function () {
+        term.terminadoAttach(sock);
+      });
+      term.open(document.getElementById('terminal-container'));
+    </script>
+  </body>
+</html>

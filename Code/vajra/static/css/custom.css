@@ -1,0 +1,222 @@
+.text-vajra{
+font-family: 'Samarkan', sans-serif;
+}
+
+.img-logo {
+width: 25%;
+padding-right: 10%;
+
+}
+
+.notification {	
+    animation:signup-response 0.5s 1;	
+    -webkit-animation:signup-response 0.5s 1;	
+    animation-fill-mode: forwards;	
+    animation-delay:2s;	
+    -webkit-animation-delay:10s; /* Safari and Chrome */	
+    -webkit-animation-fill-mode: forwards;	
+}	
+@keyframes signup-response {	
+    from {	
+        opacity: 1;	
+    }	
+    to {	
+        opacity: 0;	
+    }	
+}	
+@-webkit-keyframes signup-response {	
+    from {	
+        opacity: 1;	
+    }	
+    to {	
+        opacity: 0;	
+    }	
+}
+
+.vajra-weapon {
+transition: transform .7s ease-in-out;
+}
+.vajra-weapon:active {
+transform: rotate(270deg);
+}
+
+.my-custom-scrollbar {
+    
+position: relative;
+height:calc(100vh - 40px);
+overflow: auto;
+}
+
+.my-custom-scrollbar-stealer{
+position: relative;
+height:calc(50vh - 40px);
+overflow: auto;
+}
+
+.my-custom-scrollbar-brutforce {
+
+position: relative;
+height:calc(70vh - 40px);
+overflow: auto;
+}
+
+.my-custom-scrollbar-spraying{
+position: relative;
+height:calc(45vh - 40px);
+overflow: auto;
+}
+
+.my-custom-scrollbar-userenum{
+position: relative;
+height:calc(70vh - 40px);
+overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+display: block;
+
+}
+
+
+.img-banner {
+    width: 100%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.close-jq-toast-single {
+    position: absolute;
+    top: 3px;
+    right: 7px;
+    font-size: 14px;
+    cursor: pointer
+}
+
+
+.wallpaper {
+    background-image: url('/static/images/wallpaper/wallpaper.png');
+    background-size:     cover;                      
+    background-repeat:   no-repeat;
+    background-position: center center; 
+    
+}
+
+.wallpaper1{
+    background-image: url('/static/images/wallpaper/wallpaper.png');
+    background-size:     cover;                      
+    background-repeat:   no-repeat;
+    background-position: center center; 
+
+}
+
+.sidebar-wallpaper {
+    background-image: url('/static/images/wallpaper/sidebarwallpaper.jpg');
+    background-size:     cover;                      
+    background-repeat:   no-repeat;
+    background-position: center center; 
+}
+
+#navbar-wallpaper {
+    background-image: url('/static/images/wallpaper/navbar-wallpaper.jpg');
+
+}
+.auto-height{
+    height: auto;
+}
+
+.vajra-weapon {
+    transition: transform .7s ease-in-out;
+    }
+.vajra-weapon:active {
+    transform: rotate(270deg);
+}
+
+@font-face {
+    font-family: "Samarkan"; 
+    src: url("//db.onlinewebfonts.com/t/7e96eba370659b4e4563309dc4ebb33f.eot"); 
+    src: url("//db.onlinewebfonts.com/t/7e96eba370659b4e4563309dc4ebb33f.eot?#iefix") format("embedded-opentype"), 
+    url("//db.onlinewebfonts.com/t/7e96eba370659b4e4563309dc4ebb33f.woff2") format("woff2"), 
+    url("//db.onlinewebfonts.com/t/7e96eba370659b4e4563309dc4ebb33f.woff") format("woff"), 
+    url("//db.onlinewebfonts.com/t/7e96eba370659b4e4563309dc4ebb33f.ttf") format("truetype"), 
+    url("//db.onlinewebfonts.com/t/7e96eba370659b4e4563309dc4ebb33f.svg#Samarkan") format("svg"); 
+} 
+
+.fixTableHead {
+    overflow-y: auto;
+  }
+  .fixTableHead thead th {
+    position: sticky;
+    top: 0;
+    border: 1;
+  }
+  
+td, th {
+  margin: 0;
+  white-space: nowrap;
+  border-top-width: 0px;
+}
+
+.img-custom{
+    height: 53px;
+    width: 53px;
+}
+
+.content-wrapper {
+    background-image: url("/static/images/wallpaper/dashboard-wallpaper.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: 30%;
+  }
+
+
+  .nav-pills.nav-pills-custom .nav-link {
+  font-weight: bold;
+  margin: 4px;
+}  
+.nav-pills.nav-pills-custom .nav-link.active {
+    background: #1F3BB3;
+}
+
+.dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+  
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+  
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 140px;
+            box-shadow: 0px 8px 16px 
+                0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+  
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+  
+        .dropdown-content a:hover {
+            background-color: #f1f1f1
+        }
+  
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+  
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }

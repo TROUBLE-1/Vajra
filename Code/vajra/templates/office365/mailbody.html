@@ -1,0 +1,41 @@
+<div class="row" style="font-weight:normal;">
+    <div class="col-md-12 mb-6 mt-4 text-center">
+        <b>{{ user }}</b>
+    </div>
+  </div> 
+  <hr>
+  <div class="message-body table-wrapper-scroll-y my-custom-scrollbar">
+    {% for mail in mails%}
+    <div class="sender-details"> 
+      <div class="details">
+          
+        <p class="msg-subject">
+          {{ mail.Subject }}
+        </p>
+        <p class="sender-email">
+          <a href="">{{ mail.Sender }}sss</a>
+          &nbsp;<i class="ti-user"></i>
+        </p>
+      </div>
+    </div>
+    <div class="message-content">
+      {{ mail.Body | safe }}
+    </div>
+    <div class="attachments-sections">
+      <ul>
+        {% for attachment in attachments %}
+        <li>
+          <div class="thumb"><i class="ti-file"></i></div>
+          <div class="details">
+            <p class="file-name">{{ attachment.filename }}</p>
+            <div class="buttons">
+              <p class="file-size">{{ attachment.size }}</p>
+              <a href="{{ url_for('download', type='attachment', id=attachment.id) }}" class="download">Download</a>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+</div>

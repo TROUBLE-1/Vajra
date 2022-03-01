@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                <div id="home-tab" aria-selected="true">
+                  <b>Azure Ad User Enumeration</b>
+                </div>
+              <div>
+                <div class="btn-wrapper">
+                  <a href="{{url_for('userenumDownload')}}" class="btn btn-outline-dark"><i class="icon-download"></i>Results</a>
+                  {% if userenumStatus == "False" or userenumStatus == None%}
+                  <a href="{{url_for('userenumStart', action='start')}}" class="btn btn-primary text-white me-0"><i class="menu-icon mdi mdi-run-fast"></i> Enumerate</a>
+                  {% else %}
+                  <a href="{{url_for('userenumStart', action='stop')}}" class="btn btn-danger text-white me-0"><i class="menu-icon mdi mdi-stop"></i> Stop Enumeration</a>
+                  {% endif %} 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 grid-margin stretch-card pt-3">
+
+      </div>
+      <div class="col-6 grid-margin stretch-card">
+      </div>
+
+      </div>
+      <div class="row">
+        <div class="col-lg-6 d-flex flex-column">
+          <div class="row flex-grow">
+            <div class=" grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        configuration
+                    </h4>
+                    
+                    <form method="POST" enctype="multipart/form-data" action="{{url_for('userenum')}}">
+                        {{ form.hidden_tag() }}
+                        
+                        {{ form.userList.label(class="form-control-label") }}
+                        <div class="form-group">
+                            {% if form.userList.errors %}
+                                {{ form.userList(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.userList.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <textarea class="form-control mb-2 mr-sm-2" id="userList" name="userList" style="height:150px">{% for data in userslistConfig %}
+{% if data.emails != None %}{{data.emails}}{% endif %}{% endfor %}
+</textarea>
+                                
+                            {% endif %}
+                        </div>
+                        
+                        {{ form.moreVictims.label(class="form-control-label") }}
+                        <div class="form-group">
+                            {% if form.moreVictims.errors %}
+                                {{ form.moreVictims(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.moreVictims.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.moreVictims(class="file-upload-browse btn btn-primary") }}
+                            {% endif %}
+                          </div>
+                        {{ form.submit(class="btn btn-primary me-2") }}
+                        <a href="{{url_for('userenum')}}" class="btn btn-danger">Cancel</a>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 d-flex flex-column">
+          <div class="row flex-grow">
+                <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                    <div class="card  bg-dark">
+                      <div class="card-body" style="overflow: scroll;position: relative;">
+                        <h3 class="card-title text-success">Userenum Logs</h3>
+                        
+                        <div id="display_log" class="text-warning " style="position: absolute;">
+                          {% for log in userenumlogs %}
+                           {{ log.message | safe }}
+                        {% endfor %}
+                        </div>
+                        
+                              
+                      </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-sm-flex align-items-center justify-content-between">
+                  
+                  <h4>Results</h4>
+                  
+                <div class="btn-wrapper">
+                    <a href="{{url_for('deleteLogs', type='userenum')}}" class="btn btn-danger text-white me-0"><i class="menu-icon mdi mdi-delete"></i>Delete Results</a>
+                  </div>
+              </div>
+                <div class="table-responsive pt-3">
+                  <table class="table table-dark">
+                    <thead>
+                      <tr>
+                        <th>
+                          Valid Email Address
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for value in validemails %}
+                      <tr>
+                        <td>
+                          {{value.email}}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

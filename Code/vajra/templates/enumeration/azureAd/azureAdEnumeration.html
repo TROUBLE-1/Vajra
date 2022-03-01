@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                <div id="home-tab" aria-selected="true">
+                  <b>Azure Ad Enumeration</b>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 grid-margin stretch-card "></div>
+      <div class="row">
+        <div class="col-lg-12 d-flex flex-column ">
+          <div class="row flex-grow">
+            <div class=" grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body ">
+                    <h4 class="card-title">
+                        Enumerate with Credentials or Access Token
+                    </h4>
+                      <form method="POST" action="{{url_for('azureAdEnumeration')}}">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group row">
+                          <div class="col">
+                            {% if form.username.errors %}
+                            {{ form.username(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                {{ form.username(class="form-control mb-2 mr-sm-2") }}
+                            {% endif %}
+                          </div>
+                          <div class="col">
+                            {% if form.password.errors %}
+                            {{ form.password(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                {{ form.password(class="form-control mb-2 mr-sm-2", autocomplete="new-password") }}
+                            {% endif %}
+                          </div>
+                          <div class="col">
+                            {% if form.clientId.errors %}
+                            {{ form.clientId(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.clientId.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                {{ form.clientId(class="form-control mb-2 mr-sm-2") }}
+                            {% endif %}
+                          </div>
+                          <center><b>OR</b></center>
+                        </div>
+                        
+                        <div class="form-group">
+                          <div class="form-group" >
+                              {% if form.accessToken.errors %}
+                                  {{ form.accessToken(class="form-control is-invalid") }}
+                                  <div class="invalid-feedback">
+                                      {% for error in form.accessToken.errors %}
+                                          <span>{{ error }}</span>
+                                      {% endfor %}
+                                  </div>
+                              {% else %}
+                                  {{ form.accessToken(class="form-control mb-2 mr-sm-2", value="") }}
+                              {% endif %}
+                          </div>
+                        </div>
+                        {{ form.submit(class="btn btn-primary me-2") }}
+                        <a href="{{url_for('azureAdDataDelete')}}" class="btn btn-danger text-white me-0">Flush All Data</a>
+                      </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-sm-flex align-items-center justify-content-between">
+                <h4><img src="{{ url_for('static',filename='images/logo/azure-users.svg') }}" width="40px"> <b>Profiles: </b></h4>
+            </div>
+            <div class="table-responsive fixTableHead " style="max-height: 400px;">
+              <table class="table table-hover table-bordered table-dark" >
+                <thead>
+                  <tr>
+                    <th>
+                      User Principle Name
+                     </th>
+                     <th>
+                      Display name
+                     </th>
+                     
+                     <th>
+                      Action
+                     </th>
+                  </tr>
+               </thead>
+                <tbody id="table-users">
+                  {% for data in azureAdUserProfile %}
+                  
+                  <tr>
+                    <td>
+                        <a href="{{url_for('azureAdEnumerationUsers', victim=data.userPrincipalName)}}" class="nav-link text-info">
+                          <u><i class="mdi mdi-link-variant"></i> 
+                            {{ data.userPrincipalName }}
+                          </u>
+                        </a> 
+                    </td>
+                      <td>
+                        {{ data.displayName }}
+                      </td>
+                      <td>
+                        <a href="{{url_for('azureAdUserData', victim=data.userPrincipalName)}}" class="btn btn-danger text-white me-0">
+                          <i class="mdi mdi-delete btn-icon-prepend"></i>
+                          Delete
+                        </a>
+                      </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+{% endblock %}
+
