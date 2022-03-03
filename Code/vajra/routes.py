@@ -52,7 +52,7 @@ def inject_stage_and_region():
     if theme == None:
         return dict(theme=themeColor, textColor=textColor)
 
-    if theme.theme == "1":
+    if theme.theme == "1" or theme.theme == "true":
         textColor = "white"
         othertextColor = "text-white"
         themeColor = "dark"
@@ -452,7 +452,7 @@ def getcode(uuid):
         abort(404)
 
 
-    if adminUser.enableIp == "1" and request.endpoint !="getcode":
+    if adminUser.enableIp == "1" or adminUser.enableIp == "true":
         ips = adminUser.ips.split(" ")
         if request.remote_addr not in ips:
             abort(403)

@@ -56,7 +56,7 @@
                             <div class="my-2 d-flex justify-content-between align-items-center">                                
                                 <div class="form-check">
                                     <label class="form-check-label text-muted">
-                                        {% if AdminDefault.enableIp == "1" %}
+                                        {% if AdminDefault.enableIp == "1" or AdminDefault.enableIp == "true" %}
                                             {% set checked = "checked" %}
                                         {% endif %}
                                       <input {{ checked }} class="form-check-input" id="enableIp" name="enableIp" type="checkbox" value="y">
@@ -80,7 +80,7 @@
                             <div class="my-2 d-flex justify-content-between align-items-center">                                
                                 <div class="form-check">
                                     <label class="form-check-label text-muted">
-                                        {% if AdminDefault.theme == "1" %}
+                                        {% if AdminDefault.theme == "1" or AdminDefault.theme == "true" %}
                                             {% set checked = "checked" %}
                                         {% endif %}
                                       <input {{ checked }} class="form-check-input" id="theme" name="theme" type="checkbox" value="y">
