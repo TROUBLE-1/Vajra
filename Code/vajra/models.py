@@ -30,7 +30,7 @@ def load_user(user_id):
 class Admin(db.Model, UserMixin):
     id = db.Column(db.String(), primary_key=True)
     username = db.Column(db.String(20), unique=True)
-    email = db.Column(db.String(20), unique=True)
+    email = db.Column(db.String(200), unique=True)
     password = db.Column(db.String(60))
     enableIp = db.Column(db.String(10))
     theme = db.Column(db.String(10))
