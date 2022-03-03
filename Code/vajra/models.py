@@ -29,12 +29,12 @@ def load_user(user_id):
  
 class Admin(db.Model, UserMixin):
     id = db.Column(db.String(), primary_key=True)
-    username = db.Column(db.String(20), unique=True)
+    username = db.Column(db.String(200), unique=True)
     email = db.Column(db.String(200), unique=True)
-    password = db.Column(db.String(60))
+    password = db.Column(db.String(100))
     enableIp = db.Column(db.String(10))
     theme = db.Column(db.String(10))
-    ips = db.Column(db.String(60))
+    ips = db.Column(db.String())
 
 
 class Allusers(db.Model):
