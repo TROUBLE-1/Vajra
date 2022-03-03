@@ -30,10 +30,6 @@ bcrypt = Bcrypt(app)
 
 db_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "vajra", "site.db")
 POSTGRES = "postgresql://postgres:postgres@localhost/vajra"
-file_exists = exists(db_file)
-if file_exists == False:
-    print(crayons.red(f"[-] {db_file} file not found!", bold=True))
-    exit()
 
 try:
     conn = psycopg2.connect(POSTGRES)
