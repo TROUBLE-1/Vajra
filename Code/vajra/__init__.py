@@ -21,8 +21,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-import logging 
-import os, crayons
+import os, crayons, requests, crayons, time
 import psycopg2 as pg
 import sqlite3 as sqlite
 
@@ -60,3 +59,9 @@ context = (public_key, private_key)
 
 from vajra import routes
 
+f = open(os.path.join(os.path.dirname(os.path.realpath(__file__)) , "VERSION"),'r').read()
+res = requests.get("https://raw.githubusercontent.com/TROUBLE-1/Vajra/main/Code/vajra/VERSION").text
+if f != res:
+    print(crayons.yellow("[!] Please update the tool to get new modules!\r\n"))
+    time.sleep(3)
+    
