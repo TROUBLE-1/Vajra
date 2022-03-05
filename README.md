@@ -14,19 +14,22 @@ Vajra currently supports Azure Cloud environments and plans to support AWS cloud
 
 **Following features are available at the moment:**
 
-- Attacking
-    1. OAuth Based Phishing (Illicit Consent Grant Attack)
-        1. Exfiltrate Data
-        2. Enumerate Environment
-        3. Deploy Backdoors
-        4. Send mails/Create Rules
-    2. Password Spray
-    3. Password Brute Force
-- Enumeration
-    1. Users 
-    2. Subdomain 
-    3. Azure Ad
-    4. Azure Services
+- Azure
+  - Attacking
+      1. OAuth Based Phishing (Illicit Consent Grant Attack)
+          - Exfiltrate Data
+          - Enumerate Environment
+          - Deploy Backdoors
+          - Send mails/Create Rules
+      2. Password Spray
+      3. Password Brute Force
+  - Enumeration
+      1. Users 
+      2. Subdomain 
+      3. Azure Ad
+      4. Azure Services
+  - Specific Service
+      1. Storage Accounts
 
 _**Note:** This tool have been tested in a environment which had around 3 Lakh principals like users, groups, enterprise application, etc._
 
