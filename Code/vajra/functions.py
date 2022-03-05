@@ -22,9 +22,9 @@ from vajra import db, bcrypt, engine
 from vajra.models import *
 import sys, os, base64, threading, base64, json, jwt
 from sqlalchemy.sql import text
-from vajra.attacks.phishing import stealerAction, stealing
-from vajra.enumeration.azureAd import azureAdEnum
-from vajra.enumeration.azureAzService import  azureAzServiceEnum
+from vajra.azure.attacks.phishing import stealerAction, stealing
+from vajra.azure.enumeration.azureAd import azureAdEnum
+from vajra.azure.enumeration.azureAzService import  azureAzServiceEnum
 import pandas as pd
 from flask_login import current_user
 
@@ -65,6 +65,8 @@ def firstVisitDb(uuid):
         StealerConfig(uuid=uuid),
         sprayingConfig(uuid=uuid),
         bruteforceConfig(uuid=uuid),
+        azureStorageAccountConfig(uuid=uuid),
+        specificAttackStatus(uuid=uuid),
         AttackStatus(uuid=uuid, phishing="False", spraying="False", bruteforce="False"),
         enumerationStatus(uuid=uuid, userenum="False", subdomain="False", azureAdEnum="False"),
         ]
@@ -217,7 +219,6 @@ def insertSprayingConfig(form, file):
         db.session.query(AddedVictims).filter_by(uuid = current_user.id).delete()
         for email in victimslist.splitlines():
             try:
-                #db.engine.execute("INSERT OR REPLACE into added_victims(uuid, userPrincipalName) values(:uuid,:userPrincipalName)",uuid=current_user.id, userPrincipalName=email)
                 db.session.add(AddedVictims(uuid=current_user.id, userPrincipalName=email))
             except:
                 pass    
@@ -233,8 +234,7 @@ def insertSprayingConfig(form, file):
     if form.advanceSpray.data:
         advanceSpray = "checked"        
     
-    
-#    db.engine.execute("Insert OR REPLACE INTO spraying_config(uuid, customVictims, advanceSpray, password) VALUES (:uuid, :customVictims, :advanceSpray,:password)", uuid=current_user.id, customVictims=customVictims,advanceSpray=advanceSpray, password=password)
+
     db.session.query(sprayingConfig).filter_by(uuid = current_user.id).delete()
     db.session.add(sprayingConfig(uuid=current_user.id, customVictims=customVictims,advanceSpray=advanceSpray, password=password))
     db.session.commit()
@@ -264,7 +264,7 @@ def insertBruteforceConfig(form):
 
     for username in userList.splitlines():
         try:
-            #db.engine.execute("Insert INTO bruteforce_config(uuid, usernames) VALUES (:uuid, :username)", uuid=current_user.id, username=username)
+
             db.session.add(bruteforceConfig(uuid=current_user.id, usernames=username))
             db.session.commit()
             db.session.rollback()
@@ -278,7 +278,7 @@ def insertBruteforceConfig(form):
     
     for password in passList.splitlines():
         try:
-            #db.engine.execute("Insert INTO bruteforce_config(uuid, passwords) VALUES (:uuid, :passwords)", uuid=current_user.id, passwords=password)
+            
             db.session.add(bruteforceConfig(uuid=current_user.id, passwords=password))
             db.session.commit()
             db.session.rollback()
@@ -579,7 +579,6 @@ def createmacrosDoc(name, path):
     f = open(tmpFile, "w")
     f.write(vbs)
     f.close()
-    # Popen(["cscript", tmpFile])
     os.popen("cscript " + tmpFile)
         
     try:
@@ -591,3 +590,21 @@ def createmacrosDoc(name, path):
     return content
            
 
+def insert_storage_accounts_config(form):
+    config = azureStorageAccountConfig.query.filter_by(uuid=current_user.id).first()
+    config.commonWord = form.commonWord.data
+    config.permutations = form.permutations.data
+
+    db.session.commit()
+
+def downloadspecificStorageResults():
+
+    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    path = directory + "Public_Storage_Account_Files.xlsx"
+    
+    sh1 = pd.read_sql_query(f"select valid from specific_attack_storage_results where uuid = '{current_user.id}' ", con=engine)
+    
+    with pd.ExcelWriter(path, engine_kwargs={'options': {'strings_to_urls': False}}) as writer:  
+        sh1.to_excel(writer, sheet_name='Profile', index=False)
+
+    return path

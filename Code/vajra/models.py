@@ -19,6 +19,7 @@
 
 from email.policy import default
 from enum import unique
+from itertools import permutations
 from vajra import db, login_manager
 from flask_login import UserMixin
 from sqlalchemy.sql import expression
@@ -96,7 +97,7 @@ class sprayingConfig(db.Model):
     id = db.Column(db.Integer)
     customVictims = db.Column(db.String())
     advanceSpray = db.Column(db.String()) 
-    password = db.Column(db.String())
+    password = db.Column(db.String(), default="")
 
 class sprayingLogs(db.Model):
     uuid = db.Column(db.String())
@@ -425,3 +426,24 @@ class SSLCert(db.Model):
     id = db.Column(db.Integer)
     publicname = db.Column(db.String(100))
     keyname = db.Column(db.String(100))
+
+class azureStorageAccountConfig(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    commonWord = db.Column(db.String(), default="")
+    permutations = db.Column(db.String(), default="")
+
+class specificAttackStatus(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    storageAccounts = db.Column(db.String())
+
+class specificAttackStorageLogs(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    message = db.Column(db.String())
+
+class specificAttackStorageResults(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    valid = db.Column(db.String())

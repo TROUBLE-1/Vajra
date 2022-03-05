@@ -1,0 +1,95 @@
+{% extends "azure/layout.html" %}
+{% block body %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+          {% if error != "" %}
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Error while sending mail</h4>
+                        <div class="form-group">
+                            {{ error }}
+                        </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('sendmail', sender=sender) }}">
+    {{ form.hidden_tag() }}
+
+    <label class="form-control-label">Sender</label>
+    <input type="email" class="form-control mb-2 mr-sm-2" value="{{ sender }}" name="sender">
+
+    {{ form.receiver.label(class="form-control-label") }}
+    <div class="form-group">
+        {% if form.receiver.errors %}
+            {{ form.receiver(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.receiver.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.receiver(class="form-control mb-2 mr-sm-2", type="email") }}
+            
+        {% endif %}
+    </div>
+
+    {{ form.subject.label(class="form-control-label") }}
+    <div class="form-group">
+        {% if form.subject.errors %}
+            {{ form.subject(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.subject.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.subject(class="form-control mb-2 mr-sm-2",) }}
+        {% endif %}
+    </div>
+
+    {{ form.body.label(class="form-control-label") }}
+    <div class="form-group">
+        {% if form.body.errors %}
+            {{ form.body(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.body.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.body(class="form-control mb-2 mr-sm-2", style="height:350px") }}
+        {% endif %}
+    </div>
+
+    {{ form.attachment.label(class="form-control-label") }}
+    <div class="form-group">
+        {% if form.attachment.errors %}
+            {{ form.attachment(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.attachment.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.attachment(class="form-control ") }}
+        {% endif %}
+    </div>
+    {{ form.submit(class="btn btn-primary me-2") }}
+</form>    
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+
+{% endblock %}

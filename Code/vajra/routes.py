@@ -21,11 +21,12 @@ from flask import render_template, request, send_file, url_for, flash, abort, Re
 from sqlalchemy.sql.expression import false
 from werkzeug.utils import redirect
 from vajra import app, db, bcrypt
-from vajra.attacks.phishing import stealerAction, sprayingResult
-from vajra.attacks.spraying import sprayingAttack
-from vajra.enumeration.userenum import userenumerate
-from vajra.enumeration.subdomain import subdomainenum
-from vajra.attacks.bruteforce import bruteforceAttack
+from vajra.azure.attacks.phishing import stealerAction, sprayingResult
+from vajra.azure.attacks.spraying import sprayingAttack
+from vajra.azure.specific.storageAccounts import storageEnum
+from vajra.azure.enumeration.userenum import userenumerate
+from vajra.azure.enumeration.subdomain import subdomainenum
+from vajra.azure.attacks.bruteforce import bruteforceAttack
 from vajra.forms import *
 from vajra.functions import *
 from vajra.models import *
@@ -108,7 +109,7 @@ def dashboard():
     sprayresults = sprayingResult.query.filter_by(uuid=current_user.id).all()
     bruteforceResults = bruteforceResult.query.filter_by(uuid=current_user.id).all()
     validemails = validEmails.query.filter_by(uuid=current_user.id).all()
-    return render_template("dashboard.html", active="active", status=status, stolenData=stolenData, sprayresults=sprayresults, bruteforceResults=bruteforceResults, validemails=validemails)
+    return render_template("azure/dashboard.html", active="active", status=status, stolenData=stolenData, sprayresults=sprayresults, bruteforceResults=bruteforceResults, validemails=validemails)
 
 @app.route("/azure/office365/victims", methods=['GET', 'POST'])
 @login_required
@@ -118,14 +119,14 @@ def victims():
     victims = Allusers.query.distinct(Allusers.id).filter_by(uuid=current_user.id).all()
     phishedUser = Token.query.filter_by(uuid=current_user.id).distinct()
     phishlogs = phishingLogs.query.filter_by(uuid=current_user.id).order_by(phishingLogs.temp.desc()).all()
-    return render_template("office365/victims.html", form=form, victims=victims, phishedUser=phishedUser, phishlogs=phishlogs)    
+    return render_template("azure/office365/victims.html", form=form, victims=victims, phishedUser=phishedUser, phishlogs=phishlogs)    
 
 @app.route("/azure/office365/oneDrive")
 @login_required
 def oneDrive():
     form = oneDriveForm()
     oneDrive = OneDrive.query.distinct(OneDrive.filename).filter_by(uuid=current_user.id).all() 
-    return render_template("office365/onedrive.html", form=form, oneDrive=oneDrive)
+    return render_template("azure/office365/onedrive.html", form=form, oneDrive=oneDrive)
 
 @app.route("/azure/office365/outlook", methods=['GET', 'POST'])
 @login_required
@@ -147,7 +148,7 @@ def outlook():
             mails = Outlook.query.with_entities(Outlook.id, Outlook.Sender, Outlook.Subject, Outlook.victim, Outlook.Body).filter_by(id=id, uuid=current_user.id).all()
             attachments = Attachments.query.with_entities(Attachments.filename, Attachments.size, Attachments.id).filter_by(id=id, uuid=current_user.id).all()
 
-            return render_template("office365/mailbody.html",user=victim, mails=mails, attachments=attachments)
+            return render_template("azure/office365/mailbody.html",user=victim, mails=mails, attachments=attachments)
 
 
     if "displayName" in flask.request.args:
@@ -155,7 +156,7 @@ def outlook():
             #subjects = db.engine.execute(text("Select id, Sender, Subject, victim, HasAttachments from Outlook where victim= :x and BodyPreview like :s or Subject like :s and uuid= :uuid order by HasAttachments desc "), x=victim, s='%'+search+'%' , uuid=current_user.id)
             subjects = Outlook.query.with_entities(Outlook.id, Outlook.Sender, Outlook.Subject, Outlook.victim, Outlook.HasAttachments).filter_by(victim=victim, uuid=current_user.id).filter(Outlook.bodyPreview.contains(search), Outlook.Subject.contains(search)).order_by(Outlook.HasAttachments.desc()).all()
 
-    return render_template("office365/outlook.html", form=form, victims=victims, user=victim,id=id, subjects=subjects, mails=mails, attachments=attachments)
+    return render_template("azure/office365/outlook.html", form=form, victims=victims, user=victim,id=id, subjects=subjects, mails=mails, attachments=attachments)
 
 
 @app.route("/azure/office365/outlook/sendmail/<sender>", methods=['GET', 'POST'])
@@ -186,7 +187,7 @@ def sendmail(sender):
             type = "error"
             error = res.json()['error']['message']
         flash(["Outlook",message], type) 
-    return render_template("office365/sendmail.html", form=form, sender=sender, error=error)
+    return render_template("azure/office365/sendmail.html", form=form, sender=sender, error=error)
 
 @app.route("/azure/office365/outlook/createRules/<victim>", methods=['GET', 'POST'])
 @login_required
@@ -213,7 +214,7 @@ def createRules(victim):
             type = "error"
         
         flash(["Outlook Rules",msg], type) 
-    return render_template("office365/outlook_rules.html", form=form, victim=victim, error=error)
+    return render_template("azure/office365/outlook_rules.html", form=form, victim=victim, error=error)
 
 @app.route("/azure/office365/attachments", methods=['GET', 'POST'])
 @login_required
@@ -222,7 +223,7 @@ def attachments():
     form.validate_on_submit()
     attachments = Attachments.query.filter_by(uuid=current_user.id).all()
     
-    return render_template("office365/attachments.html", form=form, attachments=attachments)
+    return render_template("azure/office365/attachments.html", form=form, attachments=attachments)
 
 @app.route("/azure/office365/oneNote")
 @login_required
@@ -230,7 +231,7 @@ def onenote():
     form = onenoteForm()
     form.validate_on_submit()
     onenote = OneNote.query.filter_by(uuid=current_user.id).all()
-    return render_template("office365/onenote.html", form=form, onenote=onenote)
+    return render_template("azure/office365/onenote.html", form=form, onenote=onenote)
 
 @app.route("/azure/office365/delete/<type>")
 @login_required
@@ -263,7 +264,7 @@ def phishing():
     stealerDefault = StealerConfig.query.filter_by(uuid=current_user.id).first()
     phishUrl = getPhishUrl(current_user.id)
     phishlogs = phishingLogs.query.filter_by(uuid=current_user.id).order_by(phishingLogs.temp.desc()).all()
-    return render_template("attacks/phishing.html", status=status, phishUrl=phishUrl, form=form, stealerDefault=stealerDefault, uuid=current_user.id, phishlogs=phishlogs)
+    return render_template("azure/attacks/phishing.html", status=status, phishUrl=phishUrl, form=form, stealerDefault=stealerDefault, uuid=current_user.id, phishlogs=phishlogs)
 
 @app.route("/azure/attacks/phishing/<action>")
 @login_required
@@ -294,7 +295,7 @@ def spraying():
     sprayingDefault = sprayingConfig.query.filter_by(uuid=current_user.id).first()
     sprayresults = sprayingResult.query.filter_by(uuid=current_user.id).all()
     spraylogs = sprayingLogs.query.filter_by(uuid=current_user.id).order_by(sprayingLogs.temp.desc()).all()
-    return render_template("attacks/spraying.html", form=form, sprayingDefault=sprayingDefault, sprayresults=sprayresults, sprayStatus=sprayStatus, spraylogs=spraylogs)
+    return render_template("azure/attacks/spraying.html", form=form, sprayingDefault=sprayingDefault, sprayresults=sprayresults, sprayStatus=sprayStatus, spraylogs=spraylogs)
 
 
 @app.route("/azure/attacks/spraying/<action>")
@@ -306,7 +307,7 @@ def sprayingStart(action):
         ps.start()
         
     if action == "stop":
-        db.engine.execute("UPDATE attack_status SET id = 1, spraying ='False' WHERE uuid = :uuid", uuid=current_user.id)
+        db.engine.execute(text("UPDATE attack_status SET id = 1, spraying ='False' WHERE uuid = :uuid"), uuid=current_user.id)
         try:
             ps.kill()
             ps.join()
@@ -335,7 +336,7 @@ def bruteforce():
     passwords = bruteforceConfig.query.filter_by(uuid=current_user.id).filter(bruteforceConfig.passwords != None).all()
     bruteforcelog = bruteforceLogs.query.filter_by(uuid=current_user.id).order_by(bruteforceLogs.temp.desc()).all()
     bruteforceResults = bruteforceResult.query.filter_by(uuid=current_user.id).all()
-    return render_template("attacks/bruteforce.html", form=form, usernames=usernames, passwords=passwords, bruteforceResults=bruteforceResults, bruteforceStatus=bruteforceStatus, bruteforceLogs=bruteforcelog)
+    return render_template("azure/attacks/bruteforce.html", form=form, usernames=usernames, passwords=passwords, bruteforceResults=bruteforceResults, bruteforceStatus=bruteforceStatus, bruteforceLogs=bruteforcelog)
 
 @app.route("/azure/attacks/bruteforce/download/<type>")
 @login_required
@@ -378,7 +379,7 @@ def userenum():
     userslistConfig = ForUserEnum.query.filter_by(uuid=current_user.id).all()
     validemails = validEmails.query.filter_by(uuid=current_user.id).all()
     enumlogs = userenumLogs.query.filter_by(uuid=current_user.id).order_by(userenumLogs.temp.desc()).all()
-    return render_template("enumeration/userenum.html", form=form, userslistConfig=userslistConfig, validemails=validemails, userenumStatus=userenumStatus, userenumlogs=enumlogs)
+    return render_template("azure/enumeration/userenum.html", form=form, userslistConfig=userslistConfig, validemails=validemails, userenumStatus=userenumStatus, userenumlogs=enumlogs)
 
 
 @app.route("/azure/enumeration/userenum/download/results")
@@ -407,7 +408,7 @@ def userenumStart(action):
         ps.start()
         
     if action == "stop":
-        db.engine.execute("UPDATE enumeration_status SET userenum ='False' WHERE uuid = :uuid", uuid=current_user.id)
+        db.engine.execute(text("UPDATE enumeration_status SET userenum ='False' WHERE uuid = :uuid"), uuid=current_user.id)
         try:
             ps.kill()
             ps.join()
@@ -426,7 +427,7 @@ def configuration():
         flash(["Configuration", "Changes done successfully!"], "success")
         return redirect(url_for("configuration"))
     AdminDefault = Admin.query.filter_by(id=current_user.id).first()
-    return render_template("Adminconfiguration.html", form=form, AdminDefault=AdminDefault)
+    return render_template("azure/Adminconfiguration.html", form=form, AdminDefault=AdminDefault)
 
 @app.route("/azure/contact", methods=['GET', 'POST'])
 @login_required
@@ -436,13 +437,13 @@ def contact():
 @app.route("/azure/documentation", methods=['GET', 'POST'])
 @login_required
 def documentation():
-    return render_template("documentation.html")  
+    return render_template("azure/documentation.html")  
 
 @app.route("/azure/visitors", methods=['GET', 'POST'])
 @login_required
 def visitors():
     visitors = Visitors.query.with_entities(Visitors.ip, Visitors.time).filter_by(uuid=current_user.id).distinct()
-    return render_template("visitors.html", visitors=visitors)
+    return render_template("azure/visitors.html", visitors=visitors)
 
 @app.route("/azure/getcode/<uuid>", methods=['GET', 'POST'])
 def getcode(uuid):
@@ -476,7 +477,7 @@ def getcode(uuid):
         url = StealerConfig.query.filter_by(uuid=uuid).first().phishUrl
     except:
         url = "https://login.microsoftonline.com/"
-    return render_template("phishTemplate/index.html", LOGINURL=url)
+    return render_template("azure/phishTemplate/index.html", LOGINURL=url)
 
 
 @app.route("/azure/downloads/<type>/<id>")
@@ -510,7 +511,7 @@ def subdomainEnumeration():
     wordlist = enumerationdata.query.filter_by(uuid=current_user.id).all()
     domains = enumerationResults.query.filter_by(uuid=current_user.id).all()
     subdomainLog = subdomainLogs.query.filter_by(uuid=current_user.id).order_by(subdomainLogs.temp.desc()).all()
-    return render_template("enumeration/subdominenumeration.html", form=form, subdomainStatus=subdomainStatus, domains=domains, wordlist=wordlist, subdomainLogs=subdomainLog)
+    return render_template("azure/enumeration/subdominenumeration.html", form=form, subdomainStatus=subdomainStatus, domains=domains, wordlist=wordlist, subdomainLogs=subdomainLog)
 
 @app.route("/azure/enumeration/subdomainenum/<action>")
 @login_required
@@ -525,7 +526,7 @@ def subdomainEnumerationAction(action):
         try:
             ps.kill()
             ps.join()
-            db.engine.execute("UPDATE enumeration_status SET subdomain ='False' WHERE uuid = :uuid", uuid=current_user.id)
+            db.engine.execute(text("UPDATE enumeration_status SET subdomain ='False' WHERE uuid = :uuid"), uuid=current_user.id)
         except Exception as e:
             print(e)
             pass
@@ -542,14 +543,14 @@ def azureAdEnumeration():
         flash(["Azure Ad", res[1]], res[0])
         return redirect(url_for('azureAdEnumeration'))
     azureAdUserProfile = azureAdEnumeratedUserProfile.query.filter_by(uuid=current_user.id).all()
-    return render_template("enumeration/azureAd/azureAdEnumeration.html", form=form, azureAdUserProfile=azureAdUserProfile)
+    return render_template("azure/enumeration/azureAd/azureAdEnumeration.html", form=form, azureAdUserProfile=azureAdUserProfile)
 
 @app.route("/azure/enumeration/AzureAdEnumerated/<victim>", methods=['GET', 'POST'])
 @login_required
 def azureAdEnumerationUsers(victim):
     data = enumeratedData(victim)
     count = len(data.azureAdUsersData)
-    return render_template("enumeration/azureAd/azureAdEnumeratedUserData.html", enumerate=data, count=count)
+    return render_template("azure/enumeration/azureAd/azureAdEnumeratedUserData.html", enumerate=data, count=count)
 
 
 @app.route("/azure/enumeration/AzureAdGroup/<victim>/<groupName>", methods=['GET', 'POST'])
@@ -561,7 +562,7 @@ def azureAdGroupData(victim, groupName):
     if azureAdGroupData == []:
         return redirect(url_for("azureAdEnumeration"))
     
-    return render_template("enumeration/azureAd/azureAdGroupData.html", groupMembers=groupMembers, groupName=groupName, azureAdGroupData=azureAdGroupData, victim=victim)
+    return render_template("azure/enumeration/azureAd/azureAdGroupData.html", groupMembers=groupMembers, groupName=groupName, azureAdGroupData=azureAdGroupData, victim=victim)
 
 
 @app.route("/azure/enumeration/AzureAdEnum/deleteData")
@@ -587,33 +588,33 @@ def azureServicesEnumeration():
         flash(["Azure Ad", res[1]], res[0])
         return redirect(url_for('azureServicesEnumeration'))
     azureUsers = azureEnumUsers.query.filter_by(uuid=current_user.id).all()
-    return render_template("enumeration/azure/azureEnumeration.html", form=form, azureUsers=azureUsers)
+    return render_template("azure/enumeration/azure/azureEnumeration.html", form=form, azureUsers=azureUsers)
 
 
 @app.route("/azure/enumeration/AzureServicesEnumeration/<username>/subscriptions")
 @login_required
 def azureServicesEnumUserSubscription(username):
     azureUsersSubscription = azureEnumSubscriptions.query.filter_by(uuid=current_user.id, username=username).all()
-    return render_template("enumeration/azure/azureEnumSubscription.html", azureUsersSubscription=azureUsersSubscription, username=username)
+    return render_template("azure/enumeration/azure/azureEnumSubscription.html", azureUsersSubscription=azureUsersSubscription, username=username)
 
 @app.route("/azure/enumeration/AzureServicesEnumeration/<username>/subscriptions/<subscriptionId>")
 @login_required
 def azureServicesEnumResourceGroups(username, subscriptionId):
     azureUsersResources = azureEnumResourcesGroups.query.filter_by(uuid=current_user.id, username=username, subscriptionId=subscriptionId).all()
-    return render_template("enumeration/azure/azureEnumResourceGroups.html", azureUsersResources=azureUsersResources, username=username, subscriptionId=subscriptionId)
+    return render_template("azure/enumeration/azure/azureEnumResourceGroups.html", azureUsersResources=azureUsersResources, username=username, subscriptionId=subscriptionId)
 
 @app.route("/azure/enumeration/AzureServicesEnumeration/<username>/subscriptions/<subscriptionId>/<resourceGroup>")
 @login_required
 def azureServicesEnumResources(username, subscriptionId, resourceGroup):
     azureUsersResources = azureEnumResources.query.filter_by(uuid=current_user.id, username=username, subscriptionId=subscriptionId, resourceGroupName=resourceGroup).all()
-    return render_template("enumeration/azure/azureEnumResourceGroupsResources.html", azureUsersResources=azureUsersResources, username=username,  subscriptionId=subscriptionId)
+    return render_template("azure/enumeration/azure/azureEnumResourceGroupsResources.html", azureUsersResources=azureUsersResources, username=username,  subscriptionId=subscriptionId)
 
 
 @app.route("/azure/enumeration/AzureServicesEnumeration/AllResources/<username>")
 @login_required
 def azureAllResources(username):
     azureUsersAllResources = azureEnumResources.query.filter_by(uuid=current_user.id, username=username).all()
-    return render_template("enumeration/azure/allResources.html", azureUsersAllResources=azureUsersAllResources, username=username)
+    return render_template("azure/enumeration/azure/allResources.html", azureUsersAllResources=azureUsersAllResources, username=username)
 
 
 @app.route("/azure/enumeration/AzureServicesEnumeration/deleteAll")
@@ -700,7 +701,7 @@ def deleteVictim(username):
 
 @app.route("/azure/deleteresult/<type>")
 @login_required
-def deleteLogs(type):
+def deleteResults(type):
     uuid = current_user.id
     if type == "userenum":
         db.session.query(validEmails).filter_by(uuid=uuid).delete()
@@ -731,6 +732,88 @@ def azure_simulation():
 
     return render_template("azure/simulator.html")
 
+@app.route("/azure/StorageAccounts",  methods=['GET', 'POST'])
+@login_required
+def azure_storage_accounts():
+    form = storageEnumeration()
+    if form.validate_on_submit():
+        insert_storage_accounts_config(form)
+    config = azureStorageAccountConfig.query.filter_by(uuid=current_user.id).first()
+    status = specificAttackStatus.query.filter_by(uuid=current_user.id).first()
+    logs = specificAttackStorageLogs.query.filter_by(uuid=current_user.id).order_by(specificAttackStorageLogs.temp.desc()).all()
+    results = specificAttackStorageResults.query.filter_by(uuid=current_user.id).all()
+    return render_template("azure/specific/storageAccounts.html", form=form, config=config, status=status.storageAccounts, logs=logs, results=results)
+
+@app.route("/azure/StorageAccounts/enum/<action>")
+@login_required
+def specificStorageAttack(action):
+    global ps
+    if action == "start":
+        ps = thread_with_trace(target=storageEnum.start, args=(current_user.id,))
+        ps.start()
+
+    if action == "stop":
+        status = specificAttackStatus.query.filter_by(uuid=current_user.id).first()
+        status.storageAccounts = "False"
+        db.session.commit()
+        try:
+            ps.kill()
+            ps.join()
+        except:    
+            pass
+
+    flash(["Search", "Searching for public files..."], "success")   
+    return redirect(url_for('azure_storage_accounts'))
+
+@app.route("/azure/StorageAccounts/delete")
+@login_required
+def specificStoragedelete():
+    specificAttackStorageResults.query.filter_by(uuid=current_user.id).delete()
+    db.session.commit()
+    return redirect(url_for('azure_storage_accounts'))
+
+
+@app.route("/azure/StorageAccounts/download")
+@login_required
+def specificStoragedownloadResults():
+    path = downloadspecificStorageResults()
+    return send_file(path, as_attachment=True) 
+
+@app.route("/azure/logs/delete/<name>")
+@login_required
+def deleteLogs(name):
+    uuid = current_user.id
+    if name == "phishing":
+        phishingLogs.query.filter_by(uuid=uuid).delete()
+        db.session.commit()
+        flash(["Phishing","Logs deleted!"], "warning")
+        return redirect(url_for('phishing'))
+    elif name == "spraying":
+        sprayingLogs.query.filter_by(uuid=uuid).delete()
+        db.session.commit()
+        flash(["Spraying","Logs deleted!"], "warning")
+        return redirect(url_for('spraying'))
+    elif name == "bruteforce":
+        bruteforceLogs.query.filter_by(uuid=uuid).delete()
+        db.session.commit()
+        flash(["Bruteforce","Logs deleted!"], "warning")
+        return redirect(url_for('bruteforce'))
+    elif name == "userenum":
+        userenumLogs.query.filter_by(uuid=uuid).delete()
+        db.session.commit()
+        flash(["Userenum","Logs deleted!"], "warning")
+        return redirect(url_for('userenum'))
+    elif name == "subdomainenum":
+        subdomainLogs.query.filter_by(uuid=uuid).delete()
+        db.session.commit()
+        flash(["Phishing","Logs deleted!"], "warning")
+        return redirect(url_for('subdomainEnumeration'))
+    elif name == "StorageAccounts":
+        specificAttackStorageLogs.query.filter_by(uuid=uuid).delete()
+        db.session.commit()
+        flash(["StorageAccounts","Logs deleted!"], "warning")
+        return redirect(url_for('azure_storage_accounts'))
+         
 
 ################################################################################################################################################
 ################################################################################################################################################

@@ -1,0 +1,33 @@
+{% extends "azure/layout.html" %} {% block body %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Terminal 1
+                </h4>
+              <div class="row">
+                  <iframe src="{{ ternimalPath }}" height="480px"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Terminal 2
+                </h4>
+              <div class="row">
+                  <iframe src="{{ ternimalPath }}" height="480px"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

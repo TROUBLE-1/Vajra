@@ -148,7 +148,7 @@
       
                    </a>
                    <a class="navbar-brand  brand-logo-mini" href="index.html">
-                     <img class=" rounded-circle" src="{{ url_for('static',filename='images/faces/indra_logo.png') }}" alt="logo" />
+                     <img class=" rounded-circle" src="{{ url_for('static',filename='images/common/indra_logo.png') }}" alt="logo" />
                    </a>
                    
             </div>
@@ -157,10 +157,10 @@
                <ul class="navbar-nav ">
                   <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
                      {% if textColor != "white" %}
-                     <h1 class="welcome-text fw-bold"><span style="color:#f1a634;">Amazon Cloud </span> <span style="color:#000000;">Attacking ToolKit</span></h1>
+                     <h1 class="welcome-text fw-bold"><span style="color:#f1a634;">AWS Cloud </span> <span style="color:#000000;">Attacking ToolKit</span></h1>
                      <h3 class="welcome-sub-text"><span style="color:#f1a634;">Your Weapon</span> <span style="color:#000000;">To Cloud</span></h3>
                      {% else %}
-                     <h1 class="welcome-text fw-bold"><span style="color:#f1a634;">Amazon Cloud </span> <span style="color:#ffffff;">Attacking ToolKit</span></h1>
+                     <h1 class="welcome-text fw-bold"><span style="color:#f1a634;">AWS Cloud </span> <span style="color:#ffffff;">Attacking ToolKit</span></h1>
                      <h3 class="welcome-sub-text"><span style="color:#f1a634;">Your Weapon</span> <span style="color:#ffffff;">To Cloud</span></h3>
                      {% endif %}
                   </li>
@@ -182,7 +182,7 @@
   
                         <div class="dropdown-content">
                            <a href="{{ url_for('dashboard') }}">
-                                <img src="{{ url_for('static',filename='images/logo/azure-icon.png') }}" width="25" height="20" > &nbsp;&nbsp;Azure
+                                <img src="{{ url_for('static',filename='images/azure/logo/azure-icon.png') }}" width="25" height="20" > &nbsp;&nbsp;Azure
                            </a>
                            <a href="{{ url_for('aws_dashboard') }}">
                                 <img src="{{ url_for('static',filename='images/aws/icons/aws.png') }}" width="25" height="15"> &nbsp;&nbsp;AWS
@@ -195,7 +195,7 @@
                   </li>
                   <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                      <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                       <img class="img-custom rounded-circle" src="{{ url_for('static',filename='images/faces/indra_logo.png') }}" alt="Profile image"> </a>
+                       <img class="img-custom rounded-circle" src="{{ url_for('static',filename='images/common/indra_logo.png') }}" alt="Profile image"> </a>
                    </li>
                </ul>
                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
@@ -215,7 +215,7 @@
                      </a>
                   </li>
                </ul>
-               <img rel="shortcut icon" src="{{ url_for('static',filename='images/logo/vajra-weapon.png') }} " width="75%" class="vajra-weapon"/>
+               <img rel="shortcut icon" src="{{ url_for('static',filename='images/azure/logo/vajra-weapon.png') }} " width="75%" class="vajra-weapon"/>
             </nav>
             <!-- partial -->
 			<div class="main-panel">

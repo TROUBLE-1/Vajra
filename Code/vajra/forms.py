@@ -171,3 +171,9 @@ class startStealer(FlaskForm):
 
 class stopStealer(FlaskForm):
     submit = SubmitField('Stop')
+
+
+class storageEnumeration(FlaskForm):
+    commonWord = StringField('Common Word', validators=[Length(min=1, max=200)], render_kw={"placeholder": "companyname"})
+    permutations = TextAreaField('Paste your permutations list')
+    submit = SubmitField("Save")

@@ -1,0 +1,38 @@
+{% extends "azure/layout.html" %}
+{% block body %}
+
+  <!-- partial -->
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-lg-12 grid-margin">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Visitors IP</h4>
+  
+                <div class="table-responsive" style="max-height: 500px;">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>IP</th>
+                        <th>Date & Time</th>
+                      </tr>
+                    </thead>
+                    <tbody id="myTable">
+                      {% for ip in (visitors) %}
+                        <tr>
+                          <td>{{ip.ip}}</td>
+                          <td>{{ip.time}}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
