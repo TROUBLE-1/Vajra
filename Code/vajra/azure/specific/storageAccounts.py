@@ -27,7 +27,6 @@ class storageEnum():
             try:
                 socket.gethostbyname(domain)
                 valid_domains.append(domain)
-                print(crayons.green(f'[+] {domain}', bold=True))
                 try:
                     log = (f"<br><span style=\"color:#7FFFD4\">[+] Valid: {domain}</span>" )
                     db.session.add(specificAttackStorageLogs(uuid=uuid, message=log))
@@ -50,16 +49,19 @@ class storageEnum():
 
         def validate_container(domain):
             url = f"https://{domain}/?restype=container&comp=list"
-            response = requests.get(url)
-            if response.status_code == 200:
-                log = (f"<br><span style=\"color:#61a0d9\">[+] Found public container\r\n&nbsp;&nbsp;{url}</span>" )
-                db.session.add(specificAttackStorageLogs(uuid=uuid, message=log))
-                db.session.commit()
-                res = json.loads(json.dumps(xmltodict.parse(response.text)))
-                for blob in res["EnumerationResults"]["Blobs"]["Blob"]:
-                    name = blob["Name"]
-                    public_files = (f"https://{domain}/{name}")
-                    public_storage.append(public_files)
+            response = requests.get(url, timeout=5)
+            try:
+                if response.status_code == 200:
+                    log = (f"<br><span style=\"color:#61a0d9\">[+] Found public container\r\n&nbsp;&nbsp;{url}</span>" )
+                    db.session.add(specificAttackStorageLogs(uuid=uuid, message=log))
+                    db.session.commit()
+                    res = json.loads(json.dumps(xmltodict.parse(response.text)))
+                    for blob in res["EnumerationResults"]["Blobs"]["Blob"]:
+                        name = blob["Name"]
+                        public_files = (f"https://{domain}/{name}")
+                        public_storage.append(public_files)
+            except:
+                pass
 
         # enumerate public containers 
         processes = []

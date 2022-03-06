@@ -18,7 +18,7 @@
 # The creator takes no responsibility of any mis-use of this tool.
 
 from sqlalchemy.sql.expression import false, true
-from vajra import db, bcrypt, engine
+from vajra import db, bcrypt, engine, sqlite_used, DB_PATH
 from vajra.models import *
 import sys, os, base64, threading, base64, json, jwt
 from sqlalchemy.sql import text
@@ -27,8 +27,10 @@ from vajra.azure.enumeration.azureAd import azureAdEnum
 from vajra.azure.enumeration.azureAzService import  azureAzServiceEnum
 import pandas as pd
 from flask_login import current_user
+import sqlite3 as sqlite
 
-
+directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+engine
 class thread_with_trace(threading.Thread):
   def __init__(self, *args, **keywords):
     threading.Thread.__init__(self, *args, **keywords)
@@ -365,14 +367,13 @@ def getNewToken(username):
     accessToken = stealerAction.getAccessToken(current_user.id, username)
     return accessToken
     
-def replaceOneDriveFile(username, id, name, content):
-    return stealerAction.replaceOneDriveFile(username, id, name, content)
+def replaceOneDriveFile(uuid, username, id, name, content):
+    return stealerAction.replaceOneDriveFile(uuid, username, id, name, content)
 
-def deleteOneDriveFile(username, id):
-    return stealerAction.deleteOneDriveFile(username, id)
+def deleteOneDriveFile(uuid, username, id):
+    return stealerAction.deleteOneDriveFile(uuid, username, id)
 
 def downloadfile(file, b64):
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
     try:
         os.stat(directory)
     except:
@@ -447,7 +448,8 @@ def getPath(type, id):
         return downloadfile(oneNote, false)
 
 def downloadBruteforce(type):
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     
     if type == "config":
         path = directory + "bruteforce_configuration.xlsx"
@@ -466,7 +468,8 @@ def downloadBruteforce(type):
         return path        
 
 def downloadSpraying(type):
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     
     if type == "addedemails":
         path = directory + "spraying_configuration.xlsx"
@@ -485,7 +488,8 @@ def downloadSpraying(type):
         return path    
     
 def downloadUserenum():
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     
     path = directory + "valid_emails.xlsx"
 
@@ -496,17 +500,19 @@ def downloadUserenum():
     return path
 
 def downloadSubdomainEnum():
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     path = directory + "valid_subdomains.xlsx"
     
-    sh = pd.read_sql_query(f"select validSubdomain from enumeration_results where uuid = '{current_user.id}'", con=engine)
+    sh = pd.read_sql_query(f"SELECT * FROM enumeration_results where uuid = '{current_user.id}'", con=engine)
     with pd.ExcelWriter(path, engine_kwargs={'options': {'strings_to_urls': False}}) as writer:  
         sh.to_excel(writer, sheet_name='Valid Subdomains', index=False)
     
     return path
-
+ 
 def victimsDownload(type):
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     
     if type == "more":
         path = directory + "more_victims.xlsx"
@@ -524,7 +530,8 @@ def victimsDownload(type):
         return path
 
 def downloadEnumeratedData(victim):
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     path = directory + "Azure_AD_Enumerated_data.xlsx"
     
     sh1 = pd.read_sql_query(f"select * from azure_ad_enumerated_user_profile where uuid = '{current_user.id}' and victim = {victim}", con=engine)
@@ -599,7 +606,8 @@ def insert_storage_accounts_config(form):
 
 def downloadspecificStorageResults():
 
-    directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
     path = directory + "Public_Storage_Account_Files.xlsx"
     
     sh1 = pd.read_sql_query(f"select valid from specific_attack_storage_results where uuid = '{current_user.id}' ", con=engine)

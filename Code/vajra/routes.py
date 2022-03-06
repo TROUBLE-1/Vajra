@@ -652,7 +652,7 @@ def replace(username, id):
     file = request.files['oneDriveFile']
     name = file.filename
     content = file.stream.read()
-    response = replaceOneDriveFile(username, id, name, content)
+    response = replaceOneDriveFile(current_user.id,username, id, name, content)
     if response:
         message, type = name + " : " + response, "error"
     else:
@@ -665,7 +665,7 @@ def replace(username, id):
 @login_required
 def delete(username, id):
     message, type = "File Successfully Deleted", "success"
-    res = deleteOneDriveFile(username, id)
+    res = deleteOneDriveFile(current_user.id, username, id)
     if res == true:
         pass
     else:

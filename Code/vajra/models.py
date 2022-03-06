@@ -418,7 +418,7 @@ class enumerationResults(db.Model):
     uuid = db.Column(db.String())
     temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id = db.Column(db.Integer)
-    validSubdomain = db.Column(db.String(100))
+    validSubdomain = db.Column(db.String())
 
 class SSLCert(db.Model):
     uuid = db.Column(db.String())
