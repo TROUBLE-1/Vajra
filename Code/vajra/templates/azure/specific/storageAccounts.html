@@ -13,7 +13,7 @@
                 <div class="btn-wrapper">
                   <a href="{{url_for('specificStoragedownloadResults')}}" class="btn btn-outline-dark"><i class="icon-download"></i>Results</a>
                   <a href="{{url_for('deleteLogs', name='StorageAccounts')}}" class="btn btn-danger  text-white me-0"><i class="icon-download"></i>Delete Logs</a>
-                  {% if status == "False" or status == None %}
+                  {% if status.storageAccounts == "False" or status.storageAccounts == None %}
                   <a href="{{url_for('specificStorageAttack', action='start')}}" class="btn btn-primary text-white me-0"><i class="menu-icon mdi mdi-search-web"></i> Start Searching</a>
                   {% else %}
                   <a href="{{url_for('specificStorageAttack', action='stop')}}" class="btn btn-danger text-white me-0"><i class="menu-icon mdi mdi-stop"></i> Stop Searching</a>

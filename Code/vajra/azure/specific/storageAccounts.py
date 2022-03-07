@@ -1,6 +1,4 @@
-from email import message
-import socket, requests, crayons, json, xmltodict, threading
-import xml.etree.ElementTree as ET
+import socket, requests, json, xmltodict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from vajra import db
 from vajra.models import azureStorageAccountConfig, specificAttackStatus, specificAttackStorageLogs, specificAttackStorageResults

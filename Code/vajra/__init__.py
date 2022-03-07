@@ -31,12 +31,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '465465465*##4asd/4$65436t&#73457DGH:34634sfgsadgAH"6@&||@^&'
 sqlite_used = False
 try:
-    engine = pg.connect(POSTGRES)
     app.config['SQLALCHEMY_DATABASE_URI'] = POSTGRES
     app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 except Exception as e:
     error = str(e)
-    engine = ""
     print(crayons.red(f"Error while connecting to postgress database!\n{error}", bold=True))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
     print(crayons.green("[!] Sqlite database will be used", bold=True))

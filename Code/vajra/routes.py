@@ -742,7 +742,7 @@ def azure_storage_accounts():
     status = specificAttackStatus.query.filter_by(uuid=current_user.id).first()
     logs = specificAttackStorageLogs.query.filter_by(uuid=current_user.id).order_by(specificAttackStorageLogs.temp.desc()).all()
     results = specificAttackStorageResults.query.filter_by(uuid=current_user.id).all()
-    return render_template("azure/specific/storageAccounts.html", form=form, config=config, status=status.storageAccounts, logs=logs, results=results)
+    return render_template("azure/specific/storageAccounts.html", form=form, config=config, status=status, logs=logs, results=results)
 
 @app.route("/azure/StorageAccounts/enum/<action>")
 @login_required

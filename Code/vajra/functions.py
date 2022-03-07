@@ -18,7 +18,7 @@
 # The creator takes no responsibility of any mis-use of this tool.
 
 from sqlalchemy.sql.expression import false, true
-from vajra import db, bcrypt, engine, sqlite_used, DB_PATH
+from vajra import db, bcrypt, sqlite_used, DB_PATH, POSTGRES
 from vajra.models import *
 import sys, os, base64, threading, base64, json, jwt
 from sqlalchemy.sql import text
@@ -28,9 +28,10 @@ from vajra.azure.enumeration.azureAzService import  azureAzServiceEnum
 import pandas as pd
 from flask_login import current_user
 import sqlite3 as sqlite
+import psycopg2 as pg
 
 directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
-engine
+
 class thread_with_trace(threading.Thread):
   def __init__(self, *args, **keywords):
     threading.Thread.__init__(self, *args, **keywords)
@@ -450,7 +451,9 @@ def getPath(type, id):
 def downloadBruteforce(type):
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
-    
+    else:
+        engine = pg.connect(POSTGRES)
+
     if type == "config":
         path = directory + "bruteforce_configuration.xlsx"
         sh = pd.read_sql_query(f"select * from bruteforce_config where uuid = '{current_user.id}'", con=engine)
@@ -470,7 +473,9 @@ def downloadBruteforce(type):
 def downloadSpraying(type):
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
-    
+    else:
+        engine = pg.connect(POSTGRES)
+
     if type == "addedemails":
         path = directory + "spraying_configuration.xlsx"
         sh = pd.read_sql_query(f"select * from added_victims where uuid = '{current_user.id}'", con=engine)
@@ -478,7 +483,7 @@ def downloadSpraying(type):
             sh.to_excel(writer, sheet_name='Added Victims', index=False)
 
         return path
-
+    
     if type == "results":
         path = directory + "spraying_results.xlsx"
         sh = pd.read_sql_query(f"select * from spraying_result where uuid = '{current_user.id}'", con=engine)
@@ -490,7 +495,8 @@ def downloadSpraying(type):
 def downloadUserenum():
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
-    
+    else:
+        engine = pg.connect(POSTGRES)
     path = directory + "valid_emails.xlsx"
 
     sh = pd.read_sql_query(f"select * from valid_emails where uuid = '{current_user.id}'", con=engine)
@@ -502,6 +508,8 @@ def downloadUserenum():
 def downloadSubdomainEnum():
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
+    else:
+        engine = pg.connect(POSTGRES)
     path = directory + "valid_subdomains.xlsx"
     
     sh = pd.read_sql_query(f"SELECT * FROM enumeration_results where uuid = '{current_user.id}'", con=engine)
@@ -513,7 +521,9 @@ def downloadSubdomainEnum():
 def victimsDownload(type):
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
-    
+    else:
+        engine = pg.connect(POSTGRES)
+
     if type == "more":
         path = directory + "more_victims.xlsx"
         sh = pd.read_sql_query(f"select * from allusers where uuid = '{current_user.id}'", con=engine)
@@ -532,6 +542,9 @@ def victimsDownload(type):
 def downloadEnumeratedData(victim):
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
+    else:
+        engine = pg.connect(POSTGRES)
+
     path = directory + "Azure_AD_Enumerated_data.xlsx"
     
     sh1 = pd.read_sql_query(f"select * from azure_ad_enumerated_user_profile where uuid = '{current_user.id}' and victim = {victim}", con=engine)
@@ -608,6 +621,9 @@ def downloadspecificStorageResults():
 
     if sqlite_used == True:
         engine = sqlite.connect(DB_PATH)
+    else:
+        engine = pg.connect(POSTGRES)
+
     path = directory + "Public_Storage_Account_Files.xlsx"
     
     sh1 = pd.read_sql_query(f"select valid from specific_attack_storage_results where uuid = '{current_user.id}' ", con=engine)
