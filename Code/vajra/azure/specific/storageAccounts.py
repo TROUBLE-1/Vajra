@@ -1,4 +1,4 @@
-import socket, requests, json, xmltodict
+import socket, requests, re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from vajra import db
 from vajra.models import azureStorageAccountConfig, specificAttackStatus, specificAttackStorageLogs, specificAttackStorageResults
@@ -23,7 +23,8 @@ class storageEnum():
 
         def validate_existence(domain):
             try:
-                socket.gethostbyname(domain)
+                #socket.gethostbyname(domain)
+                requests.get("https://"+domain, timeout=3)
                 valid_domains.append(domain)
                 try:
                     log = (f"<br><span style=\"color:#7FFFD4\">[+] Valid: {domain}</span>" )
@@ -42,9 +43,17 @@ class storageEnum():
             full_domain_list.append(full_domain_2)
             full_domain_list.append(full_domain_3)
         
-        for domain in full_domain_list:
-            validate_existence(domain)
+        #for domain in full_domain_list:
+        #    validate_existence(domain)
 
+        processes = []
+        with ThreadPoolExecutor(max_workers=100) as executor:
+            for domain in full_domain_list:
+                processes.append(executor.submit(validate_existence, domain))
+
+        for task in as_completed(processes):
+            (task.result())
+        print(1)
         def validate_container(domain):
             url = f"https://{domain}/?restype=container&comp=list"
             response = requests.get(url, timeout=5)
@@ -52,13 +61,12 @@ class storageEnum():
                 if response.status_code == 200:
                     log = (f"<br><span style=\"color:#61a0d9\">[+] Found public container\r\n&nbsp;&nbsp;{url}</span>" )
                     db.session.add(specificAttackStorageLogs(uuid=uuid, message=log))
-                    db.session.commit()
-                    res = json.loads(json.dumps(xmltodict.parse(response.text)))
-                    for blob in res["EnumerationResults"]["Blobs"]["Blob"]:
-                        name = blob["Name"]
-                        public_files = (f"https://{domain}/{name}")
-                        public_storage.append(public_files)
-            except:
+                    public_storage = re.findall('<Url>([\s\S]*?)<\/Url>', response.text, flags=0)
+                    for url in public_storage:
+                        db.session.add(specificAttackStorageResults(valid=url, uuid=uuid)) 
+                    db.session.commit()    
+            except Exception as e:
+                print(e)
                 pass
 
         # enumerate public containers 
@@ -73,8 +81,7 @@ class storageEnum():
             for task in as_completed(processes):
                 (task.result())
 
-        for url in public_storage:
-            db.session.add(specificAttackStorageResults(valid=url, uuid=uuid))
+        
 
         status.storageAccounts = "False"
         db.session.commit()
