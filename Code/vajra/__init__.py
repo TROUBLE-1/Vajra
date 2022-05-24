@@ -24,27 +24,16 @@ from flask_login import LoginManager
 import os, crayons, requests, crayons, time
 import psycopg2 as pg
 
-POSTGRES = "postgresql://postgres:postgres@localhost/vajra"
+POSTGRES = "postgresql://postgres:postgres@localhost/vqajra"
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 DB_PATH = os.path.join(BASE_PATH , "site.db")
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '465465465*##4asd/4$65436t&#73457DGH:34634sfgsadgAH"6@&||@^&'
-sqlite_used = False
-try:
-    engine = pg.connect(POSTGRES)
-    app.config['SQLALCHEMY_DATABASE_URI'] = POSTGRES
-    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
-except Exception as e:
-    error = str(e)
-    print(crayons.red(f"Error while connecting to postgress database!\n{error}", bold=True))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-    print(crayons.green("[!] Sqlite database will be used", bold=True))
-    sqlite_used = True
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+sqlite_used = True
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
-
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -64,4 +53,17 @@ res = requests.get("https://raw.githubusercontent.com/TROUBLE-1/Vajra/main/Code/
 if f != res:
     print(crayons.yellow("[!] Please update the tool to get new modules!\r\n"))
     time.sleep(3)
-    
+
+
+'''
+try:
+    sqlite_used = False
+    engine = pg.connect(POSTGRES)
+    app.config['SQLALCHEMY_DATABASE_URI'] = POSTGRES
+    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
+except Exception as e:
+    print(crayons.yellow(f"[!] Error while connecting to postgress database!", bold=True))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    print(crayons.green("[+] Sqlite database will be used", bold=True))
+    sqlite_used = True
+'''    

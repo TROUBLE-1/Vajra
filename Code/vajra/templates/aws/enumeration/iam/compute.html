@@ -1,0 +1,448 @@
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+   <div class="content-wrapper">
+      <div class="row">
+         <div class="col-sm-12 grid-margin">
+            <div class="home-tab">
+               <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <div id="home-tab" aria-selected="true">
+                     <b>AWS IAM Enumerated Compute Services</b>
+                  </div>
+                  <div class="btn-wrapper">
+                     <a href="{{url_for('downloadAzureAdEnumData', victim='')}}" class="btn btn-outline-dark text-dark me-0"><i class="icon-download"></i>Download All</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-warning fw-bold">
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumeration') }}">Users</a></li>
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumerated_data_navigation', victimId=victimFullData.userId) }}">{{ victim.victim.split("/")[1] }}</a></li>
+               <li class="breadcrumb-item text-dark">Compute Services</li>
+            </ol>
+         </nav>
+         <div class="col-12 grid-margin">
+            <div class="card">
+               <div class="card-body">
+                  <h4 class="card-title"><u>{{ victim.victim }}</u></h4>
+                  <div class="row">
+                     <div class="col-md-12 mx-auto">
+                        <ul class="nav nav-pills nav-pills-custom" id="pills-tab-custom" role="tablist">
+                           <li class="nav-item">
+                              <a class="nav-link active" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-ec2" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/aws-ec2.svg') }}" width="25px">
+                              Ec2 ({{user_data.ec2_data | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-lambda" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/lambda.svg') }}" width="25px">
+                              Lambda ({{user_data.lambda_data | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-beanstalk" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/elasticbeanstalk.png') }}" width="20px">
+                              BeanStalk ({{user_data.beanstalk | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-ecr" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/ecr.png') }}" width="25px">
+                              ecr ({{user_data.ecr | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-eks" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/eks.png') }}" width="25px">
+                              eks ({{user_data.eks | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-ecs" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/ecs.png') }}" width="25px">
+                              ecs ({{user_data.ecs | length}})
+                              </a>
+                           </li>
+                        </ul>
+                        <hr>
+                        <div class="tab-content tab-content-custom-pill" id="pills-tabContent-custom">
+                        <div class="tab-pane fade active show" id="pills-ec2" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/aws-ec2.svg" width="40px"> <b>Ec2 Instances</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-ec2" name="displaySearch-ec2" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Instances ID
+                                       </th>
+                                       <th>
+                                          View
+                                       </th>
+                                       <th>
+                                          Instances State
+                                       </th>
+                                       <th>
+                                          Instances type
+                                       </th>
+                                       <th>
+                                          Availability Zone
+                                       </th>
+                                       <th>
+                                          Public IPv4 DNS
+                                       </th>
+                                       <th>
+                                          Public IPv4 address
+                                       </th>
+                                       <th>
+                                          IPv6 IPs
+                                       </th>
+                                       <th>
+                                          Monitoring
+                                       </th>
+                                       <th>
+                                          Security group name
+                                       </th>
+                                       <th>
+                                          Launch time
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-ec2">
+                                    {% for data in user_data.ec2_data %}
+                                    <tr>
+                                       <td>
+                                          {{ data.instancesId }}
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('Instances Id', `{{data.jsonOutput}}`, '{{data.instancesId}}')">Json Output</button>
+                                       </td>
+                                       <td>
+                                          {{ data.instancesState }}
+                                       </td>
+                                       <td>
+                                          {{ data.instancesType }}
+                                       </td>
+                                       <td>
+                                          {{ data.availabilityZone }}
+                                       </td>
+                                       <td>
+                                          {{ data.publicIPv4DNS }}
+                                       </td>
+                                       <td>
+                                          {{ data.publicIPv4Address }}
+                                       </td>
+                                       <td>
+                                          {{ data.ipv6IPs.replace("\r\n", "<br>") | safe }}
+                                       </td>
+                                       <td>
+                                          {{ data.monitoring }}
+                                       </td>
+                                       <td>
+                                          {{ data.securityGroupName }}
+                                       </td>
+                                       <td>
+                                          {{ data.launchTime }}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+
+                        <div class="tab-pane fade" id="pills-lambda" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/lambda.svg" width="40px"> <b>Lambda</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-lambda" name="displaySearch-lambda" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Function Name
+                                       </th>
+                                       <th>
+                                          Detailed
+                                       </th>
+                                       <th>
+                                          Code
+                                       </th>
+                                       <th>
+                                          Runtime
+                                       </th>
+                                       <th>
+                                          Description
+                                       </th>
+                                       <th>
+                                          Arn
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-lambda">
+                                    {% for data in user_data.lambda_data %}
+                                    <tr>
+                                       <td>
+                                          {{ data.functionName }}
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('Function Name', `{{data.jsonBody}}`, '{{data.functionName}}')">Json Output</button>
+                                       </td>
+                                       <td>
+                                          <a href="{{ url_for('downloadLambdaFunctionCode', id=data.temp) }}"><button class="btn btn-primary">Download</button></a>
+                                       </td>
+                                       <td>
+                                          {{ data.runtime }}
+                                       </td>
+                                       <td>
+                                          {{ data.description }}
+                                       </td>
+                                       <td>
+                                          {{ data.arn }}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-beanstalk" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/elasticbeanstalk.png" width="40px"> <b>Elastic BeanStalk</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-beanstalk" name="displaySearch-beanstalk" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Application Name
+                                       </th>
+                                       <th>
+                                          Created Date
+                                       </th>
+                                       <th>
+                                          Json Output
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-beanstalk">
+                                    {% for data in user_data.beanstalk %}
+                                    <tr>
+                                       <td>
+                                          {{ data.ApplicationName }}
+                                       </td>
+                                       <td>
+                                          {{ data.DateCreated }}
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('Application Name', `{{data.jsonOutput}}`, '{{data.ApplicationName}}')">Json Output</button>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-ecr" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/ecr.png" width="40px"> <b>Elastic BeanStalk</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-ecr" name="displaySearch-ecr" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Repository Uri
+                                       </th>
+                                       <th>
+                                          Created Date
+                                       </th>
+                                       <th>
+                                          Json Output
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-ecr">
+                                    {% for data in user_data.ecr %}
+                                    <tr>
+                                       <td>
+                                         <a href="https://{{ data.repositoryUri }}" target=_blank class="text-info"> {{ data.repositoryUri }}</a>
+                                       </td>
+                                       <td>
+                                          {{ data.createdAt }}
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('Repo Name', `{{data.jsonBody}}`, '{{data.repositoryName}}')">Json Output</button>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-eks" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/eks.png" width="40px"> <b>Elastic BeanStalk</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-eks" name="displaySearch-eks" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Cluster Name
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-eks">
+                                    {% for data in user_data.eks %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">{{ data.cluster }}</label>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        
+                        <div class="tab-pane fade" id="pills-ecs" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/ecs.png" width="40px"> <b>Elastic BeanStalk</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-ecs" name="displaySearch-ecs" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Cluster Arn
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-ecs">
+                                    {% for data in user_data.ecs %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">{{ data.clusterArn }}</label>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+   $(document).ready(function(){
+     $("#displaySearch-ec2").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-ec2 tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-lambda").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-lambda tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-beanstalk").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-beanstalk tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-ecr").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-ecr tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-eks").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-eks tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-ecs").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-ecs tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-sp").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-sp tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-cap").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-cap tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+</script>
+{% endblock %}

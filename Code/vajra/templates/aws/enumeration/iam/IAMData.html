@@ -1,0 +1,395 @@
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+   <div class="content-wrapper">
+      <div class="row">
+         <div class="col-sm-12 grid-margin">
+            <div class="home-tab">
+               <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <div id="home-tab" aria-selected="true">
+                     <b>AWS IAM User data</b>
+                  </div>
+                  <div class="btn-wrapper">
+                     <a href="{{url_for('downloadAzureAdEnumData', victim='')}}" class="btn btn-outline-dark text-dark me-0"><i class="icon-download"></i>Download All</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-warning fw-bold">
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumeration') }}">Users</a></li>
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumerated_data_navigation', victimId=victimFullData.userId) }}">{{ victim.victim.split("/")[1] }}</a></li>
+               <li class="breadcrumb-item text-dark">IAM</li>
+            </ol>
+         </nav>
+         <div class="col-12 grid-margin">
+            <div class="card">
+               <div class="card-body">
+                  <h4 class="card-title"><u>{{ victim.victim }}</u></h4>
+                  <div class="row">
+                     <div class="col-md-12 mx-auto">
+                        <ul class="nav nav-pills nav-pills-custom" id="pills-tab-custom" role="tablist">
+                           <li class="nav-item">
+                              <a class="nav-link active" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-iamUsers" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/user.png') }}" width="25px">
+                              IAM Users ({{user_data.iam_users_data | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-iamGroups" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/groups.png') }}" width="25px">
+                              IAM Groups ({{user_data.iam_group_data | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-roles" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/role.png') }}" width="25px">
+                              IAM Roles ({{user_data.iam_roles_data | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-policies" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/policies.png') }}" width="25px">
+                              IAM Policies ({{user_data.iam_policies_data | length}})
+                              </a>
+                           </li>
+                        </ul>
+                        <hr>
+                        <div class="tab-content tab-content-custom-pill" id="pills-tabContent-custom">
+                           <div class="tab-pane fade active show" id="pills-iamUsers" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                              <div class="d-sm-flex align-items-center justify-content-between">
+                                 <h4><img src="/static/images/aws/icons/user.png" width="40px"> <b>IAM users List: </b> <u></u></h4>
+                              </div>
+                              <div class="form-group">
+                                 <input class="form-control mb-2 mr-sm-2" id="displaySearch-iamusers" name="displaySearch-iamusers" placeholder="Keywords" type="text" value="">
+                              </div>
+                              <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                                 <table class="table table-hover table-bordered table-dark" >
+                                    <thead>
+                                       <tr>
+                                          <th>
+                                             UserName
+                                          </th>
+                                          <th>
+                                             Arn
+                                          </th>
+                                          <th>
+                                             User Id
+                                          </th>
+                                          <th>
+                                             GroupName
+                                          </th>
+                                          <th>
+                                             Attached User Policy
+                                          </th>
+                                          <th>
+                                             Inline User Policy
+                                          </th>
+                                          <th>
+                                             Login Profile
+                                          </th>
+                                          <th>
+                                             Certificates
+                                          </th>
+                                          <th>
+                                             SSH Public Key
+                                          </th>
+                                          <th>
+                                             CreateDate
+                                          </th>
+                                          <th>
+                                             PasswordLastUsed
+                                          </th>
+                                       </tr>
+                                    </thead>
+                                    <tbody id="table-iamusers">
+                                       {% for data in user_data.iam_users_data %}
+                                       <tr>
+                                          <td>
+                                             <label class="badge badge-outline-warning">
+                                             {{data.username}}
+                                             </label>
+                                          </td>
+                                          <td>
+                                             {{data.arn}}
+                                          </td>
+                                          <td>
+                                             {{ data.userId }}
+                                          </td>
+                                          <td>
+                                             {{data.groupName.replace("\r\n", "<br>") | safe}}
+                                          </td>
+                                          <td>
+                                             {{data.attachedUserPolicy.replace("\r\n", "<br>") | safe }}
+                                          </td>
+                                          <td>
+                                             {{data.inlineUserPolicy}}
+                                          </td>
+                                          <td>
+                                             {{ data.loginProfile }}
+                                          </td>
+                                          <td>
+                                             {{data.Certificates.replace("\r\n", "<br>") | safe }}
+                                          </td>
+                                          <td>
+                                             {{ data.sshPublicKey.replace("\r\n", "<br>") | safe }}
+                                          </td>
+                                          <td>
+                                             {{data.createdate}}
+                                          </td>
+                                          <td>
+                                             {{data.passwordLastUsed}}
+                                          </td>
+                                       </tr>
+                                       {% endfor %}
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </div>
+                           <div class="tab-pane fade" id="pills-iamGroups" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/groups.png" width="40px"> <b>IAM Groups: </b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-iamGroups" name="displaySearch-users" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Group Name
+                                       </th>
+                                       <th>
+                                          Members
+                                       </th>
+                                       <th>
+                                        Policy Name
+                                        </th>
+                                       <th>
+                                          Arn
+                                       </th>
+                                       <th>
+                                        Group Id
+                                        </th>
+                                        <th>
+                                          Create Date
+                                        </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-iamGroups">
+                                    {% for data in user_data.iam_group_data %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">
+                                          {{data.groupName}}
+                                          </label>
+                                       </td>
+                                       <td>
+                                          {{data.members.replace("\r\n", "<br>") | safe}}
+                                      </td>
+                                       <td>
+                                           {{data.policyName.replace("\r\n", "<br>") | safe}}
+                                       </td>
+                                       <td>
+                                          {{data.arn}}
+                                       </td>
+                                       <td>
+                                        {{data.groupId}}
+                                        </td>
+                                        <td>
+                                            {{data.createDate}}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-roles" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/role.png" width="40px"> <b>IAM Attached role Policies: </b></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-roles" name="displaySearch-roles" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Role Name
+                                       </th>
+                                       <th>
+                                        Details
+                                       </th>
+                                       <th>
+                                        Attached Polices
+                                        </th>
+                                       <th>
+                                         Inline Polices
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-roles">
+                                    {% for data in user_data.iam_roles_data %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">
+                                          {{data.roleName}}
+                                          </label>
+                                       </td>
+                                       <td>
+                                          <script>
+                                             
+                                          </script>
+                                          <button class="btn btn-warning" onclick="showSwal('RoleName', `{{data.jsonBody}}`, '{{data.roleName}}')">Json Output</button>
+                                       </td>
+                                       <td>
+                                           {{data.policyName.replace("\r\n", "<br>") | safe}}
+                                       </td>
+                                       <td>
+                                          {{data.inlinePolicies.replace("\r\n", "<br>") | safe}}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-policies" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/policies.png" width="40px"> <b>IAM Policies <span class="text-muted">(Type: Customer Managed)</span> </b></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-policies" name="displaySearch-policies" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                       Policy Name
+                                       </th>
+                                       <th>
+                                        Details
+                                       </th>
+                                       <th>
+                                        Policy Id
+                                        </th>
+                                       <th>
+                                         Arn
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-policies">
+                                    {% for data in user_data.iam_policies_data %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">
+                                          {{data.policyName}}
+                                          </label>
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('iamroles', `{{data.jsonBody}}`, '{{data.policyName}}')">Json Output</button>
+                                       </td>
+                                       <td>
+                                           {{data.policyId}}
+                                       </td>
+                                       <td>
+                                          {{data.arn}}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+   $(document).ready(function(){
+     $("#displaySearch-iamusers").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-iamusers tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-iamGroups").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-iamGroups tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-policies").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-policies tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-roles").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-roles tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-custom-roles").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-custom-roles tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-app-reg").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-app-reg tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-sp").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-sp tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-cap").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-cap tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+</script>
+{% endblock %}

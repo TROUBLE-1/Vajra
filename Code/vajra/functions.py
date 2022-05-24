@@ -18,17 +18,21 @@
 # The creator takes no responsibility of any mis-use of this tool.
 
 from sqlalchemy.sql.expression import false, true
+from flask_login import current_user
 from vajra import db, bcrypt, sqlite_used, DB_PATH, POSTGRES
 from vajra.models import *
-import sys, os, base64, threading, base64, json, jwt
 from sqlalchemy.sql import text
 from vajra.azure.attacks.phishing import stealerAction, stealing
 from vajra.azure.enumeration.azureAd import azureAdEnum
 from vajra.azure.enumeration.azureAzService import  azureAzServiceEnum
+from vajra.aws.enumeration.enumerate import startEnumerate
+from vajra.aws.enumeration.function import get_client
+from vajra.aws.enumeration.s3Scanner import s3ScannerEnum
 import pandas as pd
-from flask_login import current_user
 import sqlite3 as sqlite
 import psycopg2 as pg
+import sys, os, threading, base64, json, jwt
+from vajra.aws.enumeration.config_review  import startconfigReview
 
 directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
 
@@ -71,7 +75,7 @@ def firstVisitDb(uuid):
         azureStorageAccountConfig(uuid=uuid),
         specificAttackStatus(uuid=uuid),
         AttackStatus(uuid=uuid, phishing="False", spraying="False", bruteforce="False"),
-        enumerationStatus(uuid=uuid, userenum="False", subdomain="False", azureAdEnum="False"),
+        enumerationStatus(uuid=uuid, userenum="False", subdomain="False", azureAdEnum="False")
         ]
     )
     db.session.commit()
@@ -141,6 +145,9 @@ class stolenData():
 
     def getVisitors():
         return Visitors.query.with_entities(Visitors.ip, Visitors.uuid).filter_by(uuid=current_user.id).distinct().count()
+
+    def getAzAPIcount():
+        return Admin.query.filter_by(id=current_user.id).first().azureUsage
 
 def enumeratedData(victim):
     class get():
@@ -632,3 +639,157 @@ def downloadspecificStorageResults():
         sh1.to_excel(writer, sheet_name='Profile', index=False)
 
     return path
+
+
+
+##########################################------------AWS-------------------####################################################
+
+
+def startAWSEnumeration(uuid, form):
+    key = form.key.data
+    secret = form.secret.data
+    session = form.session.data
+    jsonBody = form.json.data
+
+    try:
+        if jsonBody != "":
+            metadata = json.loads(jsonBody)["Credentials"]
+            key = metadata["AccessKeyId"]
+            secret = metadata["SecretAccessKey"]
+            session = metadata["SessionToken"]
+    except:
+        return "error", "Invalid Json"
+    client = get_client(key, secret, session, 'sts', None)
+    # Delete previous data
+    try:
+        Victim_user = client.get_caller_identity()
+        victim = Victim_user["Arn"]
+        userId = Victim_user["UserId"]
+        awsIAMVictims.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsIAMUsers.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsIAMGroups.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsEc2.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsIAMRolePolicies.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsCognitoUserPool.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsS3.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsIAMPolicies.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsLambda.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsEC2SS.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsSecurityGroups.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsVPCs.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsRoute53.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsECR.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsEKS.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsECS.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsCloudFront.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsStorageGateway.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsEFS.query.filter_by(uuid=uuid, victim=victim).delete()
+    except Exception as e:
+        print(e)
+        return "error", "Invalid Credentials"
+    
+    iamVictim = awsIAMVictims(uuid=uuid, victim=victim, userId=userId, key=key, secret=secret, session=session, enumStatus="progress")
+    db.session.add(iamVictim)
+    db.session.commit()
+        
+    threading.Thread(target=startEnumerate, args=(uuid, key, secret, session)).start()
+
+    return "success", "Enumeration started in background!"
+
+
+def startAWSConfigReview(uuid, form):
+
+    access_key = form.key.data
+    secret_key = form.secret.data
+    session_token = form.session.data
+    
+    client = get_client(access_key, secret_key, session_token, 'sts', None)
+    # Delete previous data
+    try:
+        Victim_user = client.get_caller_identity()
+        victim = Victim_user["Arn"]
+        userId = Victim_user["UserId"]
+        aws_config.query.filter_by(uuid=uuid, victim=victim).delete()
+        awsConfigVictims.query.filter_by(uuid=uuid, victim=victim).delete()
+        db.session.commit()
+    except Exception as e:
+        return "error", "Invalid Credentials"
+    
+    ConfigVictim = awsConfigVictims(uuid=uuid, victim=victim, userId=userId, key=access_key, secret=secret_key, session=session_token, configStatus="progress")
+    db.session.add(ConfigVictim)
+
+    db.session.commit()
+    threading.Thread(target=startconfigReview, args=(uuid, victim, access_key, secret_key, session_token)).start()
+
+    return "success", "Misconguration Review Started!"
+
+def downloadAWSconfigAssessmentResults(uuid, victim):
+    if sqlite_used == True:
+        engine = sqlite.connect(DB_PATH)
+    else:
+        engine = pg.connect(POSTGRES)
+
+    path = os.path.join(directory , "AWS_Config_Assessment.xlsx")
+    sh = pd.read_sql_query(f"select checkNo, checkTitle, status, result, arn from aws_config where uuid = '{uuid}' and victim = '{victim}' order by 1", con=engine)
+    with pd.ExcelWriter(path, engine_kwargs={'options': {'strings_to_urls': False}}) as writer:  
+            sh.to_excel(writer, sheet_name='Phished Users', index=False)
+
+    return path
+
+
+def deleteAwsEnumeratediamVictim(uuid, victimId):
+    victim = awsIAMVictims.query.filter_by(uuid=uuid, userId=victimId).first().victim
+    awsIAMVictims.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsIAMUsers.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsIAMGroups.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsEc2.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsIAMRolePolicies.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsCognitoUserPool.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsS3.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsIAMPolicies.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsLambda.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsEC2SS.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsSecurityGroups.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsVPCs.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsRoute53.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsECR.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsEKS.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsECS.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsCloudFront.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsStorageGateway.query.filter_by(uuid=uuid, victim=victim).delete()
+    awsEFS.query.filter_by(uuid=uuid, victim=victim).delete()
+    db.session.commit()
+
+
+def awsiamenumeratedDeleteAll(uuid):
+    awsIAMVictims.query.filter_by(uuid=uuid).delete()
+    awsIAMUsers.query.filter_by(uuid=uuid).delete()
+    awsIAMGroups.query.filter_by(uuid=uuid).delete()
+    awsEc2.query.filter_by(uuid=uuid).delete()
+    awsIAMRolePolicies.query.filter_by(uuid=uuid).delete()
+    awsCognitoUserPool.query.filter_by(uuid=uuid).delete()
+    awsS3.query.filter_by(uuid=uuid).delete()
+    awsIAMPolicies.query.filter_by(uuid=uuid).delete()
+    awsLambda.query.filter_by(uuid=uuid).delete()
+    awsEC2SS.query.filter_by(uuid=uuid).delete()
+    awsSecurityGroups.query.filter_by(uuid=uuid).delete()
+    awsVPCs.query.filter_by(uuid=uuid).delete()
+    awsRoute53.query.filter_by(uuid=uuid).delete()
+    awsECR.query.filter_by(uuid=uuid).delete()
+    awsEKS.query.filter_by(uuid=uuid).delete()
+    awsECS.query.filter_by(uuid=uuid).delete()
+    awsCloudFront.query.filter_by(uuid=uuid).delete()
+    awsStorageGateway.query.filter_by(uuid=uuid).delete()
+    awsEFS.query.filter_by(uuid=uuid).delete()
+    db.session.commit()
+
+
+
+def runS3Scanner(form, file):
+
+    awsS3Scanner.query.filter_by(uuid=current_user.id, name=form.commonWord.data).delete()
+    db.session.commit()
+    db.session.add(awsS3Scanner(uuid=current_user.id, name=form.commonWord.data, permutations=file.decode("utf-8"), progress="progress"))
+    db.session.commit()
+    
+    s3ScannerEnum.start(current_user.id, form.commonWord.data)

@@ -1,0 +1,424 @@
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+   <div class="content-wrapper">
+      <div class="row">
+         <div class="col-sm-12 grid-margin">
+            <div class="home-tab">
+               <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <div id="home-tab" aria-selected="true">
+                     <b>AWS IAM Enumerated Storage Services</b>
+                  </div>
+                  <div class="btn-wrapper">
+                     <a href="{{url_for('downloadAzureAdEnumData', victim='')}}" class="btn btn-outline-dark text-dark me-0"><i class="icon-download"></i>Download All</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-warning fw-bold">
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumeration') }}">Users</a></li>
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumerated_data_navigation', victimId=victimFullData.userId) }}">{{ victim.victim.split("/")[1] }}</a></li>
+               <li class="breadcrumb-item text-dark">Storages</li>
+            </ol>
+         </nav>
+         <div class="col-12 grid-margin">
+            <div class="card">
+               <div class="card-body">
+                  <h4 class="card-title"><u>{{ victim.victim }}</u></h4>
+                  <div class="row">
+                     <div class="col-md-12 mx-auto">
+                        <ul class="nav nav-pills nav-pills-custom" id="pills-tab-custom" role="tablist">
+                           <li class="nav-item">
+                              <a class="nav-link active" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-s3" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/s3.png') }}" width="30px">
+                              S3 Buckets ({{user_data.s3_data | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-ec2SS" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/ec2-snapshots.png') }}" width="30px">
+                              EC2 SnapShots ({{user_data.ec2SS | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-cloudFront" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/CloudFront.png') }}" width="30px">
+                              Cloud Front ({{user_data.cloudFront | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-storageGateway" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/storageGateway.png') }}" width="30px">
+                              Storage Gateway ({{user_data.storageGateway | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                              <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-efs" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/efs.png') }}" width="30px">
+                              EFS ({{user_data.efs | length}})
+                              </a>
+                           </li>
+                        </ul>
+                        <hr>
+                        <div class="tab-content tab-content-custom-pill" id="pills-tabContent-custom">
+
+                        <div class="tab-pane fade active show" id="pills-s3" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/s3.png" width="50px"> <b>S3 Bucket</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-s3" name="displaySearch-s3" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Bucket Name
+                                       </th>
+                                       <th>
+                                          Access
+                                       </th>
+                                       <th>
+                                          ACL
+                                       </th>
+                                       <th>
+                                          Policy
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-s3">
+                                    {% for data in user_data.s3_data %}
+                                    <tr>
+                                       <td>
+                                          {{ data.bucketName }}
+                                       </td>
+                                       <td>
+                                          {% if data.isPublic == "Public" %}
+                                          <label class="badge badge-outline-danger">{{data.isPublic}}</label>
+                                          {% elif data.isPublic == "False" %}
+                                             <label class="badge badge-outline-success">Private</label>
+                                          {% else %} 
+                                             {{data.isPublic}}
+                                          {% endif %}
+                                          
+                                       </td>
+                                       <td>
+                                          {{ data.acl }}
+                                       </td>
+                                       <td>
+                                          {% if data.policy != "" %}
+                                          <button class="btn btn-warning" onclick="showSwal('BucketName', `{{data.policy}}`, '{{data.bucketName}}')">Json Output</button>
+                                          {% endif %}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-ec2SS" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/ec2-snapshots.png" width="50px"> <b>EC2 SnapShots</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-ec2SS" name="displaySearch-ec2SS" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          SnapShot Id
+                                       </th>
+                                       <th>
+                                          Json Output
+                                       </th>
+                                       <th>
+                                          Description
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-s3">
+                                    {% for data in user_data.ec2SS %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">{{ data.SnapshotId }}</label>
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('SnapShot Id', `{{data.jsonBody}}`, '{{data.SnapshotId}}')">Json Output</button>
+                                       </td>
+                                       <td>
+                                          {{ data.Description }}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-cloudFront" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/ec2-snapshots.png" width="50px"> <b>Cloud Front</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-cloudFront" name="displaySearch-cloudFront" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Arn
+                                       </th>
+                                       <th>
+                                          Domain Name
+                                       </th>
+                                       <th>
+                                          Status
+                                       </th>
+                                       <th>
+                                          Json Body
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-cloudFront">
+                                    {% for data in user_data.cloudFront %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">{{ data.ARN }}</label>
+                                       </td>
+                                       <td>
+                                          <label class="badge badge-outline-info"><a href="https://{{ data.DomainName }}" target="_blank" class="text-info">{{ data.DomainName }}</a></label>
+                                       </td>
+                                       <td>
+                                          {{ data.Status }}
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('Arn', `{{data.jsonBody}}`, '{{data.ARN}}')">Json Output</button>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-storageGateway" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/storageGateway.png" width="50px"> <b>Storage Gateway</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-storageGateway" name="displaySearch-storageGateway" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Gateway Name
+                                       </th>
+                                       <th>
+                                          Gateway Id
+                                       </th>
+                                       <th>
+                                          Gateway ARN
+                                       </th>
+                                       <th>
+                                          Gateway Type
+                                       </th>
+                                       <th>
+                                          Ec2Instance Id
+                                       </th>
+                                       <th>
+                                          Ec2Instance Region
+                                       </th>
+                                       <th>
+                                          HostEnvironment
+                                       </th>
+                                       <th>
+                                          json Output
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-storageGateway">
+                                    {% for data in user_data.storageGateway %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">{{ data.SnapshotId }}</label>
+                                       </td>
+                                       <td>
+                                          {{data.GatewayName}}
+                                       </td>
+                                       <td>
+                                          {{data.GatewayId}}
+                                       </td>
+                                       <td>
+                                          {{data.GatewayARN}}
+                                       </td>
+                                       <td>
+                                          {{data.GatewayType}}
+                                       </td>
+                                       <td>
+                                          {{data.Ec2InstanceId}}
+                                       </td>
+                                       <td>
+                                          {{data.Ec2InstanceRegion}}
+                                       </td>
+                                       <td>
+                                          {{data.HostEnvironment}}
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('Gateway Name', `{{data.jsonBody}}`, '{{data.GatewayName}}')">Json Output</button>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-efs" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/efs.png" width="50px"> <b>EC2 SnapShots</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-efs" name="displaySearch-efs" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Name
+                                       </th>
+                                       <th>
+                                          FileSystem Id
+                                       </th>
+                                       <th>
+                                          FileSystem Arn
+                                       </th>
+                                       <th>
+                                          SizeInBytes
+                                       </th>
+                                       <th>
+                                          Json Output
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-efs">
+                                    {% for data in user_data.efs %}
+                                    <tr>
+                                       <td>
+                                          <label class="badge badge-outline-warning">{{ data.Name }}</label>
+                                       </td>
+                                       <td>
+                                          {{ data.FileSystemId }}
+                                       </td>
+                                       <td>
+                                          {{ data.FileSystemArn }}
+                                       </td>
+                                       <td>
+                                          <pre>{{ data.SizeInBytes }}</pre>
+                                       </td>
+                                       <td>
+                                          <button class="btn btn-warning" onclick="showSwal('FileSystem Id', `{{data.jsonBody}}`, '{{data.FileSystemId}}')">Json Output</button>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+   $(document).ready(function(){
+     $("#displaySearch-s3").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-s3 tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-ec2SS").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-ec2SS tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-cloudFront").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-cloudFront tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-storageGateway").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-storageGateway tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-custom-efs").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-efs tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-app-reg").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-app-reg tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-sp").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-sp tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-cap").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-cap tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+</script>
+{% endblock %}

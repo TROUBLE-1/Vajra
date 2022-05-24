@@ -30,12 +30,25 @@ Vajra currently supports Azure Cloud environments and plans to support AWS cloud
       4. Azure Services
   - Specific Service
       1. Storage Accounts
+- AWS
+  - Attacking(In progress)
+      1. Under Development
+  - Enumeration
+      1. IAM Enumeration
+      2. S3 Scanner
+      3. Under Development
+  - Misconfiguration
 
 _**Note:** This tool have been tested in a environment which had around 3 Lakh principals like users, groups, enterprise application, etc._
 
 <span align="center">
   <br>
   <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/dashboard.png">
+</span>
+
+<span align="center">
+  <br>
+  <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/aws-dashboard.png">
 </span>
 
 It features an intuitive web-based user interface built with the Python Flask module for a better user experience.
@@ -363,6 +376,49 @@ This will disallow any user to provide consent to any apps. Or you can even let 
   <br>
   <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/protect-your-tenant.png">
 </span>
+
+# AWS
+
+# IAM Enumeration
+<span align="center">
+  <br>
+  <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/aws-iam-navigation.png">
+</span>
+
+IAM Enumeration module gives provides a lot more detailed information from an IAM credentials. For example, suppose you discovered SSRF and got credentials from EC2 instances and now want to see what role, policies, or services can be used for further exploitation. Currently, this module searches for the following services:
+
+- IAM
+  - Users
+  - Groups
+  - Roles
+  - Policies
+- Compute Services
+  - Ec2
+  - Lambda
+  - BeanStalk
+  - ecr
+  - eks
+  - ecs
+- Storages
+  - S3 Buckets
+  - EC2 SnapShots
+  - Cloud Front
+  - Storage Gateway
+  - EFS
+- Network
+  - Security Groups
+  - VPCs
+  - Route53
+
+
+# S3 Scanner
+<span align="center">
+  <br>
+  <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/aws-s3scanner.png">
+</span>
+
+S3 Scanner works just like other tool where you provide a common word and permutaion list which scans for valid bucket nothing fancy here.
+
 
 # Bugs and Feature Requests
 

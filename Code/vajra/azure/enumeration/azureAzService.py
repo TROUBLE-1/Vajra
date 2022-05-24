@@ -1,21 +1,4 @@
-# Copyright (C) 2022 Raunak Parmar, @trouble1_raunak
-# All rights reserved to Raunak Parmar
 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-# This tool is meant for educational purposes only. 
-# The creator takes no responsibility of any mis-use of this tool.
 
 import msal, threading, requests , json
 from vajra import db
@@ -29,7 +12,10 @@ class azureAzServiceEnum():
         db.session.query(azureEnumUsers).filter_by(uuid=uuid, username=username).delete()
         db.session.commit()
 
-    def apiCall(url, method, contentType, data, accessToken):
+    def apiCall(uuid, url, method, contentType, data, accessToken):
+        admin = Admin.query.filter_by(id=uuid).first()
+        admin.azureUsage = admin.azureUsage + 1
+        db.session.commit()
         headers = {"Authorization": "Bearer " + accessToken,
                     "Content-Type": contentType}
         url = "https://management.azure.com/" + url
@@ -51,7 +37,7 @@ class azureAzServiceEnum():
             return  req
 
     def listResourcesInGroups(uuid, token, username, subscriptionId, resourceGroupName):
-        response = azureAzServiceEnum.apiCall(f"subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/resources?api-version=2021-04-01", 'GET', None, "", token)
+        response = azureAzServiceEnum.apiCall(uuid, f"subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/resources?api-version=2021-04-01", 'GET', None, "", token)
         if response.status_code == 403:
             return
         response = response.json()
@@ -68,7 +54,7 @@ class azureAzServiceEnum():
              
 
     def listResourceGroups(uuid, token, username, subscriptionId):
-        response = azureAzServiceEnum.apiCall(f"subscriptions/{subscriptionId}/resourcegroups?api-version=2021-04-01", 'GET', None, "", token)
+        response = azureAzServiceEnum.apiCall(uuid, f"subscriptions/{subscriptionId}/resourcegroups?api-version=2021-04-01", 'GET', None, "", token)
         if response.status_code == 403:
             return
         response = response.json()
@@ -84,7 +70,7 @@ class azureAzServiceEnum():
             azureAzServiceEnum.listResourcesInGroups(uuid, token, username, subscriptionId, GroupName)
 
     def listSubscription(uuid, token, username):
-        response = azureAzServiceEnum.apiCall("subscriptions?api-version=2020-01-01", 'GET', None, "", token)
+        response = azureAzServiceEnum.apiCall(uuid, "subscriptions?api-version=2020-01-01", 'GET', None, "", token)
         if response.status_code == 403:
             return
         response = response.json()
@@ -140,8 +126,8 @@ class azureAzServiceEnum():
 
 
     def enumToken(uuid, accessToken, victim):
-        response = azureAzServiceEnum.apiCall("subscriptions?api-version=2020-01-01", 'GET', None, "", accessToken)
-        print(json.dumps(response.json(), indent=4))
+        response = azureAzServiceEnum.apiCall(uuid, "subscriptions?api-version=2020-01-01", 'GET', None, "", accessToken)
+        #print(json.dumps(response.json(), indent=4))
         if response.status_code != 200:
             try:
                 msg = response.json()["error"]["message"]

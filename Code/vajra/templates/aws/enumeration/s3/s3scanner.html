@@ -1,0 +1,142 @@
+
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                <div id="home-tab" aria-selected="true">
+                  <b>AWS S3 Bucket Scanner</b>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 grid-margin stretch-card "></div>
+      <div class="row">
+        <div class="col-lg-6 d-flex flex-column">
+           <div class="row flex-grow">
+              <div class="grid-margin stretch-card">
+                 <div class="card card-rounded">
+                    <div class="card-body">
+                       <h4 class="card-title">
+                          S3 Scanner with Permutations combination 
+                       </h4>
+                        <form method="POST" enctype="multipart/form-data">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group">
+                              <div class="col">
+                                {% if form.commonWord.errors %}
+                                {{ form.commonWord(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.commonWord.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                    {{ form.commonWord(class="form-control mb-2 mr-sm-2", style="width:60%") }}
+                                {% endif %}
+                              </div>
+                              {{ form.permutations.label(class="form-control-label") }}
+                               <div class="form-group">
+                                  {% if form.permutations.errors %}
+                                  {{ form.permutations(class="form-control is-invalid") }}
+                                  <div class="invalid-feedback">
+                                     {% for error in form.permutations.errors %}
+                                     <span>{{ error }}</span>
+                                     {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ form.permutations(class="file-upload-browse btn btn-warning") }}
+                                  {% endif %}
+                               </div>
+                            </div>
+                            {{ form.submit(class="btn btn-warning text-dark me-2") }}
+                            <a href="{{url_for('deletes3ScannerAll')}}" class="btn btn-danger text-white me-0">Flush All Data</a>
+                          </form>
+                       </form>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+     </div>
+
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+                <div class="table-responsive fixTableHead " style="max-height: 400px;">
+                    <table class="table table-hover table-bordered table-dark mb-0" >
+                      <thead>
+                        <tr>
+                          <th>
+                            Name
+                           </th>
+                           <th>
+                            View
+                           </th>
+                           <th>
+                            Delete
+                           </th>
+                           <th>
+                             Status
+                           </th>
+                        </tr>
+                     </thead>
+                      <tbody id="table-users">
+                        {% for data in buckets %}
+                        <tr>
+                          <td>
+                            <label class="badge badge-outline-warning text-white">
+                                {{ data.name }}
+                            </label>
+                          </td>
+                          <td>
+                            <a href="{{url_for('lists3ScannerResults', Id=data.temp)}}"><button class="btn btn-warning text-dark">Visit</button></a>
+                          </td>
+                          <td>
+                            <a href="{{url_for('deletes3ScannerSingle', Id=data.temp)}}" type="button" class="btn btn-danger ">
+                            Delete
+                            </a>
+                          </td>
+                         <td>
+                          <div id="{{data.name}}">
+                          {% if data.progress == "progress" %}
+                          
+                          <img class="rotating" src="{{ url_for('static',filename='images/common/inprogres.png') }}" width="40px">
+                          <span style="color: rgb(2, 160, 2);">In Progress</span>
+                          {% elif data.progress == "completed" %}
+                          <img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px">
+                          <span style="color: rgb(0, 197, 247);">Completed</span>
+                          {% endif %}
+                        </div>
+                        </td>
+                        </tr>
+                        <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+                        {% if data.progress == "progress" %}
+                        <script>
+                          setInterval(function(){ 
+                         var xmlHttp = new XMLHttpRequest();
+                         xmlHttp.open( "GET", "{{url_for('gets3ScannerStatus', Id=data.temp)}}", false ); xmlHttp.send( null );
+                         if(xmlHttp.responseText == "completed"){
+                         document.getElementById("{{data.name}}").innerHTML = `<img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px"><span style="color: rgb(0, 197, 247);">Completed</span>`;
+                        }}, 1000);
+                        </script>
+                        {% endif %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+           
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

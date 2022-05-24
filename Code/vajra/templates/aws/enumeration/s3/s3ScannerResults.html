@@ -1,0 +1,57 @@
+{% extends "aws/layout.html" %}
+{% block body %}
+
+  <!-- partial -->
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+            <div class="home-tab">
+              <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <div id="home-tab" aria-selected="true">
+                    <b>AWS S3 Bucket Scanner</b>
+                  </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-12 grid-margin stretch-card "></div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-warning fw-bold">
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enum_s3Scanner') }}">S3 Scanner</a></li>
+               <li class="breadcrumb-item text-dark">{{ name }}</li>
+            </ol>
+         </nav>
+
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-sm-flex align-items-center justify-content-between"><h4>Valid S3 buckets</h4>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered table-dark mb-0">
+                    <thead>
+                      <tr>
+                        <th>Url</th>
+                        <th>Status Code</th>
+                        <th>Content Length</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in valid %}
+                      <tr>
+                        <td>{{ data.split(" ")[0] }}</td>
+                        <td>{{ data.split(" ")[1] }}</td>
+                        <td>{{ data.split(" ")[2] }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

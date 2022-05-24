@@ -1,0 +1,118 @@
+
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                <div id="home-tab" aria-selected="true">
+                  <b>AWS Secuirty Configuration Assessment</b>
+                </div>
+                <div class="btn-wrapper">
+                  <a href="{{url_for('awsconfigReviewResultsdownload', victimId=victim.userId)}}" class="btn btn-warning text-dark me-0"><i class="icon-download"></i>Download Excel</a>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 grid-margin stretch-card "></div>
+      <div class="row">
+        <nav aria-label="breadcrumb">
+           <ol class="breadcrumb bg-warning fw-bold">
+              <li class="breadcrumb-item text-dark"><a href="{{ url_for('awsconfigReview') }}">Users</a></li>
+              <li class="breadcrumb-item text-dark">{{ victim.victim.split("/")[1] }}</li>
+           </ol>
+        </nav>
+     </div>
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-sm-flex align-items-center justify-content-between">
+                <h4><img src="{{ url_for('static',filename='images/aws/icons/config-results.png') }}" width="40px"> <b>Assessment Results:</b></h4>
+                <span style="font-size: large">
+                  <span class="text-success fw-bold">PASS: {{complaint}}</span>
+                  <span class="text-danger fw-bold">Fail: {{nonComplaint}}</span>
+              </span>
+            </div>
+            <div class="form-group">
+              <input class="form-control mb-2 mr-sm-2" id="displaySearch-configreview" name="displaySearch-securityGroups" placeholder="Keywords" type="text" value="">
+           </div>
+            <div class="table-responsive fixTableHead " style="max-height: 500px;">
+              <table class="table table-bordered table-dark mb-0" >
+                <thead>
+                  <tr>
+                    <th>
+                      Check No
+                     </th>
+                     <th>
+                      Check Title
+                     </th>
+                     <th>
+                       Status
+                     </th>
+                     <th>
+                      Results
+                     </th>
+                     <th>
+                      Arn
+                   </th>
+                  </tr>
+               </thead>
+                <tbody id="table-configreview">
+                  {% for data in results %}
+                  {% if  "Non-Compliant" in data.status %}
+                    {% set color = "bg-danger" %}
+                  {% elif "Compliant" in data.status %}
+                    {% set color = "bg-success" %}
+                  {% elif "N/A" in data.status %}  
+                    {% set color = "bg-secondary text-dark" %}
+                  {% elif "AccessDenied" in data.status %}  
+                    {% set color = "bg-secondary text-warning fw-bold" %}
+                  {% endif %}
+                  <tr>
+                    <td class="{{color}}">
+                        {{data.checkNo}}
+                    </td>
+                    <td class="{{color}}">
+                        {{data.checkTitle}}
+                    </td>
+                    <td class="{{color}}">
+                        {{data.status}}
+                    </td>
+                    <td class="{{color}}">
+                      <pre style="max-width:400px">{{data.result}}</pre>
+                  </td>
+                    <td class="{{color}}">
+                        {{data.arn}}
+                   </td>
+                  
+                  </tr>
+                  
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+   $(document).ready(function(){
+     $("#displaySearch-configreview").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-configreview tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+  
+</script>
+
+{% endblock %}

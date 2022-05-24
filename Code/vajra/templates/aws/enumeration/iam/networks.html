@@ -1,0 +1,312 @@
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+   <div class="content-wrapper">
+      <div class="row">
+         <div class="col-sm-12 grid-margin">
+            <div class="home-tab">
+               <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <div id="home-tab" aria-selected="true">
+                     <b>AWS IAM Enumerated Networks Services</b>
+                  </div>
+                  <div class="btn-wrapper">
+                     <a href="{{url_for('downloadAzureAdEnumData', victim='')}}" class="btn btn-outline-dark text-dark me-0"><i class="icon-download"></i>Download All</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-warning fw-bold">
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumeration') }}">Users</a></li>
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumerated_data_navigation', victimId=victimFullData.userId) }}">{{ victim.victim.split("/")[1] }}</a></li>
+               <li class="breadcrumb-item text-dark">Networks</li>
+            </ol>
+         </nav>
+         <div class="col-12 grid-margin">
+            <div class="card">
+               <div class="card-body">
+                  <h4 class="card-title"><u>{{ victim.victim }}</u></h4>
+                  <div class="row">
+                     <div class="col-md-12 mx-auto">
+                        <ul class="nav nav-pills nav-pills-custom" id="pills-tab-custom" role="tablist">
+                           <li class="nav-item">
+                              <a class="nav-link active" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-securityGroups" role="tab" aria-controls="pills-home" aria-selected="false">
+                              <img src="{{ url_for('static',filename='images/aws/icons/securitygroups.png') }}" width="30px">
+                              Security Groups ({{user_data.securityGroups | length}})
+                              </a>
+                           </li>
+                           <li class="nav-item">
+                            <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-vpcs" role="tab" aria-controls="pills-home" aria-selected="false">
+                            <img src="{{ url_for('static',filename='images/aws/icons/vpc.png') }}" width="30px">
+                            VPCs ({{user_data.vpcs | length}})
+                            </a>
+                            </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-route53" role="tab" aria-controls="pills-home" aria-selected="false">
+                            <img src="{{ url_for('static',filename='images/aws/icons/route53.svg') }}" width="30px">
+                            Route53 ({{user_data.route53 | length}})
+                            </a>
+                        </li>
+                        </ul>
+                        <hr>
+                        <div class="tab-content tab-content-custom-pill" id="pills-tabContent-custom">
+
+                        <div class="tab-pane fade active show" id="pills-securityGroups" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                           <div class="d-sm-flex align-items-center justify-content-between">
+                              <h4><img src="/static/images/aws/icons/securitygroups.png" width="50px"> <b>Security Groups</b> <u></u></h4>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control mb-2 mr-sm-2" id="displaySearch-securityGroups" name="displaySearch-securityGroups" placeholder="Keywords" type="text" value="">
+                           </div>
+                           <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                              <table class="table table-hover table-bordered table-dark" >
+                                 <thead>
+                                    <tr>
+                                       <th>
+                                          Group Name
+                                       </th>
+                                       <th>
+                                          Group Id
+                                       </th>
+                                       <th>
+                                          VPC ID
+                                       </th>
+                                       <th>
+                                        Json Output
+                                     </th>
+                                        <th>
+                                          Admin Ports
+                                        </th>
+                                       <th>
+                                          Description
+                                       </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="table-securityGroups">
+                                    {% for data in user_data.securityGroups %}
+                                    <tr>
+                                       <td>
+                                        <label class="badge badge-outline-warning">{{ data.groupName }}</label>
+                                       </td>
+                                       <td>
+                                          {{data.GroupId}}
+                                       </td>
+                                       <td>
+                                          {{ data.vpcId }}
+                                       </td>
+                                       <td>
+                                        <button class="btn btn-warning" onclick="showSwal('Security Group', `{{data.jsonBody}}`, '{{data.GroupId}}')">Json Output</button>
+                                        </td>
+                                       <td style="max-width: 200px;overflow-x: auto;">
+                                        {{ data.adminPorts }}
+                                       </td>
+                                       <td>
+                                        {{ data.Description }}
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-vpcs" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                            <div class="d-sm-flex align-items-center justify-content-between">
+                               <h4><img src="/static/images/aws/icons/vpc.png" width="50px"> <b>VPCs</b> <u></u></h4>
+                            </div>
+                            <div class="form-group">
+                               <input class="form-control mb-2 mr-sm-2" id="displaySearch-vpcs" name="displaySearch-vpcs" placeholder="Keywords" type="text" value="">
+                            </div>
+                            <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                               <table class="table table-hover table-bordered table-dark" >
+                                  <thead>
+                                     <tr>
+                                        <th>
+                                           VPC ID
+                                        </th>
+                                        <th>
+                                            CidrBlock
+                                        </th>
+                                        <th>
+                                            DhcpOptionsId
+                                        </th>
+                                        <th>
+                                            IsDefault
+                                      </th>
+                                         <th>
+                                          Json Output
+                                         </th>
+                                     </tr>
+                                  </thead>
+                                  <tbody id="table-vpcs">
+                                     {% for data in user_data.vpcs %}
+                                     <tr>
+                                        <td>
+                                         <label class="badge badge-outline-warning">{{ data.vpcId }}</label>
+                                        </td>
+                                        <td>
+                                           {{data.CidrBlock}}
+                                        </td>
+                                        <td>
+                                           {{ data.DhcpOptionsId }}
+                                        </td>
+                                        <td>
+                                            {{ data.IsDefault }}
+                                           </td>
+                                        <td>
+                                            <button class="btn btn-warning" onclick="showSwal('VPC ID', `{{data.jsonBody}}`, '{{data.vpcId}}')">Json Output</button>
+                                        </td> 
+                                     </tr>
+                                     {% endfor %}
+                                  </tbody>
+                               </table>
+                            </div>
+                         </div>
+
+                         <div class="tab-pane fade" id="pills-route53" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                            <div class="d-sm-flex align-items-center justify-content-between">
+                               <h4><img src="/static/images/aws/icons/route53.svg" width="50px"> <b>VPCs</b> <u></u></h4>
+                            </div>
+                            <div class="form-group">
+                               <input class="form-control mb-2 mr-sm-2" id="displaySearch-route53" name="displaySearch-route53" placeholder="Keywords" type="text" value="">
+                            </div>
+                            <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                               <table class="table table-hover table-bordered table-dark" >
+                                  <thead>
+                                     <tr>
+                                        <th>
+                                            Hosted Zone Id
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            RecordSets
+                                        </th>
+                                        <th>
+                                            Caller Reference
+                                        </th>
+                                        <th>
+                                            Config
+                                        </th>
+                                        <th>
+                                            Record Set Count
+                                        </th>
+                                     </tr>
+                                  </thead>
+                                  <tbody id="table-route53">
+                                     {% for data in user_data.route53 %}
+                                     <tr>
+                                        <td>
+                                         <label class="badge badge-outline-warning">{{ data.zoneId }}</label>
+                                        </td>
+                                        <td>
+                                           {{data.Name}}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-warning" onclick="showSwal('Route53', `{{data.RecordSets}}`, '{{data.zoneId}}')">Json Output</button>
+                                        </td> 
+                                        <td>
+                                           {{ data.CallerReference }}
+                                        </td>
+                                        <td>
+                                            <pre>{{ data.Config }}</pre>
+                                        </td>
+                                        <td>
+                                            <pre>{{ data.ResourceRecordSetCount }}</pre>
+                                        </td>
+                                     </tr>
+                                     {% endfor %}
+                                  </tbody>
+                               </table>
+                            </div>
+                         </div>
+
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script>
+   $(document).ready(function(){
+     $("#displaySearch-securityGroups").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-securityGroups tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-vpcs").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-vpcs tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-ec2").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-ec2 tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-roles").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-roles tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-custom-roles").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-custom-roles tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-app-reg").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-app-reg tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-sp").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-sp tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+   
+   $(document).ready(function(){
+     $("#displaySearch-cap").on("keyup", function() {
+       var value = $(this).val().toLowerCase();
+       $("#table-cap tr").filter(function() {
+         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+       });
+     });
+   });
+</script>
+{% endblock %}

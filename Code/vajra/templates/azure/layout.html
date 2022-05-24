@@ -18,6 +18,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 This tool is meant for educational purposes only. 
 The creator takes no responsibility of any mis-use of this tool.
 -->
+{% if textColor != "white" %}
+   {% set nav_head_bg = 'style="background-color: #0078d4;border-bottom: 2px solid #ff6803"' %}
+
+{% else %}
+   {% set nav_head_bg = 'style="background-color: #004d88 ;border-bottom: 2px solid #ff6803"' %}
+{% endif %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,38 +55,44 @@ The creator takes no responsibility of any mis-use of this tool.
       <!-- endinject -->
       <link rel="shortcut icon" href="{{ url_for('static',filename='images/favicon.jpg') }}" />
    </head>
+   <style>
+      .lines{
+         border-right: 1px solid #c4c8ca83;
+         
+      }
+   </style>
+
    <body>
       <div class="container-scroller">
          <!-- partial:partials/_navbar.html -->
-         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row ">
-            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start ">
+         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start lines" {{nav_head_bg | safe}}>
                <div class="me-3">
                   <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
-                  <span class="icon-menu"></span>
+                  <span class="icon-menu text-white"></span>
                   </button>
                   </div>
                   <a class="navbar-brand brand-logo text-vajra" href="/">
                      {% if textColor != "white" %}
-                     <h1 style="font-size: 200%;">VAJRA</h1>
+                     <h1 style="font-size: 200%; color: #ffffff;">VAJRA</h1>
                      {% else %}
-                     <h1 style="font-size: 200%;color:#73b4fd;">VAJRA</h1>
+                     <h1 style="font-size: 200%;color:#ffffff;">VAJRA</h1>
                      {% endif %}
                    </a>
                    <a class="navbar-brand  brand-logo-mini" href="index.html">
                      <img class=" rounded-circle" src="{{ url_for('static',filename='images/common/indra_logo.png') }}" alt="logo" />
-                   </a>
-                   
+                  </a>
             </div>
-            <div class="navbar-menu-wrapper d-flex align-items-top">
+            <div class="navbar-menu-wrapper d-flex align-items-top"  {{nav_head_bg | safe}}>
 
                <ul class="navbar-nav ">
                   <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
                      {% if textColor != "white" %}
-                     <h1 class="welcome-text fw-bold"><span style="color:#2e71be;">Azure AD</span> <span style="color:#000000;">Attacking ToolKit</span></h1>
-                     <h3 class="welcome-sub-text"><span style="color:#2e71be;">Your Weapon</span> <span style="color:#000000;">To Cloud</span></h3>
+                     <h1 class="welcome-text fw-bold"><span style="color:#ffffff;">Azure AD</span> <span class="text-dark">Attacking ToolKit</span></h1>
+                     <h3 class="welcome-sub-text fw-bold"><span style="color:rgb(255, 255, 255);">Your Weapon</span> <span class="text-dark">To Cloud</span></h3>
                      {% else %}
-                     <h1 class="welcome-text fw-bold"><span style="color:#73b4fd;">Azure AD</span> <span style="color:#ffffff;">Attacking ToolKit</span></h1>
-                     <h3 class="welcome-sub-text"><span style="color:#73b4fd;">Your Weapon</span> <span style="color:#ffffff;">To Cloud</span></h3>
+                     <h1 class="welcome-text fw-bold"><span style="color:#ffffff;">Azure AD</span> <span class="text-dark">Attacking ToolKit</span></h1>
+                     <h3 class="welcome-sub-text"><span style="color:#ffffff;">Your Weapon</span> <span class="text-dark">To Cloud</span></h3>
                      {% endif %}
                   </li>
                </ul>
@@ -104,6 +116,13 @@ The creator takes no responsibility of any mis-use of this tool.
                         </div>
                     </div>
                   </li>
+                  <!--
+                  <li class="nav-item">
+                     <div>
+                       <p class="statistics-title text-white">API Usage</p>
+                       <h4 class="text-dark"><span id="total-api-call">{{admin.awsUsage + admin.azureUsage}}</span></h4>
+                     </div>
+                  </li> -->
                   <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                      <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                        <img class="img-custom rounded-circle" src="{{ url_for('static',filename='images/common/indra_logo.png') }}" alt="Profile image"> </a>
@@ -117,7 +136,7 @@ The creator takes no responsibility of any mis-use of this tool.
          <!-- partial -->
          <div class="container-fluid page-body-wrapper " >
             <!-- partial:partials/_sidebar.html -->
-            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <nav class="sidebar sidebar-offcanvas lines" id="sidebar">
                <ul class="nav" >
                   <li class="nav-item {{ active }}" >
                      <a class="nav-link" href="{{ url_for('dashboard') }}">
@@ -264,6 +283,12 @@ The creator takes no responsibility of any mis-use of this tool.
                      </a>
                   </li>
                   <li class="nav-item nav-category">Others</li>
+                  <!--<li class="nav-item">
+                     <a class="nav-link" href="{{ url_for('azure_pricing') }}">
+                     <i class="menu-icon mdi mdi-wallet-membership {{textColor}}"></i>
+                     <span class="menu-title">Pricing</span>
+                     </a>
+                  </li>-->
                   <li class="nav-item">
                      <a class="nav-link" href="{{ url_for('contact') }}">
                      <i class="menu-icon mdi mdi-help-circle {{textColor}}"></i>
@@ -351,3 +376,17 @@ The creator takes no responsibility of any mis-use of this tool.
       {% endif %}
    {% endwith %}
 </html>
+
+<script>
+/*
+setInterval(function(){ 
+   var xmlHttp = new XMLHttpRequest();
+   url = '/api/usage';
+   xmlHttp.open( "GET", url, false ); 
+   xmlHttp.send( null );
+   
+   document.getElementById("total-api-call").innerHTML = xmlHttp.responseText;
+
+}, 2000);
+*/
+</script>

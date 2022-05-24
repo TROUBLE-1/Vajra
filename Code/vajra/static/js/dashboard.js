@@ -554,27 +554,21 @@
       var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
       var doughnutPieData = {
         datasets: [{
-          data: [40, 20, 30, 10],
+          data: [20, 30],
           backgroundColor: [
             "#1F3BB3",
             "#FDD0C7",
-            "#52CDFF",
-            "#81DADA"
           ],
           borderColor: [
             "#1F3BB3",
             "#FDD0C7",
-            "#52CDFF",
-            "#81DADA"
           ],
         }],
   
         // These labels appear in the legend and in the tooltips when hovering different arcs
         labels: [
-          'Total',
-          'Net',
-          'Gross',
-          'AVG',
+          'Complaint',
+          'Non Complaint'
         ]
       };
       var doughnutPieOptions = {

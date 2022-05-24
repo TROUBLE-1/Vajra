@@ -16,3 +16,4 @@ flask_bcrypt
 crayons
 psycopg2-binary 
 WTForms==2.3.3
+boto3

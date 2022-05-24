@@ -1,0 +1,151 @@
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+   <div class="content-wrapper">
+      <div class="row">
+         <div class="col-sm-12 grid-margin">
+            <div class="home-tab">
+               <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <div id="home-tab" aria-selected="true">
+                     <b>AWS IAM User Enumerated Data</b>
+                  </div>
+                  <div class="btn-wrapper">
+                     <a href="{{url_for('downloadAzureAdEnumData', victim='')}}" class="btn btn-outline-dark text-dark me-0"><i class="icon-download"></i>Download All</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-warning fw-bold">
+               <li class="breadcrumb-item text-dark"><a href="{{ url_for('aws_enumeration') }}">Users</a></li>
+               <li class="breadcrumb-item text-dark"><a href="">{{ victim.victim.split("/")[1] }}</a></li>
+            </ol>
+         </nav>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 grid-margin" >
+            <div class="card">
+                <div class="card-body">
+                    <div class="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-home-tab-custom">
+                        <div class="d-sm-flex align-items-center justify-content-between">
+                           <h4><img src="/static/images/aws/icons/user.png" width="40px"> <b>Profile: </b> <u></u></h4>
+                        </div>
+                        <div class="table-responsive fixTableHead " style="max-height: 600px;">
+                           <table class="table table-hover table-bordered table-dark" >
+                              <thead>
+                                 <tr>
+                                    <th>
+                                       Victim Username
+                                    </th>
+                                    <th>
+                                     Attached Policy
+                                     </th>
+                                    <th>
+                                       Access Key
+                                    </th>
+                                    <th>
+                                     Key Secret
+                                     </th>
+                                     <th>
+                                       Session Token
+                                     </th>
+                                 </tr>
+                              </thead>
+                              <tbody id="table-iamGroups">
+                                 
+                                 <tr>
+                                    <td>
+                                       <label class="badge badge-outline-warning">
+                                       {{victim.victim}}
+                                       </label>
+                                    </td>
+                                    <td>
+                                       {% if victimFullData != None %}
+                                        {{ victimFullData.attachedUserPolicy.replace("\r\n", "<br>") | safe  }}
+                                       {% endif %}
+                                    </td>
+                                    <td>
+                                       {{victim.key}}
+                                    </td>
+                                    <td>
+                                     {{victim.secret}}
+                                     </td>
+                                     <td>
+                                         {{victim.session}}
+                                     </td>
+                                 </tr>
+                                 
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                </div>
+            </div>
+            </div>
+            <div class="col-md-3 grid-margin">
+               <div class="card d-flex align-items-start">
+                     <a href="{{ url_for('aws_enumerated_data_iam', victimId=victim.userId) }}" style="text-decoration: none;">
+                     <div class="card-body">
+                        <div class="d-flex flex-row align-items-start">
+                           <img src="/static/images/aws/icons/iam.png" width="50px">
+                           <div class="ms-3">
+                                 <h6 style="color: green;"><u>IAM</u></h6>
+                                 <p class="mt-2 text-muted card-text">Users, Groups, Roles, etc</p>
+                           </div>
+                        </div>
+                     </div>
+                  </a>
+               </div>
+            </div>   
+            <div class="col-md-3 grid-margin">
+               <div class="card d-flex align-items-start" >
+                     <a href="{{ url_for('aws_enumerated_data_services', victimId=victim.userId) }}" style="text-decoration: none;">
+                     <div class="card-body">
+                        <div class="d-flex flex-row align-items-start" >
+                           <img src="/static/images/aws/icons/compute-service.png" width="50px">
+                           <div class="ms-3">
+                                 <h6 class="text-warning">&nbsp;&nbsp;&nbsp;<u>Compute Services</u></h6>
+                                 <p class="mt-2 text-muted card-text">&nbsp;&nbsp;&nbsp;EC2, Lambda, ECS, etc</p>
+                           </div>
+                        </div>
+                     </a>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3 grid-margin">
+               <div class="card d-flex align-items-start">
+                     <a href="{{ url_for('aws_enumerated_storage', victimId=victim.userId) }}" style="text-decoration: none;">
+                     <div class="card-body">
+                        <div class="d-flex flex-row align-items-start">
+                           <img src="/static/images/aws/icons/all-storage-icon.png" width="50px">
+                           <div class="ms-3">
+                                 <h6 style="color: green;">&nbsp;&nbsp;&nbsp; <u>Storages</u></h6>
+                                 <p class="mt-2 text-muted card-text">&nbsp;&nbsp;&nbsp; S3, EFS, EBS, Glacier,  etc</p>
+                           </div>
+                        </div>
+                     </div>
+                  </a>
+               </div>
+            </div>
+            <div class="col-md-3 grid-margin">
+               <div class="card d-flex align-items-start">
+                     <a href="{{ url_for('aws_enumerated_networks', victimId=victim.userId) }}" style="text-decoration: none;">
+                     <div class="card-body">
+                        <div class="d-flex flex-row align-items-start">
+                           <img src="/static/images/aws/icons/network.png" width="50px">
+                           <div class="ms-3">
+                                 <h6 style="color: rgb(172, 19, 19);">&nbsp;&nbsp;&nbsp; <u>Networks</u></h6>
+                                 <p class="mt-2 text-muted card-text">&nbsp;&nbsp;&nbsp; API Gateway, CloudFront, VPC, etc</p>
+                           </div>
+                        </div>
+                     </div>
+                  </a>
+               </div>
+            </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

@@ -177,3 +177,20 @@ class storageEnumeration(FlaskForm):
     commonWord = StringField('Common Word', validators=[Length(min=1, max=200)], render_kw={"placeholder": "companyname"})
     permutations = TextAreaField('Paste your permutations list')
     submit = SubmitField("Save")
+
+
+
+##########################################################------AWS-----############################################################################
+
+class awsEnumerate(FlaskForm):
+    key = StringField('Access Key ID', render_kw={"placeholder": "aws_access_key_id"})
+    secret = StringField('Secret Access Key', render_kw={"placeholder": "aws_secret_access_key"})
+    session = StringField('Session Token', render_kw={"placeholder": "aws_session_token"})
+    json = StringField('Json Output from metadata', render_kw={"placeholder": '{ "Credentials": { "AccessKeyId": "AKIAIOSFODNN7EXAMPLE", "SecretAccessKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY", "SessionToken": "AQoEXAMPLEH4........'})
+    submit = SubmitField('Enumerate')
+
+
+class awsEnumerateS3(FlaskForm):
+    commonWord = StringField('Common Word', validators=[DataRequired()], render_kw={"placeholder":"Common Word"})
+    permutations = FileField('Upload your permutations list', validators=[DataRequired()])
+    submit = SubmitField("Run") 

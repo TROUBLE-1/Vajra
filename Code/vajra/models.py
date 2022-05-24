@@ -17,9 +17,6 @@
 # This tool is meant for educational purposes only. 
 # The creator takes no responsibility of any mis-use of this tool.
 
-from email.policy import default
-from enum import unique
-from itertools import permutations
 from vajra import db, login_manager
 from flask_login import UserMixin
 from sqlalchemy.sql import expression
@@ -36,6 +33,8 @@ class Admin(db.Model, UserMixin):
     enableIp = db.Column(db.String(10))
     theme = db.Column(db.String(10))
     ips = db.Column(db.String())
+    awsUsage = db.Column(db.Integer, default=0)
+    azureUsage = db.Column(db.Integer, default=0)
 
 
 class Allusers(db.Model):
@@ -447,3 +446,264 @@ class specificAttackStorageResults(db.Model):
     uuid = db.Column(db.String())
     temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
     valid = db.Column(db.String())
+
+##################################################################################################
+
+class awsIAMVictims(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    userId = db.Column(db.String(), default="")
+    key = db.Column(db.String(), default="")
+    secret = db.Column(db.String(), default="")
+    session = db.Column(db.String(), default="")
+    enumStatus = db.Column(db.String(), default="")
+
+class awsIAMUsers(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    username = db.Column(db.String(), default="")
+    arn = db.Column(db.String(), default="")
+    userId = db.Column(db.String(), default="")
+    createdate = db.Column(db.String(), default="")
+    passwordLastUsed = db.Column(db.String(), default="")
+    groupName = db.Column(db.String(), default="")
+    inlineUserPolicy = db.Column(db.String(), default="")
+    attachedUserPolicy = db.Column(db.String(), default="")
+    Certificates = db.Column(db.String(), default="")
+    sshPublicKey = db.Column(db.String(), default="")
+    MFADevices = db.Column(db.String(), default="")
+    loginProfile = db.Column(db.String(), default="")
+
+
+class awsIAMGroups(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    groupName = db.Column(db.String(), default="")
+    members = db.Column(db.String(), default="")
+    groupId = db.Column(db.String(), default="")
+    arn = db.Column(db.String(), default="")
+    createDate = db.Column(db.String(), default="")
+    policyName = db.Column(db.String(), default="")
+
+
+
+class awsEc2(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    jsonOutput = db.Column(db.String(), default="")
+    instancesId = db.Column(db.String(), default="")
+    instancesState = db.Column(db.String(), default="")
+    instancesType = db.Column(db.String(), default="")
+    statusCheck = db.Column(db.String(), default="")
+    alarmStatus = db.Column(db.String(), default="")
+    availabilityZone = db.Column(db.String(), default="")
+    publicIPv4DNS = db.Column(db.String(), default="")
+    publicIPv4Address = db.Column(db.String(), default="")
+    elasticIP = db.Column(db.String(), default="")
+    ipv6IPs = db.Column(db.String(), default="")
+    monitoring = db.Column(db.String(), default="")
+    securityGroupName = db.Column(db.String(), default="")
+    keyname = db.Column(db.String(), default="")
+    launchTime = db.Column(db.String(), default="")
+
+class awsIAMRolePolicies(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    roleName = db.Column(db.String(), default="")
+    policyName = db.Column(db.String(), default="")
+    inlinePolicies = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+
+class awsIAMPolicies(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    policyName = db.Column(db.String(), default="")
+    policyId = db.Column(db.String(), default="")
+    arn = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+
+class awsCognitoUserPool(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    id = db.Column(db.String(), default="")
+    name = db.Column(db.String(), default="")
+    lambdaConfig = db.Column(db.String(), default="")
+    lastModifiedDate = db.Column(db.String(), default="")
+    creationDate = db.Column(db.String(), default="")
+    json_identity_providers = db.Column(db.String(), default="")
+
+class awsS3(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    bucketName = db.Column(db.String(), default="")
+    isPublic = db.Column(db.String(), default="")
+    acl = db.Column(db.String(), default="")
+    policy = db.Column(db.String(), default="")
+
+
+class awsLambda(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+    functionName = db.Column(db.String(), default="")
+    arn = db.Column(db.String(), default="")
+    runtime = db.Column(db.String(), default="")
+    description = db.Column(db.String(), default="")
+    zipFile =  db.Column(db.String(), default="")
+
+
+class awsEC2SS(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+    Description = db.Column(db.String(), default="")
+    Encrypted = db.Column(db.String(), default="")
+    KmsKeyId = db.Column(db.String(), default="")
+    OwnerId = db.Column(db.String(), default="")
+    Progress = db.Column(db.String(), default="")
+    SnapshotId = db.Column(db.String(), default="")
+    StartTime = db.Column(db.String(), default="")
+    State = db.Column(db.String(), default="")
+    VolumeId = db.Column(db.String(), default="")
+    VolumeSize = db.Column(db.String(), default="")
+
+class awsSecurityGroups(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    groupName = db.Column(db.String(), default="")
+    vpcId = db.Column(db.String(), default="")
+    Description = db.Column(db.String(), default="")
+    GroupId = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+    adminPorts = db.Column(db.String(), default="")
+
+class awsVPCs(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    vpcId = db.Column(db.String())
+    CidrBlock = db.Column(db.String())
+    DhcpOptionsId = db.Column(db.String())
+    IsDefault = db.Column(db.String())
+    jsonBody = db.Column(db.String())
+
+class awsRoute53(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    zoneId = db.Column(db.String())
+    Name = db.Column(db.String())
+    CallerReference = db.Column(db.String())
+    Config = db.Column(db.String())
+    ResourceRecordSetCount = db.Column(db.String())
+    RecordSets = db.Column(db.String())
+
+class awsbeanstalk(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    ApplicationName = db.Column(db.String())
+    DateCreated = db.Column(db.String())
+    jsonOutput  = db.Column(db.String())
+
+
+class awsECR(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    repositoryArn = db.Column(db.String(), default="")
+    registryId = db.Column(db.String(), default="")
+    repositoryName = db.Column(db.String(), default="")
+    repositoryUri = db.Column(db.String(), default="")
+    createdAt = db.Column(db.String(), default="")
+    imageTagMutability = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+
+class awsEKS(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    cluster = db.Column(db.String(), default="")
+
+
+class awsECS(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    clusterArn = db.Column(db.String(), default="")
+
+
+class awsEFS(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    FileSystemId = db.Column(db.String(), default="")
+    FileSystemArn = db.Column(db.String(), default="")
+    CreationTime = db.Column(db.String(), default="")
+    LifeCycleState = db.Column(db.String(), default="")
+    Name = db.Column(db.String(), default="")
+    SizeInBytes = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+
+class awsStorageGateway(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    GatewayId = db.Column(db.String(), default="")
+    GatewayARN = db.Column(db.String(), default="")
+    GatewayType = db.Column(db.String(), default="")
+    GatewayOperationalState = db.Column(db.String(), default="")
+    GatewayName = db.Column(db.String(), default="")
+    Ec2InstanceId = db.Column(db.String(), default="")
+    Ec2InstanceRegion = db.Column(db.String(), default="")
+    HostEnvironment = db.Column(db.String(), default="")
+    HostEnvironmentId = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+
+class awsCloudFront(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    ARN = db.Column(db.String(), default="")
+    DomainName = db.Column(db.String(), default="")
+    Status = db.Column(db.String(), default="")
+    jsonBody = db.Column(db.String(), default="")
+
+class aws_config(db.Model):
+    uuid = db.Column(db.String(), default="")
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    checkNo = db.Column(db.Integer, default="")
+    checkTitle = db.Column(db.String(), default="")
+    status = db.Column(db.String(), default="")
+    result = db.Column(db.String(), default="")
+    arn   = db.Column(db.String(), default="")    
+
+class awsConfigVictims(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    victim = db.Column(db.String(), default="")
+    userId = db.Column(db.String(), default="")
+    key = db.Column(db.String(), default="")
+    secret = db.Column(db.String(), default="")
+    session = db.Column(db.String(), default="")
+    configStatus = db.Column(db.String(), default="")
+
+class awsS3Scanner(db.Model):
+    uuid = db.Column(db.String())
+    temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(), default="")
+    valid = db.Column(db.String(), default="")
+    permutations = db.Column(db.String(), default="")
+    progress = db.Column(db.String(), default="")

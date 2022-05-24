@@ -1,0 +1,145 @@
+
+{% extends "aws/layout.html" %}
+{% block body %}
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                <div id="home-tab" aria-selected="true">
+                  <b>AWS Misconfiguration</b>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 grid-margin stretch-card "></div>
+      <div class="row">
+        <div class="col-lg-12 d-flex flex-column ">
+          <div class="row flex-grow">
+            <div class=" grid-margin stretch-card">
+              <div class="card card-rounded">
+                <div class="card-body ">
+                    <h4 class="card-title">
+                        Review with IAM Keys
+                    </h4>
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group row">
+                          <div class="col">
+                            {% if form.key.errors %}
+                            {{ form.key(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.key.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                {{ form.key(class="form-control mb-2 mr-sm-2") }}
+                            {% endif %}
+                          </div>
+                          <div class="col">
+                            {% if form.secret.errors %}
+                            {{ form.secret(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.secret.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                {{ form.secret(class="form-control mb-2 mr-sm-2") }}
+                            {% endif %}
+                          </div>
+                        </div>
+                        {{ form.submit(class="btn btn-warning text-dark me-2") }}
+                        <a href="{{url_for('aws_enumerated_iam_delete_all')}}" class="btn btn-danger text-white me-0">Flush All Data</a>
+                      </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-sm-flex align-items-center justify-content-between">
+                <h4><img src="{{ url_for('static',filename='images/aws/icons/users.png') }}" width="40px"> <b>Users </b></h4>
+            </div>
+            <div class="table-responsive fixTableHead " style="max-height: 400px;">
+              <table class="table table-hover table-bordered table-dark mb-0" >
+                <thead>
+                  <tr>
+                    <th>
+                      Users
+                     </th>
+                     <th>
+                      View
+                     </th>
+                     <th>
+                       Delete
+                     </th>
+                     <th>
+                      Access Key
+                   </th>
+                   <th>
+                     Scan Status
+                   </th>
+                  </tr>
+               </thead>
+                <tbody id="table-users">
+                  {% for data in victims %}
+                  <tr>
+                    <td>
+                      <label class="badge badge-outline-warning text-white">
+                          {{ data.victim }}
+                      </label>
+                    </td>
+                    <td>
+                      <a href="{{url_for('awsconfigReviewResults', victimId=data.userId)}}"><button class="btn btn-warning text-dark">Visit</button></a>
+                    </td>
+                    <td>
+                      <a href="{{url_for('awsDeleteConfigAssessmentUser', victimId=data.userId)}}" type="button" class="btn btn-danger ">
+                      Delete
+                      </a>
+                    </td>
+                    <td>
+                      {{data.key}}
+                   </td>
+                   <td>
+                    <div id="{{data.key}}">
+                    {% if data.configStatus == "progress" %}
+                    
+                    <img class="rotating" src="{{ url_for('static',filename='images/common/inprogres.png') }}" width="40px">
+                    <span style="color: rgb(2, 160, 2);">In Progress</span>
+                    {% elif data.configStatus == "completed" %}
+                    <img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px">
+                    <span style="color: rgb(0, 197, 247);">Completed</span>
+                    {% endif %}
+                  </div>
+                  </td>
+                  </tr>
+                  <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+                  {% if data.configStatus == "progress" %}
+                  <script>
+                    setInterval(function(){ 
+                   var xmlHttp = new XMLHttpRequest();
+                   xmlHttp.open( "GET", "{{url_for('getConfigStatus', victimId=data.userId)}}", false ); xmlHttp.send( null );
+                   if(xmlHttp.responseText == "completed"){
+                   document.getElementById("{{data.key}}").innerHTML = `<img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px"><span style="color: rgb(0, 197, 247);">Completed</span>`;
+                  }}, 1000);
+                  </script>
+                  {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
