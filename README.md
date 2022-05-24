@@ -379,7 +379,7 @@ This will disallow any user to provide consent to any apps. Or you can even let 
 
 # AWS
 
-# IAM Enumeration
+### IAM Enumeration
 <span align="center">
   <br>
   <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/aws-iam-navigation.png">
@@ -411,7 +411,7 @@ IAM Enumeration module gives provides a lot more detailed information from an IA
   - Route53
 
 
-# S3 Scanner
+### S3 Scanner
 <span align="center">
   <br>
   <img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/aws-s3scanner.png">
