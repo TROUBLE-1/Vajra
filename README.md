@@ -57,12 +57,17 @@ It features an intuitive web-based user interface built with the Python Flask mo
 
 Raunak Parmar works as a senior security engineer. Web/Cloud security, source code review, scripting, and development are some of his interests. Also, familiar with PHP, NodeJs, Python, Ruby, and Java. He is OSWE certified and the author of Vajra and 365-Stealer.
 
+<a target="_blank"><img alt="readme-stats" src="https://github-readme-stats.vercel.app/api?username=trouble-1&show_icons=true&theme=vue-dark"/></a>
+
 ### **Social Media Links**
 
 - Twitter: [https://twitter.com/trouble1\_raunak](https://twitter.com/trouble1_raunak)
 - YouTube: [https://www.youtube.com/channel/UCkJ\_sEF8iUDXPCI3UL0DAcg](https://www.youtube.com/channel/UCkJ_sEF8iUDXPCI3UL0DAcg)
 - Linkedin: [https://www.linkedin.com/in/trouble1raunak/](https://www.linkedin.com/in/trouble1raunak/)
 - GitHub: [https://github.com/TROUBLE-1/](https://github.com/TROUBLE-1/)
+
+
+
 
 # Installation
 
