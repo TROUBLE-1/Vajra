@@ -55,7 +55,9 @@ It features an intuitive web-based user interface built with the Python Flask mo
 
 # **About Author**
 
-Raunak Parmar works as a senior security engineer. Web/Cloud security, source code review, scripting, and development are some of his interests. Also, familiar with PHP, NodeJs, Python, Ruby, and Java. He is OSWE certified and the author of Vajra and 365-Stealer.
+Raunak Parmar is an information security professional whose areas of interest include web penetration testing, Azure/AWS security, source code review, scripting, and development.
+He has 2+ years of experience in information security. Raunak likes to research new attack methodologies and create open-source tools that can be used during the Cloud Security assessments. He has worked extensively on Azure and AWS.
+He is the author of Vajra and 365-Stealer an offsensive cloud security tool. He has spoken in multiple conferences and local meetups.
 
 <a target="_blank"><img alt="readme-stats" src="https://github-readme-stats.vercel.app/api?username=trouble-1&show_icons=true&theme=vue-dark"/></a>
 
