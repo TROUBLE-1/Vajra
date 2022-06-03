@@ -94,13 +94,17 @@ class azureAzServiceEnum():
         for data in response["value"]:
             subscriptionId = data["subscriptionId"]
             azureAzServiceEnum.listResourceGroups(uuid, token, username, subscriptionId)
+        
+        victim = azureEnumUsers.query.filter_by(uuid=uuid, username=username).first()
+        victim.status = "completed"
+        db.session.commit()
             
     
     def enum(uuid, token, username):
         azureAzServiceEnum.flushPreviousdata(uuid, username)
 
         try:
-            db.session.add(azureEnumUsers(uuid=uuid, username=username))
+            db.session.add(azureEnumUsers(uuid=uuid, username=username, status="progress"))
             db.session.commit()
         except Exception as e:
             db.session.rollback()

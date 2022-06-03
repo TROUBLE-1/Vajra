@@ -105,9 +105,11 @@
                      <th>
                       Display name
                      </th>
-                     
                      <th>
                       Action
+                     </th>
+                     <th>
+                       Status
                      </th>
                   </tr>
                </thead>
@@ -131,7 +133,28 @@
                           Delete
                         </a>
                       </td>
-                  </tr>
+                      <td>
+                        <div id="{{data.id}}">
+                          {% if data.enumStatus == "progress" %}
+                          <img class="rotating" src="{{ url_for('static',filename='images/common/inprogres.png') }}" width="40px">
+                          <span style="color: rgb(2, 160, 2);">In Progress</span>
+                          {% elif data.enumStatus == "completed" %}
+                          <img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px">
+                          <span style="color: rgb(0, 197, 247);">Completed</span>
+                          {% endif %}
+                        </div>
+                      </td>
+                  </tr><script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+                  {% if data.enumStatus == "progress" %}
+                  <script>
+                    setInterval(function(){ 
+                   var xmlHttp = new XMLHttpRequest();
+                   xmlHttp.open( "GET", "{{url_for('azureAdEnumStatus', victimId=data.id)}}", false ); xmlHttp.send( null );
+                   if(xmlHttp.responseText == "completed"){
+                   document.getElementById("{{data.id}}").innerHTML = `<img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px"><span style="color: rgb(0, 197, 247);">Completed</span>`;
+                  }}, 1000);
+                  </script>
+                  {% endif %}
                   {% endfor %}
                 </tbody>
               </table>

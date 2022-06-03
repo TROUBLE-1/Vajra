@@ -263,6 +263,7 @@ class azureAdEnumeratedUsers(db.Model):
     surname = db.Column(db.String(100))
     userPrincipalName = db.Column(db.String())
     roles = db.Column(db.String())
+    usersGroups = db.Column(db.String())
 
 class azureAdEnumeratedUserProfile(db.Model):
     uuid = db.Column(db.String())
@@ -280,6 +281,7 @@ class azureAdEnumeratedUserProfile(db.Model):
     userPrincipalName = db.Column(db.String())
     groups = db.Column(db.String())
     accessToken = db.Column(db.String())
+    enumStatus = db.Column(db.String())
 
 class azureAdEnumeratedGroups(db.Model):
     uuid = db.Column(db.String())
@@ -383,6 +385,7 @@ class azureEnumUsers(db.Model):
     temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uuid = db.Column(db.String())
     username = db.Column(db.String())
+    status = db.Column(db.String())
 
 class azureEnumResourcesGroups(db.Model):
     temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -447,7 +450,14 @@ class specificAttackStorageResults(db.Model):
     temp = db.Column(db.Integer, primary_key=True, autoincrement=True)
     valid = db.Column(db.String())
 
-##################################################################################################
+
+
+
+
+
+
+
+#################################      AWS         #################################################################
 
 class awsIAMVictims(db.Model):
     uuid = db.Column(db.String())

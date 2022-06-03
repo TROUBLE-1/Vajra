@@ -43,49 +43,49 @@
                     <li class="nav-item">
                       <a class="nav-link" id="pills-home-tab-custom" data-bs-toggle="pill" href="#pills-Users" role="tab" aria-controls="pills-home" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-users.svg') }}" width="25px">
-                        Users
+                        Users({{ enumerate.azureAdUsersData | length }})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-profile-tab-custom" data-bs-toggle="pill" href="#pills-Groups" role="tab" aria-controls="pills-profile" aria-selected="true">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-groups.svg') }}" width="25spx">
-                        Groups
+                        Groups({{enumerate.azureAdGroupData | length}})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-contact-tab-custom" data-bs-toggle="pill" href="#pills-Devices" role="tab" aria-controls="pills-contact" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-device.svg') }}" width="25px">
-                        Devices
+                        Devices({{enumerate.azureAdDeviceData| length}})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-vibes-tab-custom" data-bs-toggle="pill" href="#pills-Admin-Users" role="tab" aria-controls="pills-contact" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-ad-AdminUsers.svg') }}" width="25px">
-                        Admin Users
+                        Admin Users({{enumerate.azureAdAdminusers|length}})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-Custom-Directory-Roles" role="tab" aria-controls="pills-contact" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-ad-custom-directory-role.png') }}" width="25px">
-                        Custom Directory Roles
+                        Custom Directory Roles({{enumerate.azureAdCustomDirectoryRoles | length}})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-App-Registrations" role="tab" aria-controls="pills-contact" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/Azure-App-Registrations.svg') }}" width="25px"> 
-                        App Registrations
+                        App Registrations({{enumerate.azureAdApplications|length}})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-Service-Principles" role="tab" aria-controls="pills-contact" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-Enterprise-Applications.svg') }}" width="25px">
-                        Service Principles
+                        Service Principles({{enumerate.azureAdServicePrinciple|length}})
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="pills-energy-tab-custom" data-bs-toggle="pill" href="#pills-Conditional-Access-Policy" role="tab" aria-controls="pills-contact" aria-selected="false">
                         <img src="{{ url_for('static',filename='images/azure/logo/azure-conditional-Access.svg') }}" width="25px"> 
-                        Conditional Access Policy
+                        Conditional Access Policy({{enumerate.azureAdConditionalAccessPolicy|length}})
                       </a>
                     </li>
                   </ul>
@@ -181,7 +181,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-Users" role="tabpanel" aria-labelledby="pills-home-tab-custom">
                       <div class="d-sm-flex align-items-center justify-content-between">
-                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-users.svg') }}" width="40px"> <b>Users - {{ count }}</b></h4>
+                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-users.svg') }}" width="40px"> <b>Users {{ enumerate.azureAdUsersData | length }}</b></h4>
                     </div>
                     <div class="form-group">
                       <input class="form-control mb-2 mr-sm-2" id="displaySearch-users" name="displaySearch-users" placeholder="Keywords" type="text" value="">
@@ -196,6 +196,9 @@
                                <th>
                                  Roles
                                </th>
+                               <th>
+                                Groups
+                              </th>
                                <th>
                                 Display Name
                                </th>
@@ -220,6 +223,9 @@
                                   {{ data.roles.replace("\r\n","<br>") | safe }}
                                 </td>
                                 <td>
+                                  {{ data.usersGroups.replace("\r\n","<br>") | safe }}
+                                </td>
+                                <td>
                                   <label class="badge badge-outline-warning">
                                     {{ data.displayName }}
                                 </label>
@@ -241,7 +247,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-Groups" role="tabpanel" aria-labelledby="pills-profile-tab-custom">
                       <div class="d-sm-flex align-items-center justify-content-between">
-                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-groups.svg') }}" width="40px"> <b>Azure Ad Groups</b></h4>
+                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-groups.svg') }}" width="40px"> <b>Azure Ad Groups : {{enumerate.azureAdGroupData | length}}</b></h4>
                     </div>
                     <div class="form-group">
                       <input class="form-control mb-2 mr-sm-2" id="displaySearch-groups" name="displayName" placeholder="Keywords" type="text" value="">
@@ -299,7 +305,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-Devices" role="tabpanel" aria-labelledby="pills-contact-tab-custom">
                       <div class="d-sm-flex align-items-center justify-content-between">
-                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-device.svg') }}" width="40px"> <b>Azure Ad Devices</b></h4>
+                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-device.svg') }}" width="40px"> <b>Azure Ad Devices : {{enumerate.azureAdDeviceData| length}}</b></h4>
                     </div>
                     <div class="form-group">
                       <input class="form-control mb-2 mr-sm-2" id="displaySearch-devices" name="displayName" placeholder="Keywords" type="text" value="">
@@ -358,7 +364,7 @@
                     <div class="tab-pane fade" id="pills-Admin-Users" role="tabpanel" aria-labelledby="pills-vibes-tab-custom">
                       <div class="d-sm-flex justify-content-between align-items-start">
                         <div id="home-tab" aria-selected="true">
-                          <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-ad-AdminUsers.svg') }}" width="40px"><b>Admin Users</b></h4>
+                          <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-ad-AdminUsers.svg') }}" width="40px"><b>Admin Users : {{enumerate.azureAdAdminusers|length}}</b></h4>
                         </div>
                     </div>
                     <div class="form-group">
@@ -384,7 +390,7 @@
                               {{data.adminName}}</label>
                             </td>
                             <td>
-                              {{data.directoryRoleName}}
+                              {{data.directoryRoleName.replace("\r\n", "<br>") | safe}}
                             </td>
                           </tr>
                           {% endfor %}
@@ -395,7 +401,7 @@
                     <div class="tab-pane fade" id="pills-Custom-Directory-Roles" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
                       <div class="d-sm-flex justify-content-between align-items-start">
                         <div id="home-tab" aria-selected="true">
-                          <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-ad-custom-directory-role.png') }}" width="40px"><b>Custom Directory Roles</b></h4>
+                          <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-ad-custom-directory-role.png') }}" width="40px"><b>Custom Directory Roles : {{enumerate.azureAdCustomDirectoryRoles | length}}</b></h4>
                         </div>
                       </div>
                       <div class="form-group">
@@ -436,7 +442,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-App-Registrations" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
                       <div class="d-sm-flex align-items-center justify-content-between">
-                        <h4><img src="{{ url_for('static',filename='images/azure/logo/Azure-App-Registrations.svg') }}" width="40px"> <b>App Registrations</b></h4>
+                        <h4><img src="{{ url_for('static',filename='images/azure/logo/Azure-App-Registrations.svg') }}" width="40px"> <b>App Registrations : {{enumerate.azureAdApplications|length}}</b></h4>
                     </div>
                     <div class="form-group">
                       <input class="form-control mb-2 mr-sm-2" id="displaySearch-app-reg" name="displayName" placeholder="Keywords" type="text" value="">
@@ -496,7 +502,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-Service-Principles" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
                       <div class="d-sm-flex align-items-center justify-content-between">
-                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-Enterprise-Applications.svg') }}" width="40px"><b>Service Principles</b></h4>
+                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-Enterprise-Applications.svg') }}" width="40px"><b>Service Principles : {{enumerate.azureAdServicePrinciple|length}}</b></h4>
                     </div>
                     <div class="form-group">
                       <input class="form-control mb-2 mr-sm-2" id="displaySearch-sp" name="displayName" placeholder="Keywords" type="text" value="">
@@ -573,7 +579,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-Conditional-Access-Policy" role="tabpanel" aria-labelledby="pills-energy-tab-custom">
                       <div class="d-sm-flex align-items-center justify-content-between">
-                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-conditional-Access.svg') }}" width="40px"> <b>Conditional Access Policy</b></h4>
+                        <h4><img src="{{ url_for('static',filename='images/azure/logo/azure-conditional-Access.svg') }}" width="40px"> <b>Conditional Access Policy : {{enumerate.azureAdConditionalAccessPolicy|length}}</b></h4>
                     </div>
                     <div class="form-group">
                       <input class="form-control mb-2 mr-sm-2" id="displaySearch-cap" name="displayName" placeholder="Keywords" type="text" value="">

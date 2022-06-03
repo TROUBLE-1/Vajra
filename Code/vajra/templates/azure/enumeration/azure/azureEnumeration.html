@@ -108,6 +108,9 @@
                      <th>
                        Delete
                      </th>
+                     <th>
+                       Status
+                     </th>
                   </tr>
                </thead>
                 <tbody id="table-users">
@@ -115,11 +118,10 @@
                   
                   <tr>
                     <td>
-                        <a href="{{url_for('azureServicesEnumUserSubscription', username=data.username)}}" class="nav-link text-warning">
-                          <label class="badge badge-outline-info">
-                            <i class="mdi mdi-link-variant"></i> 
+                        <a href="{{url_for('azureServicesEnumUserSubscription', username=data.username)}}" class="nav-link text-info">
+                            <u><i class="mdi mdi-link-variant"></i>
                             {{ data.username }}
-                          </label>
+                            </u>
                         </a> 
                     </td>
                     <td>
@@ -134,7 +136,29 @@
                         Delete
                       </a>
                     </td>
+                    <td>
+                      <div id="{{data.username}}">
+                        {% if data.status == "progress" %}
+                        <img class="rotating" src="{{ url_for('static',filename='images/common/inprogres.png') }}" width="40px">
+                        <span style="color: rgb(2, 160, 2);">In Progress</span>
+                        {% elif data.status == "completed" %}
+                        <img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px">
+                        <span style="color: rgb(0, 197, 247);">Completed</span>
+                        {% endif %}
+                      </div>
+                    </td>
                   </tr>
+                  <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+                  {% if data.status == "progress" %}
+                  <script>
+                    setInterval(function(){ 
+                   var xmlHttp = new XMLHttpRequest();
+                   xmlHttp.open( "GET", "{{url_for('azureEnumStatus', victim=data.username)}}", false ); xmlHttp.send( null );
+                   if(xmlHttp.responseText == "completed"){
+                   document.getElementById("{{data.username}}").innerHTML = `<img src="{{ url_for('static',filename='images/common/completed.png') }}" width="40px"><span style="color: rgb(0, 197, 247);">Completed</span>`;
+                  }}, 1000);
+                  </script>
+                  {% endif %}
                   {% endfor %}
                 </tbody>
               </table>

@@ -547,8 +547,7 @@ def azureAdEnumeration():
 @login_required
 def azureAdEnumerationUsers(victim):
     data = enumeratedData(victim)
-    count = len(data.azureAdUsersData)
-    return render_template("azure/enumeration/azureAd/azureAdEnumeratedUserData.html", enumerate=data, count=count)
+    return render_template("azure/enumeration/azureAd/azureAdEnumeratedUserData.html", enumerate=data)
 
 
 @app.route("/azure/enumeration/AzureAdGroup/<victim>/<groupName>", methods=['GET', 'POST'])
@@ -813,12 +812,19 @@ def deleteLogs(name):
         return redirect(url_for('azure_storage_accounts'))
          
 
-
-@app.route("/pricing")
+@app.route("/azure/enumeration/AzureAdEnumeration/status/<victimId>")
 @login_required
-def azure_pricing():
+def azureAdEnumStatus(victimId):
+    victim = azureAdEnumeratedUserProfile.query.filter_by(uuid=current_user.id, id=victimId).first()
+    return victim.enumStatus
 
-    return render_template("pricing.html")  
+@app.route("/azure/enumeration/AzureEnumeration/status/<victim>")
+@login_required
+def azureEnumStatus(victim):
+    victim = azureEnumUsers.query.filter_by(uuid=current_user.id, username=victim).first()
+    return victim.status
+
+ 
 ################################################################################################################################################
 ################################################################################################################################################
 

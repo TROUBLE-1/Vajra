@@ -6,12 +6,14 @@ from vajra.models import  *
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from vajra.azure.enumeration.roles.applicationPermission import listOfAppRoles
 from vajra.azure.enumeration.roles.adRoles import listAdroles
+from vajra.azure.enumeration.roles.adminRoles import adminRoles, adRoles
+
 
 class azureAdEnum():
     def apiCall(uuid, url, method, contentType, data, accessToken):
-        admin = Admin.query.filter_by(id=uuid).first()
-        admin.azureUsage = admin.azureUsage + 1
-        db.session.commit()
+        #admin = Admin.query.filter_by(id=uuid).first()
+        #admin.azureUsage = admin.azureUsage + 1
+        #db.session.commit();db.session.close()
         headers = {"Authorization": "Bearer " + accessToken,
                     "Content-Type": contentType}
         url = "https://graph.microsoft.com/v1.0" + url
@@ -43,7 +45,7 @@ class azureAdEnum():
         db.session.query(azureAdEnumeratedServicePrinciple).filter_by(uuid=uuid).delete()
         db.session.query(azureAdEnumeratedConditionalAccessPolicy).filter_by(uuid=uuid).delete()
         db.session.query(azureAdEnumeratedUserProfile).filter_by(uuid=uuid).delete()
-        db.session.commit()
+        db.session.commit();db.session.close()
 
     def flushPreviousdata(uuid, victim):
         db.session.query(azureAdEnumeratedUsers).filter_by(uuid=uuid, victim=victim).delete()
@@ -56,56 +58,74 @@ class azureAdEnum():
         db.session.query(azureAdEnumeratedServicePrinciple).filter_by(uuid=uuid, victim=victim).delete()
         db.session.query(azureAdEnumeratedConditionalAccessPolicy).filter_by(uuid=uuid, victim=victim).delete()
         db.session.query(azureAdEnumeratedUserProfile).filter_by(uuid=uuid, victim=victim).delete()
+        db.session.commit();db.session.close()
+
+    def getAdRolesForUser(uuid, accessToken, data, victim):
+        
+        
+        displayName       = data['displayName']
+        givenName         = data['givenName']
+        jobTitle          = data['jobTitle']
+        mail              = data['mail']
+        mobilePhone       = data['mobilePhone']
+        officeLocation    = data['officeLocation']
+        preferredLanguage = data['preferredLanguage']
+        surname           = data['surname']
+        userPrincipalName = data['userPrincipalName']
+        Id                = data['id']
+        response = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{Id}'", 'GET', None, "", accessToken)
+        if response.status_code != 200:
+            return
+        groups = ""
+        usersGroup_res = azureAdEnum.apiCall(uuid, "/users/"+Id+"/memberOf", 'GET', None, "", accessToken).json()
+        for group in usersGroup_res["value"]:
+            try:
+                if group["@odata.type"] == "#microsoft.graph.group":
+                    name  = group["displayName"]
+                    groups = groups + "\r\n" + name
+            except:
+                pass
+        usersGroups       = groups[2:]
+
+        roles = ""
+        response = response.json()
+        for data in response["value"]:
+            id = data["roleDefinitionId"]
+            for search in listAdroles:
+                if id in search["id"]:
+                    roles = roles + "\r\n" + search["role"]
+
+        insertColleagues = azureAdEnumeratedUsers(uuid=uuid,
+                        id=Id,
+                        victim=victim,
+                        displayName=displayName,
+                        givenName=givenName,
+                        jobTitle=jobTitle,
+                        mail=mail, 
+                        mobilePhone=mobilePhone,
+                        officeLocation=officeLocation,
+                        preferredLanguage=preferredLanguage,
+                        surname=surname,
+                        userPrincipalName=userPrincipalName,
+                        roles=roles,
+                        usersGroups=usersGroups)
+        db.session.add(insertColleagues)
+        time.sleep(2)
         db.session.commit()
 
-    def getAdRolesForUser(uuid, accessToken, response, victim):
-        
-        for data in response["value"]:
-            displayName       = data['displayName']
-            givenName         = data['givenName']
-            jobTitle          = data['jobTitle']
-            mail              = data['mail']
-            mobilePhone       = data['mobilePhone']
-            officeLocation    = data['officeLocation']
-            preferredLanguage = data['preferredLanguage']
-            surname           = data['surname']
-            userPrincipalName = data['userPrincipalName']
-            Id                = data['id']
-            response = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{Id}'", 'GET', None, "", accessToken)
-            if response.status_code != 200:
-                return
-                
-            roles = ""
-            response = response.json()
-            for data in response["value"]:
-                id = data["roleDefinitionId"]
-                for search in listAdroles:
-                    if id in search["id"]:
-                        roles = roles + "\r\n" + search["role"]
-
-            insertColleagues = azureAdEnumeratedUsers(uuid=uuid,
-                            id=Id,
-                            victim=victim,
-                            displayName=displayName,
-                            givenName=givenName,
-                            jobTitle=jobTitle,
-                            mail=mail, 
-                            mobilePhone=mobilePhone,
-                            officeLocation=officeLocation,
-                            preferredLanguage=preferredLanguage,
-                            surname=surname,
-                            userPrincipalName=userPrincipalName,
-                            roles=roles)
-            db.session.add(insertColleagues)
-            db.session.commit()
 
     def listusers(uuid, accessToken, victim, endpoint):
         response = azureAdEnum.apiCall(uuid, endpoint, 'GET', None, "", accessToken)
         if response.status_code != 200:
             return
         response = response.json()
-        
-        threading.Thread(target=azureAdEnum.getAdRolesForUser, args=(uuid, accessToken, response, victim)).start()
+        processes = []
+        with ThreadPoolExecutor(max_workers=50) as executor:
+            for data in response["value"]:
+                processes.append(executor.submit(azureAdEnum.getAdRolesForUser, uuid, accessToken, data, victim))
+                  
+        for task in as_completed(processes):
+            (task.result())
 
         if "@odata.nextLink" in response:
             endpoint = response["@odata.nextLink"].split("/v1.0")[1]
@@ -153,7 +173,7 @@ class azureAdEnum():
                 print(json.dumps(response["value"], indent=4))
 
         try:
-            db.session.commit()
+            db.session.commit();db.session.close()
         except:
             db.session.rollback()
 
@@ -193,7 +213,8 @@ class azureAdEnum():
             print("listgroupsThread=> " + str(e))
 
         try:
-            db.session.commit()
+            time.sleep(2)
+            db.session.commit();db.session.close()
         except:
             db.session.rollback()
   
@@ -205,7 +226,7 @@ class azureAdEnum():
         response = response.json()
 
         processes = []
-        with ThreadPoolExecutor(max_workers=500) as executor:
+        with ThreadPoolExecutor(max_workers=100) as executor:
             for data in response["value"]:
                 processes.append(executor.submit(azureAdEnum.listGroupsThread, data, accessToken, victim, uuid))
                   
@@ -248,41 +269,50 @@ class azureAdEnum():
             except Exception as e:
                 print("ListAzureDevices" + str(e))
         try:
-            db.session.commit()
+            db.session.commit();db.session.close()
         except:
             db.session.rollback()
         if "@odata.nextLink" in response:
             endpoint = response["@odata.nextLink"].split("/v1.0")[1]
             azureAdEnum.listAzureDevices(uuid, accessToken, victim, endpoint)
 
-    def listAdminUsers(uuid, accessToken, victim):
-        response = azureAdEnum.apiCall(uuid, "/directoryRoles", 'GET', None, "", accessToken)
+    def listAdminUsers(uuid, accessToken, victim, endpoint):
+        response = azureAdEnum.apiCall(uuid, endpoint, 'GET', None, "", accessToken)
         if response.status_code != 200:
             return
         response = response.json()
-        with ThreadPoolExecutor(max_workers=20) as executor: 
-            for data in response["value"]:
-                if "Admin" in data["displayName"]:
-                    id = data["id"]
-                    roleName = data["displayName"]
-                    response1 = azureAdEnum.apiCall(uuid, f"/directoryRoles/{id}/members", 'GET', None, "", accessToken).json()
 
-                    try:
-                        for data in response1["value"]:
-                            if data['@odata.type'] == "#microsoft.graph.user":
-                                adminName = data['userPrincipalName']
-                            elif data['@odata.type'] == "#microsoft.graph.group":
-                                adminName = data['displayName'] + " (Group)"
-                            else:
-                                adminName = data['displayName'] + "( " +data['@odata.type']  + " )"
+        def adminusers(uuid, victim, user, accessToken, endpoint):
+#            print(user["userPrincipalName"])
+            id = user["id"]
+            adminroles = []
+            assignments = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{id}'", 'GET', None, "", accessToken).json()
+            for role in assignments["value"]:
+                roleDefinitionId = role["roleDefinitionId"]
+                if roleDefinitionId in adminRoles:
+                    adminroles.append(adRoles[roleDefinitionId] + " : " + roleDefinitionId)
 
-                            db.session.add(azureAdEnumeratedAdmins(uuid=uuid, victim=victim, directoryRoleName=roleName, adminName=adminName))
-                    except Exception as e:
-                        print("listAdminusers 1" + str(e))
-                        pass
+            if adminroles != []:
+                adminName = user['userPrincipalName']
+                roleName = "\r\n".join(adminroles)
 
-    
+                db.session.add(azureAdEnumeratedAdmins(uuid=uuid, victim=victim, directoryRoleName=roleName, adminName=adminName))
+                db.session.commit();db.session.close()
+            
+        processes = []
+        with ThreadPoolExecutor(max_workers=10) as executor: 
+            for user in response["value"]:
+                processes.append(executor.submit(adminusers, uuid, victim, user, accessToken, endpoint))
+        for task in as_completed(processes):
+            (task.result())
+
         db.session.commit()
+        
+        db.session.commit();db.session.close()
+        if "@odata.nextLink" in response:
+            endpoint = response["@odata.nextLink"].split("/v1.0")[1]
+            azureAdEnum.listAdminUsers(uuid, accessToken, victim, endpoint)
+
 
     def listCustomDirectoryroles(uuid, accessToken, victim):
         response = azureAdEnum.apiCall(uuid, "/roleManagement/directory/roleDefinitions?$filter=(isBuiltIn+eq+false)", 'GET', None, "", accessToken)
@@ -300,7 +330,7 @@ class azureAdEnum():
                 print("listCustomDirectoryroles => " + str(e))
                 break
         
-        db.session.commit()
+        db.session.commit();db.session.close()
 
     def listApplication(uuid, accessToken, victim, endpoint):
         response = azureAdEnum.apiCall(uuid, endpoint, 'GET', None, "", accessToken)
@@ -334,7 +364,7 @@ class azureAdEnum():
                 print("listApplication => " + str(e))
                 pass
 
-        db.session.commit()
+        db.session.commit();db.session.close()
         if "@odata.nextLink" in response:
             endpoint = response["@odata.nextLink"].split("/v1.0")[1]
             azureAdEnum.listApplication(uuid, accessToken, victim, endpoint)
@@ -369,7 +399,7 @@ class azureAdEnum():
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 print(exc_type, fname, exc_tb.tb_lineno)
-        db.session.commit()
+        db.session.commit();db.session.close()
         if "@odata.nextLink" in response:
             endpoint = response["@odata.nextLink"].split("/v1.0")[1]
             azureAdEnum.listServicePrinciples(uuid, token, victim, endpoint)
@@ -405,7 +435,7 @@ class azureAdEnum():
             except Exception as e:
                 print("listConditonalAccessPolicies " + str(e))
 
-        db.session.commit()
+        db.session.commit();db.session.close()
 
     def userProfile(uuid, token, victim):
         profile_res = azureAdEnum.apiCall(uuid, "/me", 'GET', None, "", token).json()
@@ -442,24 +472,22 @@ class azureAdEnum():
                         preferredLanguage=preferredLanguage,
                         surname=surname,
                         userPrincipalName=userPrincipalName,
-                        accessToken=token
+                        accessToken=token,
+                        enumStatus="progress"
                         )
         
         db.session.add(insertProfile)
         
-        db.session.commit()
+        db.session.commit();db.session.close()
 
         
 
     def enum(uuid, token, victim):
-        print("started")
-        azureAdEnum.flushPreviousdata(uuid, victim)
-        azureAdEnum.userProfile(uuid, token, victim)
-
+        
         ps1 = threading.Thread(target=azureAdEnum.listusers, name="users", args=(uuid, token, victim, "/users?$top=999"))
         ps2 = threading.Thread(target=azureAdEnum.listApplication, name="Applications", args=(uuid, token, victim, "/applications?$top=999"))
         ps3 = threading.Thread(target=azureAdEnum.listAzureDevices, name="device", args=(uuid, token, victim, "/devices?$top=999"))
-        ps4 = threading.Thread(target=azureAdEnum.listAdminUsers, name="Admin Users", args=(uuid, token, victim))
+        ps4 = threading.Thread(target=azureAdEnum.listAdminUsers, name="Admin Users", args=(uuid, token, victim, "/users?$top=999"))
         ps5 = threading.Thread(target=azureAdEnum.listCustomDirectoryroles, name="Custom Directory Roles", args=(uuid, token, victim))
         ps6 = threading.Thread(target=azureAdEnum.listServicePrinciples, name="Service Principle", args=(uuid, token, victim, "/servicePrincipals?$top=999"))
         ps7 = threading.Thread(target=azureAdEnum.listConditonalAccessPolicies, name="Conditional Access Policies", args=(uuid, token, victim))
@@ -483,7 +511,9 @@ class azureAdEnum():
         ps7.join()
         ps8.join()
 
-        print("Done")
+        victim = azureAdEnumeratedUserProfile.query.filter_by(uuid=uuid, victim=victim).first()
+        victim.enumStatus = "completed"
+        db.session.commit();db.session.close()        
 
 
     def enumCred(uuid, username, password, clientId):
@@ -492,6 +522,8 @@ class azureAdEnum():
         app = msal.ClientApplication(clientId, authority="https://login.microsoftonline.com/organizations")
         result = app.acquire_token_by_username_password(username, password, scopes=[])
         try:
+            azureAdEnum.flushPreviousdata(uuid, username)
+            azureAdEnum.userProfile(uuid, result["access_token"], username)
             threading.Thread(target=azureAdEnum.enum, args=(uuid, result["access_token"], username)).start()
             time.sleep(3)
             return "success", "Enumeration running in background please refresh the page after few seconds."
@@ -509,6 +541,9 @@ class azureAdEnum():
         except:
             return "error", "Access Token Expired!"
         try:
+            print("started")
+            azureAdEnum.flushPreviousdata(uuid, victim)
+            azureAdEnum.userProfile(uuid, accessToken, victim)
             threading.Thread(target=azureAdEnum.enum, args=(uuid, accessToken, victim)).start()
             return "success", "Enumeration running in background please refresh the page after few seconds."
         except:

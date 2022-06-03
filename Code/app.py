@@ -21,6 +21,6 @@ from vajra import app, context
 
 if '__main__' == __name__:
     
-    app.run(port=80, host="0.0.0.0", debug=False)                                     # For HTTP
+    app.run(port=80, host="0.0.0.0", debug=True)                                     # For HTTP
     
     #app.run(port=443, host="0.0.0.0", debug=True, ssl_context=context)  # For HTTPS
