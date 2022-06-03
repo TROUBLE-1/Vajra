@@ -13,7 +13,7 @@ Vajra is a UI based tool with multiple techniques for attacking and enumerating 
 
 The term Vajra refers to the Weapon of God Indra in Indian mythology (God of Thunder &amp; Storms). Its connection to the cloud makes it a perfect name for the tool.
 
-Vajra currently supports Azure Cloud environments and plans to support AWS cloud environments and some OSINT in the future.
+Vajra presently supports Azure and AWS Cloud environments, with plans to add support for Google Cloud Platform and certain OSINT in the future.
 
 **Following features are available at the moment:**
 
