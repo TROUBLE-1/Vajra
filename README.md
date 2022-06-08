@@ -62,7 +62,7 @@ Raunak Parmar is an information security professional whose areas of interest in
 
 He has 2+ years of experience in information security. Raunak likes to research new attack methodologies and create open-source tools that can be used during the Cloud Security assessments. He has worked extensively on Azure and AWS.
 
-He is the author of [Vajra](https://github.com/TROUBLE-1/Vajra) and [365-Stealer](https://github.com/AlteredSecurity/365-Stealer) an offsensive cloud security tool. He has spoken in multiple conferences and local meetups.
+He is the author of [Vajra](https://github.com/TROUBLE-1/Vajra) and [365-Stealer](https://github.com/AlteredSecurity/365-Stealer) an offensive cloud security tool. He has spoken in multiple conferences and local meetups.
 
 <a target="_blank"><img alt="readme-stats" src="https://github-readme-stats.vercel.app/api?username=trouble-1&show_icons=true&theme=vue-dark"/></a>
 
@@ -80,6 +80,19 @@ He is the author of [Vajra](https://github.com/TROUBLE-1/Vajra) and [365-Stealer
 <!--
 Install postgres database with credential postgres/postgres and create a database name vajra. If postgres is not installed then by default sqlite will be used.
 --->
+## Docker
+
+Pull the image file from dockerhub
+```
+docker pull tr0uble1/vajra   
+```
+Run Vajra with following and navigate to http://localhost
+```
+docker run -p 80:80 -d tr0uble1/vajra
+```
+
+## Manually
+
 Run the following command to install all the modules.
 
 ```
@@ -90,6 +103,7 @@ Once installed run the following to start the application.
 ```
 python app.py
 ```
+
 
 ## How to use Vajra?
 
