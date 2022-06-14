@@ -1132,7 +1132,7 @@ def network(uuid, victim, access_key, secret_key, session_token):
 
     def check4_1(uuid, victim, access_key, secret_key, session_token):
         checkNo = 4.1
-        checkTitle = "Ensure credentials unused for 90 days or greater are disabled"
+        checkTitle = "Ensure no security groups allow ingress from 0.0.0.0/0 to remote server administration ports"
         client = get_client(access_key, secret_key, session_token, "ec2", None)        
         try:
             security_groups = client.describe_security_groups()
