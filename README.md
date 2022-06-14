@@ -15,7 +15,9 @@
 
 <br>
 <p align="center">
-  <a href="https://github.com/TROUBLE-1/Vajra/"><img src="https://github.com/TROUBLE-1/Vajra/raw/main/images/demon.png"></a>
+  <a href="https://github.com/TROUBLE-1/Vajra/">
+    <img src="https://media3.giphy.com/media/pZOMvUVfVKJWP05Kww/giphy.gif"  width="750" >
+  </a>
 </p>
 
 
