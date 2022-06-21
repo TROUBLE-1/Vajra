@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Added Groups Column for Azure Ad users list
   - This will show all the groups of a user
 - Better results for Admin users in Azure Ad Enum
+- Tmp folder not found issue fixed
  
 ## 2.0
 
