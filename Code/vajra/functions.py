@@ -35,6 +35,10 @@ import sys, os, threading, base64, json, jwt
 from vajra.aws.enumeration.config_review  import startconfigReview
 
 directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
+try:
+    os.stat(directory)
+except:
+    os.mkdir(directory)
 
 class thread_with_trace(threading.Thread):
   def __init__(self, *args, **keywords):
