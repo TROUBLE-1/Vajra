@@ -23,6 +23,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 import os, crayons, requests, crayons, time
 import psycopg2 as pg
+from flask_socketio import SocketIO, emit
 
 POSTGRES = "postgresql://postgres:postgres@localhost/vqajra"
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -30,11 +31,13 @@ DB_PATH = os.path.join(BASE_PATH , "site.db")
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '465465465*##4asd/4$65436t&#73457DGH:34634sfgsadgAH"6@&||@^&'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-sqlite_used = True
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
+
+socketio = SocketIO(app, async_mode="threading")
+
+sqlite_used = True
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)

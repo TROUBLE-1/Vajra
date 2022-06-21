@@ -17,10 +17,10 @@
 # This tool is meant for educational purposes only. 
 # The creator takes no responsibility of any mis-use of this tool.
 
-from vajra import app, context
+from vajra import app, context, socketio
 
 if '__main__' == __name__:
-    
-    app.run(port=80, host="0.0.0.0", debug=False)                                     # For HTTP
+    socketio.run(app, host='0.0.0.0', port=80, debug=True)
+    #app.run(port=80, host="0.0.0.0", debug=False)                                     # For HTTP
     
     #app.run(port=443, host="0.0.0.0", debug=True, ssl_context=context)  # For HTTPS

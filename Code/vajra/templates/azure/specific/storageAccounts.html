@@ -80,9 +80,7 @@
                         <h3 class="card-title text-success">Storage enumeration Logs</h3>
 
                         <div id="display_log" class="text-warning " style="position: absolute;">
-                          {% for log in logs %}
-                           {{ log.message | safe }}
-                        {% endfor %}
+                       
                         </div>                              
                       </div>
                     </div>
@@ -127,5 +125,25 @@
       </div>
     </div>
   </div>
+  
+
+  <script src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/socket.io.min.js') }}"></script>
+
+  <script type="text/javascript" charset="utf-8">
+      var socket;
+      $(document).ready(function(){
+          socket = io.connect('http://' + document.domain + ':' + location.port + '/logs');
+          socket.on('connect', function() {
+              socket.emit('joined', {});
+          });
+          socket.on('message', function(data) {
+              $("#display_log").html("<pre>"+data.msg+"</pre>");
+          });
+          socket.emit('logging', {'type': 'specificAttackStorageLog'});
+      });
+
+  </script>
+
 {% endblock %}
 

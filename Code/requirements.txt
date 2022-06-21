@@ -17,3 +17,9 @@ crayons
 psycopg2-binary 
 WTForms==2.3.3
 boto3
+werkzeug==2.0.3
+python-engineio==4.0.0
+python-socketio==5.0.4
+Flask==1.1.2
+Flask-Session==0.3.2
+Flask-SocketIO==5.0.1

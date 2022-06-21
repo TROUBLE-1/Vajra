@@ -17,10 +17,10 @@
 # This tool is meant for educational purposes only. 
 # The creator takes no responsibility of any mis-use of this tool.
 
-from flask import render_template, request, send_file, url_for, flash, abort
+from flask import render_template, request, send_file, url_for, flash, abort, Response
+from numpy import append
 from werkzeug.utils import redirect
-from vajra import app, db, bcrypt
-from vajra.aws.enumeration.storages import storageGateway
+from vajra import app, db, bcrypt, socketio, emit
 from vajra.azure.attacks.phishing import stealerAction, sprayingResult
 from vajra.azure.attacks.spraying import sprayingAttack
 from vajra.azure.specific.storageAccounts import storageEnum
@@ -32,9 +32,9 @@ from vajra.functions import *
 from vajra.models import *
 from sqlalchemy.sql import text
 from flask_login import login_user, current_user, logout_user, login_required
-import flask, threading, uuid
 from datetime import datetime
 from vajra.functions import directory
+import flask, threading, uuid, time
 
 db.create_all()
 
@@ -305,7 +305,10 @@ def sprayingStart(action):
         ps.start()
         
     if action == "stop":
-        db.engine.execute(text("UPDATE attack_status SET id = 1, spraying ='False' WHERE uuid = :uuid"), uuid=current_user.id)
+        attack_status = AttackStatus.query.filter_by(uuid=current_user.id).first()
+        attack_status.spraying = "False"
+        db.session.commit
+        db.engine.execute(text("UPDATE attack_status SET spraying ='False' WHERE uuid = :uuid"), uuid=current_user.id)
         try:
             ps.kill()
             ps.join()
@@ -824,7 +827,82 @@ def azureEnumStatus(victim):
     victim = azureEnumUsers.query.filter_by(uuid=current_user.id, username=victim).first()
     return victim.status
 
- 
+@app.route("/azure/enumeration/logs")
+@login_required
+def azurelogs():
+    return render_template("log.html")
+
+
+@socketio.on('logging', namespace='/logs')
+@login_required
+def command(log):
+    
+    if log['type'] == "spray":
+        while True:
+            spraylogs = sprayingLogs.query.filter_by(uuid=current_user.id).order_by(sprayingLogs.temp.desc()).all()
+            logs = []
+            for data in spraylogs:
+                logs.append(data.message)
+            spraylogs = "".join(logs)
+
+            emit('message', {'msg': spraylogs})
+            time.sleep(1)
+    
+    if log['type'] == "bruteforce":
+        while True:
+            brutelogs = bruteforceLogs.query.filter_by(uuid=current_user.id).order_by(bruteforceLogs.temp.desc()).all()
+            logs = []
+            for data in brutelogs:
+                logs.append(data.message)
+            brutelogs = "".join(logs)
+
+            emit('message', {'msg': brutelogs})
+            time.sleep(1)
+
+    if log['type'] == "phishing":
+        while True:
+            phishlogs = phishingLogs.query.filter_by(uuid=current_user.id).order_by(phishingLogs.temp.desc()).all()
+            logs = []
+            for data in phishlogs:
+                logs.append(data.message)
+            phishlogs = "".join(logs)
+
+            emit('message', {'msg': phishlogs})
+            time.sleep(1)
+
+    if log['type'] == "userenum":
+        while True:
+            phishlogs = userenumLogs.query.filter_by(uuid=current_user.id).order_by(userenumLogs.temp.desc()).all()
+            logs = []
+            for data in phishlogs:
+                logs.append(data.message)
+            phishlogs = "".join(logs)
+
+            emit('message', {'msg': phishlogs})
+            time.sleep(1)
+    
+    if log['type'] == "subdomainlogs":
+        while True:
+            phishlogs = subdomainLogs.query.filter_by(uuid=current_user.id).order_by(subdomainLogs.temp.desc()).all()
+            logs = []
+            for data in phishlogs:
+                logs.append(data.message)
+            phishlogs = "".join(logs)
+
+            emit('message', {'msg': phishlogs})
+            time.sleep(1)
+
+    if log['type'] == "specificAttackStorageLog":
+        while True:
+            phishlogs = subdomainLogs.query.filter_by(uuid=current_user.id).order_by(subdomainLogs.temp.desc()).all()
+            logs = []
+            for data in phishlogs:
+                logs.append(data.message)
+            phishlogs = "".join(logs)
+
+            emit('message', {'msg': phishlogs})
+            time.sleep(1)
+
 ################################################################################################################################################
 ################################################################################################################################################
 

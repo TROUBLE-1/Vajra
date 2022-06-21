@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 <br>
 
+## 2.2
+ - Live Logs feature added via websockets for Azure
+
+
 ## 2.1
 
 - Performance improvement in Azure Ad enumeration

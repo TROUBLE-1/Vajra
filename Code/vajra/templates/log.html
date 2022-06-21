@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>Sockets</title>
+        <style>
+
+            #output{
+                background-color: black;
+                color: white;
+                overflow: auto;
+                height:80%;
+            }
+            #text{
+                position: absolute;
+                width: 100%;
+                background: greenyellow;
+            }
+        </style>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket;
+            $(document).ready(function(){
+                socket = io.connect('http://' + document.domain + ':' + location.port + '/command');
+                socket.on('connect', function() {
+                    socket.emit('joined', {});
+                });
+                socket.on('message', function(data) {
+                    $("#output").append("<pre>"+data.msg+"</pre>");
+                    $('#output').scrollTop($('#output')[0].scrollHeight);
+
+                });
+                socket.on('status', function(data) {
+                    $('#output').val($('#output').val() + '<' + data.msg + '>\n');
+                    $('#output').scrollTop($('#output')[0].scrollHeight);
+                });
+                $("input").each(function(){
+                    $(this).focus(function(){$.scrollTo('+=10px');});
+                }); 
+                
+                socket.emit('spraying', {'msg': 'test'});
+            });
+            
+        </script>
+    </head>
+    <body>
+        <h1>Sockets</h1>
+        <div id="output">Welcome</div>
+        <input id="text" placeholder="Powershell commands" autofocus><br><br>
+    </body>
+</html>
