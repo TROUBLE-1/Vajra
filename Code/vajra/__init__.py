@@ -37,6 +37,11 @@ app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
 socketio = SocketIO(app, async_mode="threading")
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+
 sqlite_used = True
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)

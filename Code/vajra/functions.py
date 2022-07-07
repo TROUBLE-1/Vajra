@@ -272,6 +272,7 @@ def insertBruteforceConfig(form):
     passList = form.passwordList.data
     bruteforceConfig.query.filter_by(uuid = current_user.id).delete()
     db.session.commit()
+    db.session.rollback()
     if form.usernameListFile.data:
         userList = userList + "\r\n" +form.usernameListFile.data.read().decode("utf-8")
 

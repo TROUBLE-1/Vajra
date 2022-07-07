@@ -4,7 +4,7 @@ import adal
 from sqlalchemy.sql.expression import false, true
 from vajra import db
 from sqlalchemy.sql import text
-from vajra.models import AddedVictims, StealerConfig, sprayingConfig, sprayingLogs, sprayingResult, Allusers
+from vajra.models import AddedVictims, StealerConfig, sprayingConfig, sprayingLogs, sprayingResult, Allusers, AttackStatus
 
 
 class sprayingAttack():
@@ -46,7 +46,10 @@ class sprayingAttack():
                 
                 
     def startAttack(uuid):
-        db.engine.execute(text("UPDATE attack_status SET spraying ='True' WHERE uuid = :uuid"), uuid=uuid)
+        #db.engine.execute(text("UPDATE attack_status SET spraying ='True' WHERE uuid = :uuid"), uuid=uuid)
+        attack_status = AttackStatus.query.filter_by(uuid=uuid).first()
+        attack_status.spraying = "True"
+        db.session.commit()
         endpoints = [
             ["aad_graph_api", "https://graph.windows.net"],
             ["ms_graph_api", "https://graph.microsoft.com"],
@@ -102,4 +105,7 @@ class sprayingAttack():
                 db.session.commit()
                 res = sprayingAttack.spray(uuid, password, endpoint, victim)
 
-        db.engine.execute(text("UPDATE attack_status SET spraying ='False' WHERE uuid = :uuid"), uuid=uuid)
+#        db.engine.execute(text("UPDATE attack_status SET spraying ='False' WHERE uuid = :uuid"), uuid=uuid)
+        attack_status = AttackStatus.query.filter_by(uuid=uuid).first()
+        attack_status.spraying = "False"
+        db.session.commit()
