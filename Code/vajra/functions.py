@@ -416,12 +416,12 @@ def startAzureAdEnumeration(form):
 
     elif accessToken != "":
         try:
-            username = jwt.decode(accessToken, options={"verify_signature": False})["upn"]
+            username = jwt.decode(accessToken, options={"verify_signature": False, "verify_aud": False})["upn"]
         except:
             return "error", "Invaild Token Found!"
         res = azureAdEnum.enumToken(current_user.id, accessToken, username)
         return res
-        
+
     return "warning", "Invalid Credentials or Access Token not found!"
 
 def startAzServiceEnumeration(form):

