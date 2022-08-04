@@ -361,14 +361,15 @@ def iam(uuid, victim, client):
             res = client.list_virtual_mfa_devices()
         except:
             insert_results(uuid, victim, checkNo, checkTitle, "AccessDenied", "", "")
-            return    
+            return
+
         for VirtualMFADevices in res["VirtualMFADevices"]:
             serial = VirtualMFADevices["SerialNumber"]
             if "root-account-mfa-device" in serial:
                 insert_results(uuid, victim, checkNo, checkTitle, "Compliant", "Hardware MFA enabled for \"root\"", serial)
                 return
 
-        insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", "Hardware Mfa Not enabled for \"root\"", serial)
+            insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", "Hardware Mfa Not enabled for \"root\"", serial)
 
     def check1_15(uuid, victim):                                                     # Ensure security questions are registered in the AWS account
         checkNo = "1.15"
