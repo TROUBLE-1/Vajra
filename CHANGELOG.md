@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 <br>
 
+## 2.3
+ - [Fixed] JWT Decoding error
+ - Removed unwanted download button from AWS
+
+
 ## 2.2
  - Live Logs feature added via websockets for Azure
 
