@@ -606,8 +606,8 @@ For instances that are known to perform AWS actions, ensure that they belong to 
 
 
 
-def logging(uuid, victim, access_key, secret_key, session_token):
-    clientCloudTrial = get_client(access_key, secret_key, session_token, "cloudtrail", None)
+def logging(uuid, victim, access_key, secret_key, session_token, region):
+    clientCloudTrial = get_client(access_key, secret_key, session_token, "cloudtrail", region)
     try:
         trailList = clientCloudTrial.describe_trails()
     except:
@@ -664,7 +664,7 @@ def logging(uuid, victim, access_key, secret_key, session_token):
         checkTitle = "Ensure the S3 bucket used to store CloudTrail logs is not publicly accessible"
 
         def check_for_s3_trail( uuid, victim, trail):
-            client = get_client(access_key, secret_key, session_token, "s3", None)
+            client = get_client(access_key, secret_key, session_token, "s3", region)
             bucketName = trail["S3BucketName"]
             try:
                 bucket_acl = client.get_bucket_acl(Bucket=bucketName)
@@ -750,7 +750,7 @@ def logging(uuid, victim, access_key, secret_key, session_token):
     def check2_5(uuid, victim):                                                 # Ensure AWS Config is enabled in all regions 
         checkNo = 2.5
         checkTitle = "Ensure AWS Config is enabled in all regions "
-        client = get_client(access_key, secret_key, session_token, "config", None)
+        client = get_client(access_key, secret_key, session_token, "config", region)
         try:
             res = client.describe_configuration_recorders()
         except:
@@ -771,16 +771,20 @@ def logging(uuid, victim, access_key, secret_key, session_token):
                     return
                 for data in res["ConfigurationRecordersStatus"]:
                     recording = data["recording"]
-                    lastStatus = data["lastStatus"]
-                    if recording == True and lastStatus == "SUCCESS":
-                        insert_results(uuid, victim, checkNo, checkTitle, "Compliant", "", roleARN)
+                    
+                    if "lastStatus" in data:
+                        lastStatus = data["lastStatus"]
+                        if recording == True and lastStatus == "SUCCESS":
+                            insert_results(uuid, victim, checkNo, checkTitle, "Compliant", "", roleARN)
+                        else:
+                            insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", "", roleARN)    
                     else:
-                        insert_results(uuid, victim, checkNo, checkTitle, "Compliant", "", roleARN)    
+                        insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", "", roleARN)    
 
     def check2_6(uuid, victim, clientCloudTrial):                                                 # Ensure S3 bucket access logging is enabled on the CloudTrail S3bucket
         checkNo = 2.6
         checkTitle = "Ensure S3 bucket access logging is enabled on the CloudTrail S3bucket"
-        s3client = get_client(access_key, secret_key, session_token, "s3", None)
+        s3client = get_client(access_key, secret_key, session_token, "s3", region)
 
         def get_bucket_logging(uuid, victim, bucketName, client):
             try:
@@ -817,7 +821,7 @@ def logging(uuid, victim, access_key, secret_key, session_token):
     def check2_8(uuid, victim):                                                                        # Ensure rotation for customer created CMKs is enabled
         checkNo = 2.8
         checkTitle = "Ensure rotation for customer created CMKs is enabled"
-        client = get_client(access_key, secret_key, session_token, "kms", None)
+        client = get_client(access_key, secret_key, session_token, "kms", region)
         try:
             res = client.list_keys()
         except:
@@ -851,45 +855,39 @@ def logging(uuid, victim, access_key, secret_key, session_token):
         checkNo = 2.9
         checkTitle = "Ensure VPC flow logging is enabled in all VPCs"            
         try:
-            ec2client = get_client(access_key, secret_key, session_token, "ec2", "us-east-1")
+            ec2client = get_client(access_key, secret_key, session_token, "ec2", region)
             res = ec2client.describe_vpcs()
         except:
             insert_results(uuid, victim, checkNo, checkTitle, "AccessDenied", "", "")
             return
 
-        def describe_vps(uuid, victim, region):
-            ec2client = get_client(access_key, secret_key, session_token, "ec2", region)
-            try:
-                res = ec2client.describe_vpcs()
-                flowlogs = ec2client.describe_flow_logs()
-            except:
-                insert_results(uuid, victim, checkNo, checkTitle, "AccessDenied", "", "")
-                return
-            
-            for vpc in res["Vpcs"]:    
-           
-                if vpc["State"] == "available":
-                    vpcId = vpc["VpcId"]
-                    if flowlogs["FlowLogs"] != []:
-                        for data in flowlogs["FlowLogs"]:
-                            if data["FlowLogStatus"] == "ACTIVE" and data["ResourceId"] == vpcId:
-                                FlowLogId = data["FlowLogId"]
-                                results = f"VPCFlowLog is enabled for LogGroupName: {FlowLogId} in Region {region}"
-                                insert_results(uuid, victim, checkNo, checkTitle, "Compliant", results, FlowLogId)
-                            else:
-                                FlowLogId = data["FlowLogId"]
-                                results = f"VPCFlowLog is not enabled for LogGroupName: {FlowLogId} in Region {region}"
-                                insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", results, vpcId)
-                    else:
-                        results = f"VPCFlowLog is disabled for vpcId: {vpcId} in Region {region}"
-                        insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", results, vpcId)
+        ec2client = get_client(access_key, secret_key, session_token, "ec2", region)
+        try:
+            res = ec2client.describe_vpcs()
+            flowlogs = ec2client.describe_flow_logs()
+        except:
+            insert_results(uuid, victim, checkNo, checkTitle, "AccessDenied", "", "")
+            return
+        
+        for vpc in res["Vpcs"]:    
+        
+            if vpc["State"] == "available":
+                vpcId = vpc["VpcId"]
+                if flowlogs["FlowLogs"] != []:
+                    for data in flowlogs["FlowLogs"]:
+                        if data["FlowLogStatus"] == "ACTIVE" and data["ResourceId"] == vpcId:
+                            FlowLogId = data["FlowLogId"]
+                            results = f"VPCFlowLog is enabled for LogGroupName: {FlowLogId} in Region {region}"
+                            insert_results(uuid, victim, checkNo, checkTitle, "Compliant", results, FlowLogId)
+                        else:
+                            FlowLogId = data["FlowLogId"]
+                            results = f"VPCFlowLog is not enabled for LogGroupName: {FlowLogId} in Region {region}"
+                            insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", results, vpcId)
+                else:
+                    results = f"VPCFlowLog is disabled for vpcId: {vpcId} in Region {region}"
+                    insert_results(uuid, victim, checkNo, checkTitle, "Non-Compliant", results, vpcId)
 
-        processes = []
-        with ThreadPoolExecutor(max_workers=20) as executor:
-            for region in regions:
-                processes.append(executor.submit(describe_vps, uuid, victim, region))
-        for task in as_completed(processes):
-            (task.result())
+        
 
     p1 = threading.Thread(target=check2_1, args=(uuid, victim, clientCloudTrial))
     p2 = threading.Thread(target=check2_3, args=(uuid, victim, clientCloudTrial))
@@ -905,9 +903,9 @@ def logging(uuid, victim, access_key, secret_key, session_token):
     p1.join();p2.join();p3.join();p4.join();p5.join();p6.join();p7.join();p8.join()
 
 
-def monitoring(uuid, victim, access_key, secret_key, session_token):
+def monitoring(uuid, victim, access_key, secret_key, session_token, region):
     try:
-        client= get_client(access_key, secret_key, session_token, "cloudtrail", None)
+        client= get_client(access_key, secret_key, session_token, "cloudtrail", region)
         trails = client.describe_trails()
     except:
         insert_results(uuid, victim, 3, "Monitoring", "AccessDenied", "", "")
@@ -961,7 +959,7 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
                     insert_results(uuid, victim, checkNo, checkTitle, compliant, results, CloudWatchLogsRoleArn)
                     continue
 
-                logclient = get_client(access_key, secret_key, session_token, "logs", None)
+                logclient = get_client(access_key, secret_key, session_token, "logs", region)
                 log_group_name = trail["CloudWatchLogsLogGroupArn"].split(":")[6]
                 try:
                     logs = logclient.describe_metric_filters(logGroupName=log_group_name)
@@ -984,11 +982,10 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
                 results = " CloudWatchLogsLogGroupArn not Found!"
                 insert_results(uuid, victim, checkNo, checkTitle, compliant, results, Name)
 
-
+    client = get_client(access_key, secret_key, session_token, "cloudtrail", region)
     def check3_1(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for unauthorized API calls
         checkNo = 3.1
         checkTitle = "Ensure a log metric filter and alarm exist for unauthorized API calls"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["*UnauthorizedOperation", "AccessDenied"]
         resultsfilter = '"filterPattern": "{ ($.errorCode = "*UnauthorizedOperation") || ($.errorCode = "AccessDenied*") }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -997,7 +994,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_2(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for Management Console sign-in without MFA
         checkNo = 3.2
         checkTitle = "Ensure a log metric filter and alarm exist for Management Console sign-in without MFA"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["ConsoleLogin", "additionalEventData.MFAUsed"]
         resultsfilter = '"filterPattern": "{ ($.eventName = "ConsoleLogin") && ($.additionalEventData.MFAUsed != "Yes") }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1006,7 +1002,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_3(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for usage of "root" account
         checkNo = 3.3
         checkTitle = "Ensure a log metric filter and alarm exist for usage of \"root\" account"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["Root", "AwsServiceEvent", "$.userIdentity.invokedBy NOT EXISTS"]
         resultsfilter = '"filterPattern": "{ $.userIdentity.type = "Root" && $.userIdentity.invokedBy NOT EXISTS && $.eventType != "AwsServiceEvent" }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1014,7 +1009,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_4(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for IAM policy changes
         checkNo = 3.4
         checkTitle = "Ensure a log metric filter and alarm exist for IAM policy changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["DeleteGroupPolicy", "DeleteRolePolicy", "DeleteUserPolicy", "CreatePolicy", "PutUserPolicy", "DetachRolePolicy", ]
         resultsfilter = '"filterPattern":"{($.eventName=DeleteGroupPolicy)||($.eventName=DeleteRolePolicy)||($.eventName=DeleteUserPolicy)||($.eventName=PutGroupPolicy)||($.eventName=PutRolePolicy)||($.eventName=PutUserPolicy)||($.eventName=CreatePolicy)||($.eventName=DeletePolicy)||($.eventName=CreatePolicyVersion)||($.eventName=DeletePolicyVersion)||($.eventName=AttachRolePolicy)||($.eventName=DetachRolePolicy)||($.eventName=AttachUserPolicy)||($.eventName=DetachUserPolicy)||($.eventName=AttachGroupPolicy)||($.eventName=DetachGroupPolicy)}"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1023,7 +1017,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_5(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for CloudTrail configuration changes
         checkNo = 3.5
         checkTitle = "Ensure a log metric filter and alarm exist for CloudTrail configuration changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["CreateTrail", "UpdateTrail", "DeleteTrail"]
         resultsfilter = '"filterPattern": "{ ($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) || ($.eventName = StartLogging) || ($.eventName = StopLogging) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1032,7 +1025,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_6(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for AWS Management Console authentication failures
         checkNo = 3.6
         checkTitle = "Ensure a log metric filter and alarm exist for AWS Management Console authentication failures"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["ConsoleLogin", "Failed authentication"]
         resultsfilter = '"filterPattern": "{ ($.eventName = ConsoleLogin) && ($.errorMessage = "Failed authentication") }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1041,7 +1033,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_7(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs
         checkNo = 3.7
         checkTitle = "Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["kms.amazonaws.com", "DisableKey", "ScheduleKeyDeletion"]
         resultsfilter = '"filterPattern": "{($.eventSource = kms.amazonaws.com) && (($.eventName=DisableKey)||($.eventName=ScheduleKeyDeletion)) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)            
@@ -1049,7 +1040,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_8(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for S3 bucket policy changes
         checkNo = 3.8
         checkTitle = "Ensure a log metric filter and alarm exist for S3 bucket policy changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["s3.amazonaws.com", "PutBucketAcl", "PutBucketPolicy", "PutBucketCors", "PutBucketLifecycle", "DeleteBucketReplication", "DeleteBucketLifecycle"]
         resultsfilter = '"filterPattern": "{ ($.eventSource = s3.amazonaws.com) && (($.eventName = PutBucketAcl) || ($.eventName = PutBucketPolicy) || ($.eventName = PutBucketCors) || ($.eventName = PutBucketLifecycle) || ($.eventName = PutBucketReplication) || ($.eventName = DeleteBucketPolicy) || ($.eventName = DeleteBucketCors) || ($.eventName = DeleteBucketLifecycle) || ($.eventName = DeleteBucketReplication)) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter) 
@@ -1057,7 +1047,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_9(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for AWS Config configuration changes
         checkNo = 3.9
         checkTitle = "Ensure a log metric filter and alarm exist for AWS Config configuration changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["config.amazonaws.com", "StopConfigurationRecorder", "DeleteDeliveryChannel", "PutDeliveryChannel", "PutConfigurationRecorder"]
         resultsfilter = '"filterPattern": "{ ($.eventSource = config.amazonaws.com) && (($.eventName=StopConfigurationRecorder)||($.eventName=DeleteDeliveryChannel) ||($.eventName=PutDeliveryChannel)||($.eventName=PutConfigurationRecorder)) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1065,7 +1054,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_10(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for security group changes
         checkNo = 3.10
         checkTitle = "Ensure a log metric filter and alarm exist for security group changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["uthorizeSecurityGroupIngress", "AuthorizeSecurityGroupEgress", "RevokeSecurityGroupIngress", "CreateSecurityGroup", "DeleteSecurityGroup"]
         resultsfilter = '"filterPattern": "{ ($.eventName = AuthorizeSecurityGroupIngress) || ($.eventName = AuthorizeSecurityGroupEgress) || ($.eventName = RevokeSecurityGroupIngress) || ($.eventName = RevokeSecurityGroupEgress) || ($.eventName = CreateSecurityGroup) || ($.eventName = DeleteSecurityGroup) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1073,7 +1061,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_11(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for changes to Network Access Control Lists
         checkNo = 3.11
         checkTitle = "Ensure a log metric filter and alarm exist for changes to Network Access Control Lists"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["CreateNetworkAcl", "CreateNetworkAclEntry", "DeleteNetworkAcl", "DeleteNetworkAclEntry", "ReplaceNetworkAclAssociation"]
         resultsfilter = '"filterPattern": "{ ($.eventName = CreateNetworkAcl) || ($.eventName = CreateNetworkAclEntry) || ($.eventName = DeleteNetworkAcl) || ($.eventName = DeleteNetworkAclEntry) || ($.eventName = ReplaceNetworkAclEntry) || ($.eventName = ReplaceNetworkAclAssociation) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1082,7 +1069,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_12(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for changes to network gateways
         checkNo = 3.12
         checkTitle = "Ensure a log metric filter and alarm exist for changes to network gateways"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["CreateCustomerGateway", "DeleteCustomerGateway", "AttachInternetGateway", "DeleteInternetGateway", "DetachInternetGateway"]
         resultsfilter = '"filterPattern": "{ ($.eventName = CreateCustomerGateway) || ($.eventName = DeleteCustomerGateway) || ($.eventName = AttachInternetGateway) || ($.eventName = CreateInternetGateway) || ($.eventName = DeleteInternetGateway) || ($.eventName = DetachInternetGateway) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1090,7 +1076,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_13(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for route table changes
         checkNo = 3.13
         checkTitle = "Ensure a log metric filter and alarm exist for route table changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["CreateRoute", "CreateRouteTable", "ReplaceRoute", "ReplaceRouteTableAssociation", "DeleteRouteTable", "DeleteRoute", "DisassociateRouteTable"]
         resultsfilter = '"filterPattern": "{ ($.eventName = CreateRoute) || ($.eventName = CreateRouteTable) || ($.eventName = ReplaceRoute) || ($.eventName = ReplaceRouteTableAssociation) || ($.eventName = DeleteRouteTable) || ($.eventName = DeleteRoute) || ($.eventName = DisassociateRouteTable) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1098,7 +1083,6 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     def check3_14(uuid, victim):                                                             # Ensure a log metric filter and alarm exist for VPC changes
         checkNo = 3.14
         checkTitle = "Ensure a log metric filter and alarm exist for VPC changes"
-        client = get_client(access_key, secret_key, session_token, "cloudtrail", None)
         filters = ["CreateVpc", "DeleteVpc", "ModifyVpcAttribute", "AcceptVpcPeeringConnection", "CreateVpcPeeringConnection", "DeleteVpcPeeringConnection", "RejectVpcPeeringConnection", "AttachClassicLinkVpc", "DetachClassicLinkVpc", "DisableVpcClassicLink"]
         resultsfilter = '"filterPattern": "{ ($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink) }"'
         getmetricFilters(uuid, victim, checkNo, checkTitle, client, filters, resultsfilter)
@@ -1123,8 +1107,8 @@ def monitoring(uuid, victim, access_key, secret_key, session_token):
     p1.start();p2.start();p3.start();p4.start();p5.start();p6.start();p7.start();p8.start();p9.start();p10.start();p11.start();p12.start();p13.start();p14.start()
     p1.join(); p2.join(); p3.join(); p4.join(); p5.join(); p6.join(); p7.join(); p8.join(); p9.join(); p10.join(); p11.join(); p12.join(); p13.join(); p14.join()
   
-def network(uuid, victim, access_key, secret_key, session_token):
-    client = get_client(access_key, secret_key, session_token, "ec2", None)        
+def network(uuid, victim, access_key, secret_key, session_token, region):
+    client = get_client(access_key, secret_key, session_token, "ec2", region)        
     try:
         security_groups = client.describe_security_groups()
     except:
@@ -1134,7 +1118,7 @@ def network(uuid, victim, access_key, secret_key, session_token):
     def check4_1(uuid, victim, access_key, secret_key, session_token):
         checkNo = 4.1
         checkTitle = "Ensure no security groups allow ingress from 0.0.0.0/0 to remote server administration ports"
-        client = get_client(access_key, secret_key, session_token, "ec2", None)        
+        client = get_client(access_key, secret_key, session_token, "ec2", region)        
         try:
             security_groups = client.describe_security_groups()
         except:
@@ -1144,12 +1128,13 @@ def network(uuid, victim, access_key, secret_key, session_token):
         for groups in security_groups['SecurityGroups']:
             groupName = groups["GroupName"]
             Id = groups["GroupId"]
+            adminports = []
             for group in groups["IpPermissions"]:
                 if "FromPort" not in group:
                     continue
                 formPort = group["FromPort"]
                 toPort = group["ToPort"]
-                adminports = []
+                
                 for port in range(formPort, toPort + 1):
                     if port in ports:
                         adminports.append(str(port))
@@ -1164,7 +1149,7 @@ def network(uuid, victim, access_key, secret_key, session_token):
     def check4_3(uuid, victim):
         checkNo = 4.3
         checkTitle = "Ensure the default security group of every VPC restricts all traffic"
-        client = get_client(access_key, secret_key, session_token, "ec2", None)
+        client = get_client(access_key, secret_key, session_token, "ec2", region)
         try:
             res = client.describe_security_groups(Filters=[{"Name":"group-name","Values":['default']}])
         except:
@@ -1184,7 +1169,7 @@ def network(uuid, victim, access_key, secret_key, session_token):
     def check4_4(uuid, victim):
         checkNo = 4.4
         checkTitle = "Ensure routing tables for VPC peering are \"least access\""
-        client = get_client(access_key, secret_key, session_token, "ec2", None)
+        client = get_client(access_key, secret_key, session_token, "ec2", region)
         try:
             res = client.describe_vpc_peering_connections()
         except:
@@ -1222,19 +1207,25 @@ def startconfigReview(uuid, victim, access_key, secret_key, session_token):
     
     psiam = threading.Thread(target=iam, args=(uuid, victim, iam_client))
     psiam.start()
-
-    pslog = threading.Thread(target=logging, args=(uuid, victim, access_key, secret_key, session_token))
-    pslog.start()
-    # Monitoring
-    psmonitor = threading.Thread(target=monitoring, args=(uuid, victim, access_key, secret_key, session_token))
-    psmonitor.start()
-
-    psnetwork = threading.Thread(target=network, args=(uuid, victim, access_key, secret_key, session_token))
-    psnetwork.start()
-
     psiam.join()
-    pslog.join()
-    psmonitor.join()
+    
+    for region in regions:
+        pslog = threading.Thread(target=logging, args=(uuid, victim, access_key, secret_key, session_token, region))
+        pslog.start()
+
+    pslog.join()   
+
+    # Monitoring
+    for region in regions:
+        psmonitor = threading.Thread(target=monitoring, args=(uuid, victim, access_key, secret_key, session_token, region))
+        psmonitor.start()
+
+    psmonitor.join()    
+
+    for region in regions:
+        psnetwork = threading.Thread(target=network, args=(uuid, victim, access_key, secret_key, session_token, region))
+        psnetwork.start()
+        
     psnetwork.join()
 
     iamVictim = awsConfigVictims.query.filter_by(uuid=uuid, victim=victim).first()
