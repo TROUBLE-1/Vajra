@@ -476,7 +476,7 @@ For instances that are known to perform AWS actions, ensure that they belong to 
         checkTitle = "Ensure a support role has been created to manage incidents with AWS Support"
         
         try:
-            res = client.list_policies()
+            res = client.list_policies(MaxItems=1000, OnlyAttached=True)
         except:
             insert_results(uuid, victim, checkNo, checkTitle, "AccessDenied", "", "")
             return
