@@ -89,7 +89,7 @@ class azureAdEnum():
 
         roles = ""
         response = azureAdEnum.apiCall(uuid, f"/rolemanagement/directory/roleAssignments?$filter=principalId+eq+'{Id}'", 'GET', None, "", accessToken)
-        if response.status_code != 200:
+        if response.status_code == 200:
             response = response.json()
             if "value" in response:
                 for data in response["value"]:
