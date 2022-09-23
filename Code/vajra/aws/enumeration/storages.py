@@ -51,12 +51,15 @@ def s3BucketGetPolicy(uuid, victim, client, bucketName):
 def s3BucketAcl(uuid, victim, client, bucketName):
     res1 = client.get_bucket_acl(Bucket=bucketName)
     s3bucket = awsS3.query.filter_by(uuid=uuid, victim=victim, bucketName=bucketName).first()
-    if "URI" in res1["Grants"][0]["Grantee"]:
-        if "http://acs.amazonaws.com/groups/global/AllUsers" == res1["Grants"][0]["Grantee"]["URI"]:
-            s3bucket.acl = "All Users"
-        elif "http://acs.amazonaws.com/groups/global/AuthenticatedUsers" == res1["Grants"][0]["Grantee"]["URI"]:
-            s3bucket.acl = "Authenticated Users"
-
+    try:
+        if "URI" in res1["Grants"][0]["Grantee"]:
+            if "http://acs.amazonaws.com/groups/global/AllUsers" == res1["Grants"][0]["Grantee"]["URI"]:
+                s3bucket.acl = "All Users"
+            elif "http://acs.amazonaws.com/groups/global/AuthenticatedUsers" == res1["Grants"][0]["Grantee"]["URI"]:
+                s3bucket.acl = "Authenticated Users"
+    except:
+        s3bucket.acl = "Private"
+        
     db.session.commit()
 
 def s3bucket(uuid, victim, client, bucket):

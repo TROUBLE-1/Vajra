@@ -950,11 +950,10 @@ def aws_enumeration():
     form = awsEnumerate()
     if form.validate_on_submit():
         res = startAWSEnumeration(current_user.id, form)
-
         flash(["AWS",res[1]], res[0])
         return redirect(url_for('aws_enumeration'))
 
-    victims = awsIAMVictims.query.filter_by(uuid=current_user.id).all()        
+    victims = reversed(awsIAMVictims.query.filter_by(uuid=current_user.id).all())
     return render_template("aws/enumeration/iam/enumerate.html", form=form, victims=victims)
 
 @app.route("/aws/enumeration/<victimId>")

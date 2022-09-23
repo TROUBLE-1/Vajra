@@ -31,11 +31,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 def start_iam(uuid, victim, client):
 
     try:
-        iam_all_details = client.get_account_authorization_details()   # UserDetailList
+        iam_all_users = client.list_users(MaxItems=1000)   # UserDetailList
     except:
         return
     
-    UserDetailList = iam_all_details["UserDetailList"]
+    UserDetailList = iam_all_users["Users"]
     GroupDetailList = client.list_groups()["Groups"]
     p1 = threading.Thread(target=iam_users, args=(uuid, victim, UserDetailList, client))
     p2 = threading.Thread(target=iam_groups, args=(uuid, victim, GroupDetailList, UserDetailList, client))

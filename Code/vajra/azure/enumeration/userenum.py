@@ -1,11 +1,7 @@
 
 
-from os import times
-import requests
-from sqlalchemy.orm.query import Query
-from sqlalchemy.sql.expression import false, true
+import requests, re
 from vajra import db
-from sqlalchemy.sql import text
 from vajra.models import ForUserEnum, userenumLogs, validEmails
 from email_validator import validate_email, EmailNotValidError
 
@@ -14,21 +10,20 @@ class userenumerate():
         db.engine.execute(f"UPDATE enumeration_status SET userenum ='True' WHERE uuid = '{uuid}'")
         try:
             emails = ForUserEnum.query.filter_by(uuid=uuid).all()
-
+        
             for email in emails:
                 email = email.emails.replace(" ", "")
                 if email == "":
                     continue
-                try:
-                    valid = validate_email(email)
-                    valid.email
-                except EmailNotValidError as e:
-                    # email is not valid, exception message is human-readable
+                regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+                if re.fullmatch(regex, email) :
+                    pass
+                else:
                     log = (f"<br><span style=\"color:red\">[-] Invalid: {email}</span>" )
                     db.session.add(userenumLogs(uuid=uuid, message=log))
                     db.session.commit()
                     continue
-
+                print(33)
                 body = '{"Username":"%s"}' % email
                 response = requests.post("https://login.microsoftonline.com/common/GetCredentialType", data=body).json()
                 try:

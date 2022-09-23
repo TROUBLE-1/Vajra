@@ -22,6 +22,8 @@ from vajra import db
 from vajra.models import *
 from vajra.aws.enumeration.function import osCommand
 from vajra.aws.enumeration.utils.json_utils import json_encoder
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 def public_ssh_keys_for_user(uuid, username, profile):
     res = osCommand(uuid, f"aws iam list-ssh-public-keys --user-name {username} --profile {profile}")
@@ -122,11 +124,11 @@ def iam_groups(uuid, victim, GroupDetailList, UserDetailList, client):
             policies.append(policy["PolicyArn"])
 
         policies = "\r\n".join(policies)
+        users = awsIAMUsers.query.with_entities(awsIAMUsers.username).filter(awsIAMUsers.groupName.contains(groupName)).all()
 
         members = []
-        for user in UserDetailList:
-            if groupName in user["GroupList"]:
-                members.append(user["UserName"])
+        for user in users:
+            members.append(user[0])
 
         members = "\r\n".join(members)
         groups = awsIAMGroups(uuid=uuid, victim=victim, groupName=groupName, groupId=groupId, arn=arn, createDate=createDate, policyName=policies, members=members)
@@ -152,16 +154,22 @@ def iam_users(uuid, victim, UserDetailList, client):
         except:
             return  
 
-    
-    for data in UserDetailList:
+
+    def importUsersDetails(uuid, victim, data):    
         username = data["UserName"]
         userId   = data["UserId"]
         arn      = data["Arn"]
         createDate = data["CreateDate"]
-        groupList = "\r\n".join(data["GroupList"])
-        attachedManagedPolicies = []
+        groups = client.list_groups_for_user(UserName=username, MaxItems=1000)
+        groupList = []
+        for group in groups["Groups"]:
+            groupList.append(group["GroupName"])
 
-        for policy in data["AttachedManagedPolicies"]:
+        groupList = "\r\n".join(groupList)
+
+        attachedPoliciesList = client.list_attached_user_policies(UserName=username, MaxItems=1000)
+        attachedManagedPolicies = []
+        for policy in attachedPoliciesList["AttachedPolicies"]:
             attachedManagedPolicies.append(policy["PolicyArn"])
         attachedManagedPolicies = "\r\n".join(attachedManagedPolicies)
         try:
@@ -172,7 +180,18 @@ def iam_users(uuid, victim, UserDetailList, client):
         db.session.add(awsIAMUsers(uuid=uuid, victim=victim, username=username, userId=userId, arn=arn, createdate=createDate, passwordLastUsed=passwordLastUsed, groupName=groupList, attachedUserPolicy=attachedManagedPolicies))
         db.session.commit()
 
-        threading.Thread(target=inline_user_policy, args=(uuid, victim, username, client)).start()
-        threading.Thread(target=get_login_profile, args=(uuid, victim, username, client)).start()
-        time.sleep(0.2)
-    
+        p1 = threading.Thread(target=inline_user_policy, args=(uuid, victim, username, client))
+        p2 = threading.Thread(target=get_login_profile, args=(uuid, victim, username, client))
+
+        p1.start()
+        p2.start()
+        p1.join()
+        p2.join()
+
+    processes = []
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        for data in UserDetailList:
+            processes.append(executor.submit(importUsersDetails, uuid, victim, data))
+
+    for task in as_completed(processes):
+        (task.result()) 
