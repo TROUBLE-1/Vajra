@@ -55,10 +55,10 @@
                   {% for data in azureUsersResources %} 
                   <tr>
                     <td>
-                      <a href="" class="nav-link text-info">
+                      
                           {% set image = data.type.split("/")[1] %}
                           <img src="{{ url_for('static',filename='images/azure/logo/resources/'+image+'.svg') }}" style="border-radius: 0%;">
-                          <u>
+                      
                       {{ data.resourceName }}
                       </u>
                   </a> 

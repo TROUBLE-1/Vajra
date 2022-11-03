@@ -551,6 +551,7 @@ def azureAdEnumeration():
 @login_required
 def azureAdEnumerationUsers(victim):
     data = enumeratedData(victim)
+  
     return render_template("azure/enumeration/azureAd/azureAdEnumeratedUserData.html", enumerate=data)
 
 

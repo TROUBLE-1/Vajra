@@ -33,6 +33,7 @@ import sqlite3 as sqlite
 import psycopg2 as pg
 import sys, os, threading, base64, json, jwt
 from vajra.aws.enumeration.config_review  import startconfigReview
+import requests
 
 directory = os.path.dirname(os.path.realpath(__file__)) + "/tmp/"
 
@@ -416,9 +417,13 @@ def startAzureAdEnumeration(form):
 
     elif accessToken != "":
         try:
-            username = jwt.decode(accessToken, options={"verify_signature": False, "verify_aud": False})["upn"]
+            try:
+                username = jwt.decode(accessToken, options={"verify_signature": False})["upn"]
+            except:
+                username = jwt.decode(accessToken, options={"verify_signature": False})["oid"]
         except:
             return "error", "Invaild Token Found!"
+
         res = azureAdEnum.enumToken(current_user.id, accessToken, username)
         return res
 
@@ -436,9 +441,16 @@ def startAzServiceEnumeration(form):
 
     elif accessToken != "":
         try:
-            username = jwt.decode(accessToken, options={"verify_signature": False})["upn"]
+            try:
+                username = jwt.decode(accessToken, options={"verify_signature": False})["upn"]
+            except:
+                try:
+                    username = jwt.decode(accessToken, options={"verify_signature": False})["xms_mirid"].split("/")[-1]
+                except:
+                    username = jwt.decode(accessToken, options={"verify_signature": False})["appid"]    
         except:
-            return "error", "Invaild Token Found!"    
+            
+            return "error", "Invaild Token Found!"           
         
         res = azureAzServiceEnum.enumToken(current_user.id, accessToken, username)
         return res

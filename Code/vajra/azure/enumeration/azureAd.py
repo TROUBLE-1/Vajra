@@ -475,6 +475,48 @@ class azureAdEnum():
         
         db.session.commit();db.session.close()
 
+    def SpProfile(uuid, token, victim, oi):
+        profile_res = azureAdEnum.apiCall(uuid, f"/servicePrincipals/{oi}", 'GET', None, "", token).json()
+        displayName       = profile_res['displayName'] + "(SP)"
+        givenName         = "Service Principle"
+        jobTitle          = ""
+        mail              = ""
+        mobilePhone       = ""
+        officeLocation    = ""
+        preferredLanguage = ""
+        surname           = ""
+        userPrincipalName = profile_res['displayName']
+        Id                = profile_res['id']
+        groups = ""
+        usersGroup_res = azureAdEnum.apiCall(uuid, "/servicePrincipals/"+oi+"/memberOf", 'GET', None, "", token).json()
+        for group in usersGroup_res["value"]:
+            try:
+                if group["@odata.type"] == "#microsoft.graph.group":
+                    name  = group["displayName"]
+                    groups = groups + "\r\n" + name
+            except:
+                pass
+        usersGroups       = groups[2:]
+        insertProfile = azureAdEnumeratedUserProfile(uuid=uuid, 
+                        victim=victim,
+                        id=Id,
+                        groups=usersGroups,
+                        displayName=displayName,
+                        givenName=givenName,
+                        jobTitle=jobTitle,
+                        mail=mail, 
+                        mobilePhone=mobilePhone,
+                        officeLocation=officeLocation,
+                        preferredLanguage=preferredLanguage,
+                        surname=surname,
+                        userPrincipalName=userPrincipalName,
+                        accessToken=token,
+                        enumStatus="progress"
+                        )
+        
+        db.session.add(insertProfile)
+        
+        db.session.commit();db.session.close()
         
 
     def enum(uuid, token, victim):
@@ -529,17 +571,31 @@ class azureAdEnum():
                 return "error", str(e)
 
 
-    def enumToken(uuid, accessToken, victim):
+    def enumToken(uuid, accessToken, oi):
         try:
-            profile_res = azureAdEnum.apiCall(uuid, "/me", 'GET', None, "", accessToken).json()
-            profile_res['displayName']
+            try:    
+                Sp = False
+                profile_res = azureAdEnum.apiCall(uuid, "/me", 'GET', None, "", accessToken).json()
+                victim = profile_res['displayName']
+            except:
+                profile_res = azureAdEnum.apiCall(uuid, f"/servicePrincipals/{oi}", 'GET', None, "", accessToken).json()
+                victim = profile_res['displayName']
+                Sp = True
         except:
             return "error", "Access Token Expired!"
         try:
             azureAdEnum.flushPreviousdata(uuid, victim)
-            azureAdEnum.userProfile(uuid, accessToken, victim)
+            if Sp == False:
+                azureAdEnum.userProfile(uuid, accessToken, victim)
+            elif Sp == True:
+                azureAdEnum.SpProfile(uuid, accessToken, victim, oi)
+
             threading.Thread(target=azureAdEnum.enum, args=(uuid, accessToken, victim)).start()
             return "success", "Enumeration running in background please refresh the page after few seconds."
-        except:
+            
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             return "error", "Invalid or Access Token Expired!"
 
