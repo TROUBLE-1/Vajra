@@ -3,10 +3,10 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/s0md3v/Arjun/releases">
+  <a href="">
     <img src="https://raw.githubusercontent.com/toolswatch/badges/b3a921c9e9084018758752aacc9bd9ec95cd11f8/arsenal/europe/2021.svg">
   </a>
-  <a href="https://github.com/s0md3v/Arjun/releases">
+  <a href="">
     <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg">
   </a>
   
