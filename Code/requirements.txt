@@ -1,5 +1,6 @@
 flask
-flask_sqlalchemy
+sqlalchemy==1.4.39
+flask_sqlalchemy==2.5.1
 adal
 hurry.filesize
 flask_wtf
