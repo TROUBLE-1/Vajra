@@ -73,11 +73,9 @@ It features an intuitive web-based user interface built with the Python Flask mo
 
 # **About Author**
 
-Raunak Parmar is an information security professional whose areas of interest include web penetration testing, Azure/AWS security, source code review, scripting, and development.
+Raunak Parmar is an information security professional whose areas of interest include web penetration testing, Azure/AWS security, source code review, scripting, and development. He has 3+ years of experience in information security. Raunak holds OSWE certification and likes to research new attack methodologies and create open-source tools that can be used during Cloud Security assessments. He has worked extensively on Azure and AWS.
 
-He has 2+ years of experience in information security. Raunak likes to research new attack methodologies and create open-source tools that can be used during the Cloud Security assessments. He has worked extensively on Azure and AWS.
-
-He is the author of [Vajra](https://github.com/TROUBLE-1/Vajra) and [365-Stealer](https://github.com/AlteredSecurity/365-Stealer) an offensive cloud security tool. He has spoken in multiple conferences and local meetups.
+He is the author of [Vajra](https://github.com/TROUBLE-1/Vajra) an offensive cloud security tool and has spoken at multiple conferences like NullCon, Defcon, Blackhat, and local meetups.
 
 <a target="_blank"><img alt="readme-stats" src="https://github-readme-stats.vercel.app/api?username=trouble-1&show_icons=true&theme=vue-dark"/></a>
 
