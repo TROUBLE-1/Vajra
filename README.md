@@ -93,6 +93,7 @@ He is the author of [Vajra](https://github.com/TROUBLE-1/Vajra) an offensive clo
 <!--
 Install postgres database with credential postgres/postgres and create a database name vajra. If postgres is not installed then by default sqlite will be used.
 --->
+<!--
 ## Docker
 
 Pull the image file from dockerhub
@@ -103,7 +104,7 @@ Run Vajra with following and navigate to http://localhost
 ```
 docker run -p 80:80 -d tr0uble1/vajra
 ```
-
+-->
 ## Manually
 
 Run the following command to install all the modules.
